@@ -595,189 +595,189 @@ Each phase is independently shippable and reduces real-world pain.
 
 Goal: make the system safe to build on
 
-- Project scaffolding (repo, linting, env)
-- PostgreSQL + Drizzle setup
-- BetterAuth integration
-- Organization (tenant) creation
-- Organization types:
-  - school
-  - independent_teacher
-- Basic role system (admin / teacher / staff)
-- Tenant isolation enforcement
+- [ ] Project scaffolding (repo, linting, env)
+- [ ] PostgreSQL + Drizzle setup
+- [ ] BetterAuth integration
+- [ ] Organization (tenant) creation
+- [ ] Organization types:
+  - [ ] school
+  - [ ] independent_teacher
+- [ ] Basic role system (admin / teacher / staff)
+- [ ] Tenant isolation enforcement
 
 Deliverable:
-✅ Secure, multi-tenant foundation
+- [ ] Secure, multi-tenant foundation
 
 **Phase 1 — Core Actors**
 
 Goal: represent real people and places
 
-- Student entity (no-login support)
-- Teacher entity (user-linked or standalone)
-- Venue management
-- Organization member management
-- Public student registration form (minimal)
+- [ ] Student entity (no-login support)
+- [ ] Teacher entity (user-linked or standalone)
+- [ ] Venue management
+- [ ] Organization member management
+- [ ] Public student registration form (minimal)
 
 Deliverable:
-✅ Real-world entities represented correctly
+- [ ] Real-world entities represented correctly
 
 **Phase 2 — Groups & Membership**
 
 Goal: model ongoing classes accurately
 
-- Group lifecycle (active / paused / closed)
-- Student ↔ group membership with date ranges
-- Move students between groups
-- Multi-group enrollment
-- Group-level views
+- [ ] Group lifecycle (active / paused / closed)
+- [ ] Student ↔ group membership with date ranges
+- [ ] Move students between groups
+- [ ] Multi-group enrollment
+- [ ] Group-level views
 
 Deliverable:
-✅ Flexible class structure without data loss
+- [ ] Flexible class structure without data loss
 
 **Phase 3 — Class Sessions**
 
 Goal: introduce time as a first-class concept
 
-- Manual class session creation
-- Session status (scheduled / held / cancelled)
-- Link sessions to:
-  - groups
-  - teachers
-  - venues
-- Session history (immutable)
+- [ ] Manual class session creation
+- [ ] Session status (scheduled / held / cancelled)
+- [ ] Link sessions to:
+  - [ ] groups
+  - [ ] teachers
+  - [ ] venues
+- [ ] Session history (immutable)
 
 Deliverable:
-✅ Everything important happens in time
+- [ ] Everything important happens in time
 
 **Phase 4 — Attendance**
 
 Goal: capture what actually happened
 
-- Attendance per student per session
-- Attendance states (present / absent / excused / late)
-- Teacher attendance marking UI
-- Admin override & audit
-- Missing-attendance detection
+- [ ] Attendance per student per session
+- [ ] Attendance states (present / absent / excused / late)
+- [ ] Teacher attendance marking UI
+- [ ] Admin override & audit
+- [ ] Missing-attendance detection
 
 Deliverable:
-✅ Reliable operational truth
+- [ ] Reliable operational truth
 
 **Phase 5 — Private Classes**
 
 Goal: support 1-on-1 teaching
 
-- Private session creation
-- Duration-based sessions
-- Teacher assignment
-- Attendance implicit handling
+- [ ] Private session creation
+- [ ] Duration-based sessions
+- [ ] Teacher assignment
+- [ ] Attendance implicit handling
 
 Deliverable:
-✅ Solo teachers fully supported
+- [ ] Solo teachers fully supported
 
 **Phase 6 — Student Payments**
 
 Goal: replace manual tracking
 
-- Monthly payment records
-- Bank transfer receipt upload
-- Payment status tracking
-- Overdue detection
-- Manual reconciliation flow
+- [ ] Monthly payment records
+- [ ] Bank transfer receipt upload
+- [ ] Payment status tracking
+- [ ] Overdue detection
+- [ ] Manual reconciliation flow
 
 Deliverable:
-✅ Clear payment visibility without payment processing
+- [ ] Clear payment visibility without payment processing
 
 **Phase 7 — Teacher Payouts**
 
 Goal: make compensation transparent
 
-- Payout period calculation
-- Support payment models:
-  - fixed monthly
-  - per class
-  - per head
-- Attendance-based aggregation
-- Payout preview
-- Manual approval
+- [ ] Payout period calculation
+- [ ] Support payment models:
+  - [ ] fixed monthly
+  - [ ] per class
+  - [ ] per head
+- [ ] Attendance-based aggregation
+- [ ] Payout preview
+- [ ] Manual approval
 
 Deliverable:
-✅ Teachers trust the numbers
+- [ ] Teachers trust the numbers
 
 **Phase 8 — Scheduling Automation**
 
 Goal: reduce repetitive work
 
-- Group schedules (weekly patterns)
-- Automatic session generation
-- Holiday / cancellation handling
-- Schedule edits without history loss
+- [ ] Group schedules (weekly patterns)
+- [ ] Automatic session generation
+- [ ] Holiday / cancellation handling
+- [ ] Schedule edits without history loss
 
 Deliverable:
-✅ Fewer manual operations
+- [ ] Fewer manual operations
 
 **Phase 9 — Notifications**
 
 Goal: reduce chasing people
 
-- Payment reminders
-- Attendance reminders
-- Missing data alerts
-- Teacher notifications
-- Parent notifications (read-only)
+- [ ] Payment reminders
+- [ ] Attendance reminders
+- [ ] Missing data alerts
+- [ ] Teacher notifications
+- [ ] Parent notifications (read-only)
 
 Deliverable:
-✅ System nudges replace human chasing
+- [ ] System nudges replace human chasing
 
 **Phase 10 — Reporting**
 
 Goal: basic operational visibility
 
-- Attendance reports
-- Revenue summaries
-- Teacher load reports
-- Group health indicators
-- Export (CSV)
+- [ ] Attendance reports
+- [ ] Revenue summaries
+- [ ] Teacher load reports
+- [ ] Group health indicators
+- [ ] Export (CSV)
 
 Deliverable:
-✅ Admins understand what's happening
+- [ ] Admins understand what's happening
 
 **Phase 11 — Intelligence (v1)**
 
 Goal: insight, not just data
 
-- Attendance trends
-- Dropout risk indicators
-- Late-payment prediction
-- Teacher utilization metrics
-- AI-generated summaries
+- [ ] Attendance trends
+- [ ] Dropout risk indicators
+- [ ] Late-payment prediction
+- [ ] Teacher utilization metrics
+- [ ] AI-generated summaries
 
 Deliverable:
-✅ Cadence becomes proactive
+- [ ] Cadence becomes proactive
 
 **Phase 12 — AI Copilot**
 
 Goal: natural language operations
 
-- "Who hasn't paid this month?"
-- "Which students are at risk?"
-- "How much should I pay teachers?"
-- Actionable suggestions
+- [ ] "Who hasn't paid this month?"
+- [ ] "Which students are at risk?"
+- [ ] "How much should I pay teachers?"
+- [ ] Actionable suggestions
 
 Deliverable:
-✅ The system feels alive
+- [ ] The system feels alive
 
 **Phase 13 — Platform & Scale**
 
 Goal: long-term sustainability
 
-- Public APIs & webhooks
-- Third-party integrations
-- Advanced permissions
-- Multi-country support
-- White-labeling (optional)
+- [ ] Public APIs & webhooks
+- [ ] Third-party integrations
+- [ ] Advanced permissions
+- [ ] Multi-country support
+- [ ] White-labeling (optional)
 
 Deliverable:
-✅ Cadence as infrastructure
+- [ ] Cadence as infrastructure
 
 📁 Project Structure (early)
 
