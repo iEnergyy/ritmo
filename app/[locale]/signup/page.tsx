@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link, useRouter as useI18nRouter } from "@/i18n/navigation";
 
 export default function SignUpPage() {
-	const router = useRouter();
+	const router = useI18nRouter();
+	const t = useTranslations("SignUp");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [name, setName] = useState("");
@@ -26,7 +28,7 @@ export default function SignUpPage() {
 			});
 
 			if (result.error) {
-				setError(result.error.message || "Sign up failed");
+				setError(result.error.message || t("error"));
 			} else {
 				// Redirect to dashboard after successful sign up
 				router.push("/dashboard");
@@ -52,15 +54,15 @@ export default function SignUpPage() {
 			<div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
 				<div>
 					<h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-						Create your account
+						{t("title")}
 					</h2>
 					<p className="mt-2 text-center text-sm text-gray-600">
-						Or{" "}
+						{t("or")}{" "}
 						<Link
 							href="/signin"
 							className="font-medium text-blue-600 hover:text-blue-500"
 						>
-							sign in to your existing account
+							{t("signInExisting")}
 						</Link>
 					</p>
 				</div>
@@ -76,7 +78,7 @@ export default function SignUpPage() {
 								htmlFor="name"
 								className="block text-sm font-medium text-gray-700"
 							>
-								Name
+								{t("name")}
 							</label>
 							<input
 								id="name"
@@ -86,7 +88,7 @@ export default function SignUpPage() {
 								value={name}
 								onChange={(e) => setName(e.target.value)}
 								className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-								placeholder="Your name"
+								placeholder={t("namePlaceholder")}
 							/>
 						</div>
 						<div>
@@ -94,7 +96,7 @@ export default function SignUpPage() {
 								htmlFor="email"
 								className="block text-sm font-medium text-gray-700"
 							>
-								Email address
+								{t("email")}
 							</label>
 							<input
 								id="email"
@@ -105,7 +107,7 @@ export default function SignUpPage() {
 								value={email}
 								onChange={(e) => setEmail(e.target.value)}
 								className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-								placeholder="Email address"
+								placeholder={t("emailPlaceholder")}
 							/>
 						</div>
 						<div>
@@ -113,7 +115,7 @@ export default function SignUpPage() {
 								htmlFor="password"
 								className="block text-sm font-medium text-gray-700"
 							>
-								Password
+								{t("password")}
 							</label>
 							<input
 								id="password"
@@ -124,7 +126,7 @@ export default function SignUpPage() {
 								value={password}
 								onChange={(e) => setPassword(e.target.value)}
 								className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-								placeholder="Password"
+								placeholder={t("passwordPlaceholder")}
 							/>
 						</div>
 					</div>
@@ -135,7 +137,7 @@ export default function SignUpPage() {
 							disabled={loading}
 							className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
 						>
-							{loading ? "Creating account..." : "Create account"}
+							{loading ? t("creating") : t("createAccount")}
 						</button>
 					</div>
 				</form>

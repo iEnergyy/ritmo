@@ -2,13 +2,18 @@
 
 import { useSession } from "@/lib/auth-client";
 import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
 	const { data: session, isPending } = useSession();
 	const router = useRouter();
+	const locale = useLocale();
+	const t = useTranslations("Dashboard");
+	const navT = useTranslations("Navigation");
+	const langT = useTranslations("LanguageSwitcher");
+	const pathname = usePathname();
 	const [organizations, setOrganizations] = useState<any[]>([]);
 	const [organizationTypes, setOrganizationTypes] = useState<
 		Record<string, string>
@@ -52,10 +57,14 @@ export default function DashboardPage() {
 		router.push("/");
 	};
 
+	const switchLocale = (newLocale: string) => {
+		window.location.href = `/${newLocale}${pathname}`;
+	};
+
 	if (isPending) {
 		return (
 			<div className="min-h-screen flex items-center justify-center">
-				<div className="text-lg">Loading...</div>
+				<div className="text-lg">{t("loadingText")}</div>
 			</div>
 		);
 	}
@@ -64,12 +73,12 @@ export default function DashboardPage() {
 		return (
 			<div className="min-h-screen flex items-center justify-center">
 				<div className="text-center">
-					<h1 className="text-2xl font-bold mb-4">Not authenticated</h1>
+					<h1 className="text-2xl font-bold mb-4">{t("notAuthenticated")}</h1>
 					<Link
 						href="/signin"
 						className="text-blue-600 hover:text-blue-500 underline"
 					>
-						Sign in
+						{t("signIn")}
 					</Link>
 				</div>
 			</div>
@@ -88,20 +97,33 @@ export default function DashboardPage() {
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="flex justify-between h-16">
 						<div className="flex items-center">
-							<h1 className="text-xl font-semibold">Dashboard</h1>
+							<h1 className="text-xl font-semibold">{t("title")}</h1>
 						</div>
 						<div className="flex items-center space-x-4">
 							<Link
 								href="/"
 								className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
 							>
-								Home
+								{navT("home")}
 							</Link>
+							<button
+								onClick={() =>
+									switchLocale(locale === "es" ? "en" : "es")
+								}
+								className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium border border-gray-300 rounded-md"
+								title={
+									locale === "es"
+										? `${langT("switchTo")} ${langT("english")}`
+										: `${langT("switchTo")} ${langT("spanish")}`
+								}
+							>
+								{locale === "es" ? "EN" : "ES"}
+							</button>
 							<button
 								onClick={handleSignOut}
 								className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
 							>
-								Sign Out
+								{navT("signOut")}
 							</button>
 						</div>
 					</div>
@@ -111,46 +133,46 @@ export default function DashboardPage() {
 			<main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
 				<div className="px-4 py-6 sm:px-0">
 					<div className="bg-white shadow rounded-lg p-6 mb-6">
-						<h2 className="text-2xl font-bold mb-4">User Information</h2>
+						<h2 className="text-2xl font-bold mb-4">{t("userInfo")}</h2>
 						<div className="space-y-2">
 							<div>
-								<span className="font-semibold">User ID:</span>{" "}
+								<span className="font-semibold">{t("userId")}:</span>{" "}
 								<code className="bg-gray-100 px-2 py-1 rounded text-sm">
 									{session.user.id}
 								</code>
 							</div>
 							<div>
-								<span className="font-semibold">Name:</span>{" "}
+								<span className="font-semibold">{t("name")}:</span>{" "}
 								{session.user.name || "N/A"}
 							</div>
 							<div>
-								<span className="font-semibold">Email:</span>{" "}
+								<span className="font-semibold">{t("email")}:</span>{" "}
 								{session.user.email}
 							</div>
 							<div>
-								<span className="font-semibold">Email Verified:</span>{" "}
-								{session.user.emailVerified ? "Yes" : "No"}
+								<span className="font-semibold">{t("emailVerified")}:</span>{" "}
+								{session.user.emailVerified ? t("yes") : t("no")}
 							</div>
 						</div>
 					</div>
 
 					<div className="bg-white shadow rounded-lg p-6 mb-6">
-						<h2 className="text-2xl font-bold mb-4">Session Information</h2>
+						<h2 className="text-2xl font-bold mb-4">{t("sessionInfo")}</h2>
 						<div className="space-y-2">
 							<div>
-								<span className="font-semibold">Session ID:</span>{" "}
+								<span className="font-semibold">{t("sessionId")}:</span>{" "}
 								<code className="bg-gray-100 px-2 py-1 rounded text-sm">
 									{session.session?.id || "N/A"}
 								</code>
 							</div>
 							<div>
-								<span className="font-semibold">Active Organization ID:</span>{" "}
+								<span className="font-semibold">{t("activeOrganizationId")}:</span>{" "}
 								<code className="bg-gray-100 px-2 py-1 rounded text-sm">
-									{session.session?.activeOrganizationId || "None"}
+									{session.session?.activeOrganizationId || t("none")}
 								</code>
 							</div>
 							<div>
-								<span className="font-semibold">Expires At:</span>{" "}
+								<span className="font-semibold">{t("expiresAt")}:</span>{" "}
 								{session.session?.expiresAt
 									? new Date(session.session.expiresAt).toLocaleString()
 									: "N/A"}
@@ -160,20 +182,18 @@ export default function DashboardPage() {
 
 					<div className="bg-white shadow rounded-lg p-6 mb-6">
 						<div className="flex justify-between items-center mb-4">
-							<h2 className="text-2xl font-bold">Organizations</h2>
+							<h2 className="text-2xl font-bold">{t("organizations")}</h2>
 							<Link
 								href="/organizations/create"
 								className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
 							>
-								Create Organization
+								{t("createOrganization")}
 							</Link>
 						</div>
 						{loading ? (
-							<div>Loading organizations...</div>
+							<div>{t("loading")}</div>
 						) : organizations.length === 0 ? (
-							<div className="text-gray-500">
-								No organizations found. Create one to test multi-tenancy.
-							</div>
+							<div className="text-gray-500">{t("noOrganizations")}</div>
 						) : (
 							<div className="space-y-4">
 								{organizations.map((org) => (
@@ -189,28 +209,28 @@ export default function DashboardPage() {
 											<div>
 												<h3 className="font-semibold text-lg">{org.name}</h3>
 												<p className="text-sm text-gray-600">
-													Slug:{" "}
+													{t("slug")}:{" "}
 													<code className="bg-gray-100 px-1 rounded">
 														{org.slug}
 													</code>
 												</p>
 												{organizationTypes[org.id] && (
 													<p className="text-sm text-gray-600">
-														Type:{" "}
+														{t("type")}:{" "}
 														<span className="font-medium capitalize">
 															{organizationTypes[org.id].replace("_", " ")}
 														</span>
 													</p>
 												)}
 												<p className="text-sm text-gray-600">
-													ID:{" "}
+													{t("id")}:{" "}
 													<code className="bg-gray-100 px-1 rounded text-xs">
 														{org.id}
 													</code>
 												</p>
 												{activeOrg?.id === org.id && (
 													<span className="inline-block mt-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
-														Active Organization
+														{t("activeOrganization")}
 													</span>
 												)}
 											</div>
@@ -224,7 +244,7 @@ export default function DashboardPage() {
 												className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
 												disabled={activeOrg?.id === org.id}
 											>
-												{activeOrg?.id === org.id ? "Active" : "Set Active"}
+												{activeOrg?.id === org.id ? t("active") : t("setActive")}
 											</button>
 										</div>
 									</div>
@@ -234,7 +254,7 @@ export default function DashboardPage() {
 					</div>
 
 					<div className="bg-white shadow rounded-lg p-6">
-						<h2 className="text-2xl font-bold mb-4">Raw Session Data</h2>
+						<h2 className="text-2xl font-bold mb-4">{t("rawSessionData")}</h2>
 						<pre className="bg-gray-100 p-4 rounded overflow-auto text-xs">
 							{JSON.stringify(session, null, 2)}
 						</pre>

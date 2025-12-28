@@ -3,10 +3,13 @@
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link, useRouter as useI18nRouter } from "@/i18n/navigation";
 
 export default function CreateOrganizationPage() {
-	const router = useRouter();
+	const router = useI18nRouter();
+	const t = useTranslations("CreateOrganization");
+	const navT = useTranslations("Navigation");
 	const [name, setName] = useState("");
 	const [slug, setSlug] = useState("");
 	const [type, setType] = useState<"school" | "independent_teacher">("school");
@@ -38,7 +41,7 @@ export default function CreateOrganizationPage() {
 			});
 
 			if (result.error) {
-				setError(result.error.message || "Failed to create organization");
+				setError(result.error.message || t("error"));
 			} else if (result.data) {
 				// After creating the organization, add the type metadata
 				// This requires a server-side API call since we need to use the database directly
@@ -75,14 +78,14 @@ export default function CreateOrganizationPage() {
 			<div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
 				<div>
 					<h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-						Create Organization
+						{t("title")}
 					</h2>
 					<p className="mt-2 text-center text-sm text-gray-600">
 						<Link
 							href="/dashboard"
 							className="font-medium text-blue-600 hover:text-blue-500"
 						>
-							Back to Dashboard
+							{t("backToDashboard")}
 						</Link>
 					</p>
 				</div>
@@ -98,7 +101,7 @@ export default function CreateOrganizationPage() {
 								htmlFor="name"
 								className="block text-sm font-medium text-gray-700"
 							>
-								Organization Name
+								{t("organizationName")}
 							</label>
 							<input
 								id="name"
@@ -108,7 +111,7 @@ export default function CreateOrganizationPage() {
 								value={name}
 								onChange={handleNameChange}
 								className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-								placeholder="My Dance School"
+								placeholder={t("namePlaceholder")}
 							/>
 						</div>
 						<div>
@@ -116,7 +119,7 @@ export default function CreateOrganizationPage() {
 								htmlFor="slug"
 								className="block text-sm font-medium text-gray-700"
 							>
-								Slug (URL-friendly identifier)
+								{t("slug")}
 							</label>
 							<input
 								id="slug"
@@ -126,19 +129,16 @@ export default function CreateOrganizationPage() {
 								value={slug}
 								onChange={(e) => setSlug(e.target.value)}
 								className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-								placeholder="my-dance-school"
+								placeholder={t("slugPlaceholder")}
 							/>
-							<p className="mt-1 text-xs text-gray-500">
-								This will be used in URLs. Only lowercase letters, numbers, and
-								hyphens.
-							</p>
+							<p className="mt-1 text-xs text-gray-500">{t("slugHint")}</p>
 						</div>
 						<div>
 							<label
 								htmlFor="type"
 								className="block text-sm font-medium text-gray-700"
 							>
-								Organization Type
+								{t("organizationType")}
 							</label>
 							<select
 								id="type"
@@ -149,8 +149,10 @@ export default function CreateOrganizationPage() {
 								}
 								className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
 							>
-								<option value="school">Dance School</option>
-								<option value="independent_teacher">Independent Teacher</option>
+								<option value="school">{t("danceSchool")}</option>
+								<option value="independent_teacher">
+									{t("independentTeacher")}
+								</option>
 							</select>
 						</div>
 					</div>
@@ -161,7 +163,7 @@ export default function CreateOrganizationPage() {
 							disabled={loading}
 							className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
 						>
-							{loading ? "Creating..." : "Create Organization"}
+							{loading ? t("creating") : t("createOrganization")}
 						</button>
 					</div>
 				</form>

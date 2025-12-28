@@ -1,0 +1,93 @@
+{
+	"HomePage": {
+		"title": "Bienvenido a Ritmo",
+		"signUp": "Registrarse",
+		"signIn": "Iniciar sesión",
+		"dashboard": "Panel de control"
+	},
+	"Navigation": {
+		"home": "Inicio",
+		"signIn": "Iniciar sesión",
+		"signOut": "Cerrar sesión",
+		"signUp": "Registrarse",
+		"dashboard": "Panel de control",
+		"createAccount": "Crear cuenta",
+		"backToDashboard": "Volver al panel"
+	},
+	"SignIn": {
+		"title": "Inicia sesión en tu cuenta",
+		"or": "O",
+		"createAccount": "crea una cuenta nueva",
+		"email": "Correo electrónico",
+		"emailPlaceholder": "Correo electrónico",
+		"password": "Contraseña",
+		"passwordPlaceholder": "Contraseña",
+		"signingIn": "Iniciando sesión...",
+		"signIn": "Iniciar sesión",
+		"error": "Error al iniciar sesión"
+	},
+	"SignUp": {
+		"title": "Crea tu cuenta",
+		"or": "O",
+		"signInExisting": "inicia sesión en tu cuenta existente",
+		"name": "Nombre",
+		"namePlaceholder": "Tu nombre",
+		"email": "Correo electrónico",
+		"emailPlaceholder": "Correo electrónico",
+		"password": "Contraseña",
+		"passwordPlaceholder": "Contraseña",
+		"creating": "Creando cuenta...",
+		"createAccount": "Crear cuenta",
+		"error": "Error al crear cuenta"
+	},
+	"Dashboard": {
+		"title": "Panel de control",
+		"userInfo": "Información del usuario",
+		"userId": "ID de usuario",
+		"name": "Nombre",
+		"email": "Correo electrónico",
+		"emailVerified": "Correo verificado",
+		"yes": "Sí",
+		"no": "No",
+		"sessionInfo": "Información de sesión",
+		"sessionId": "ID de sesión",
+		"activeOrganizationId": "ID de organización activa",
+		"none": "Ninguna",
+		"expiresAt": "Expira en",
+		"organizations": "Organizaciones",
+		"createOrganization": "Crear organización",
+		"loading": "Cargando organizaciones...",
+		"noOrganizations": "No se encontraron organizaciones. Crea una para probar multi-tenancy.",
+		"slug": "Slug",
+		"type": "Tipo",
+		"id": "ID",
+		"activeOrganization": "Organización activa",
+		"setActive": "Establecer activa",
+		"active": "Activa",
+		"rawSessionData": "Datos de sesión sin procesar",
+		"loadingText": "Cargando...",
+		"notAuthenticated": "No autenticado",
+		"signIn": "Iniciar sesión"
+	},
+	"CreateOrganization": {
+		"title": "Crear organización",
+		"backToDashboard": "Volver al panel",
+		"organizationName": "Nombre de la organización",
+		"namePlaceholder": "Mi escuela de baile",
+		"slug": "Slug (identificador amigable para URL)",
+		"slugPlaceholder": "mi-escuela-de-baile",
+		"slugHint": "Esto se usará en las URLs. Solo letras minúsculas, números y guiones.",
+		"organizationType": "Tipo de organización",
+		"danceSchool": "Escuela de baile",
+		"independentTeacher": "Profesor independiente",
+		"creating": "Creando...",
+		"createOrganization": "Crear organización",
+		"error": "Error al crear organización"
+	},
+	"LanguageSwitcher": {
+		"switchTo": "Cambiar a",
+		"spanish": "Español",
+		"english": "Inglés"
+	}
+}
+

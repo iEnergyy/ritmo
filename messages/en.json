@@ -1,0 +1,93 @@
+{
+	"HomePage": {
+		"title": "Welcome to Ritmo",
+		"signUp": "Sign Up",
+		"signIn": "Sign In",
+		"dashboard": "Dashboard"
+	},
+	"Navigation": {
+		"home": "Home",
+		"signIn": "Sign In",
+		"signOut": "Sign Out",
+		"signUp": "Sign Up",
+		"dashboard": "Dashboard",
+		"createAccount": "Create account",
+		"backToDashboard": "Back to Dashboard"
+	},
+	"SignIn": {
+		"title": "Sign in to your account",
+		"or": "Or",
+		"createAccount": "create a new account",
+		"email": "Email address",
+		"emailPlaceholder": "Email address",
+		"password": "Password",
+		"passwordPlaceholder": "Password",
+		"signingIn": "Signing in...",
+		"signIn": "Sign in",
+		"error": "Sign in failed"
+	},
+	"SignUp": {
+		"title": "Create your account",
+		"or": "Or",
+		"signInExisting": "sign in to your existing account",
+		"name": "Name",
+		"namePlaceholder": "Your name",
+		"email": "Email address",
+		"emailPlaceholder": "Email address",
+		"password": "Password",
+		"passwordPlaceholder": "Password",
+		"creating": "Creating account...",
+		"createAccount": "Create account",
+		"error": "Sign up failed"
+	},
+	"Dashboard": {
+		"title": "Dashboard",
+		"userInfo": "User Information",
+		"userId": "User ID",
+		"name": "Name",
+		"email": "Email",
+		"emailVerified": "Email Verified",
+		"yes": "Yes",
+		"no": "No",
+		"sessionInfo": "Session Information",
+		"sessionId": "Session ID",
+		"activeOrganizationId": "Active Organization ID",
+		"none": "None",
+		"expiresAt": "Expires At",
+		"organizations": "Organizations",
+		"createOrganization": "Create Organization",
+		"loading": "Loading organizations...",
+		"noOrganizations": "No organizations found. Create one to test multi-tenancy.",
+		"slug": "Slug",
+		"type": "Type",
+		"id": "ID",
+		"activeOrganization": "Active Organization",
+		"setActive": "Set Active",
+		"active": "Active",
+		"rawSessionData": "Raw Session Data",
+		"loadingText": "Loading...",
+		"notAuthenticated": "Not authenticated",
+		"signIn": "Sign in"
+	},
+	"CreateOrganization": {
+		"title": "Create Organization",
+		"backToDashboard": "Back to Dashboard",
+		"organizationName": "Organization Name",
+		"namePlaceholder": "My Dance School",
+		"slug": "Slug (URL-friendly identifier)",
+		"slugPlaceholder": "my-dance-school",
+		"slugHint": "This will be used in URLs. Only lowercase letters, numbers, and hyphens.",
+		"organizationType": "Organization Type",
+		"danceSchool": "Dance School",
+		"independentTeacher": "Independent Teacher",
+		"creating": "Creating...",
+		"createOrganization": "Create Organization",
+		"error": "Failed to create organization"
+	},
+	"LanguageSwitcher": {
+		"switchTo": "Switch to",
+		"spanish": "Spanish",
+		"english": "English"
+	}
+}
+

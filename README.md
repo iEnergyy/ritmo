@@ -39,6 +39,20 @@ Attendance, payments, and payouts are derived from what actually happened, not w
 This allows Cadence to evolve into an intelligence platform, not just a CRUD system.
 
 🏗️ Architecture Overview
+🌐 Internationalization
+
+Built with next-intl
+
+Locale-based routing (URL prefixes: `/es/`, `/en/`)
+
+Default locale: Spanish (es)
+
+Supported locales: Spanish, English
+
+Language switcher in navigation
+
+All UI text is translatable via JSON message files
+
 🔐 Authentication & Multitenancy
 
 Uses BetterAuth
@@ -244,6 +258,10 @@ AI is an evolution, not a bolt-on.
 🧩 Tech Stack
 
 TypeScript
+
+Next.js 16 (App Router)
+
+next-intl (Internationalization)
 
 Drizzle ORM
 
@@ -591,7 +609,7 @@ export const teacherPayouts = pgTable("teacher_payouts", {
 
 Each phase is independently shippable and reduces real-world pain.
 
-**Current Status:** Phase 0 is ~90% complete. Core infrastructure (auth, database, organization management) is in place. Schema definitions for all domain entities are complete. UI/API implementations for domain entities are pending.
+**Current Status:** Phase 0 is ~90% complete. Core infrastructure (auth, database, organization management, internationalization) is in place. Schema definitions for all domain entities are complete. UI/API implementations for domain entities are pending.
 
 **Phase 0 — Groundwork**
 
@@ -605,11 +623,12 @@ Goal: make the system safe to build on
   - [x] school
   - [x] independent_teacher
 - [x] Basic role system (admin / teacher / staff) - Schema defined with `organizationMembers` table, UI pending
+- [x] Internationalization (i18n) - Implemented with next-intl, locale-based routing, Spanish (default) and English support
 - [ ] Tenant isolation enforcement - Not yet implemented
 - [ ] Multi-tenant login via URL (e.g., `tenantslug.localhost/dashboard`) - Not yet implemented
 
 Deliverable:
-- [x] Secure, multi-tenant foundation (Core infrastructure complete: auth, org creation, schema defined. Tenant isolation enforcement and URL-based tenant routing pending)
+- [x] Secure, multi-tenant foundation (Core infrastructure complete: auth, org creation, i18n, schema defined. Tenant isolation enforcement and URL-based tenant routing pending)
 
 **Phase 1 — Core Actors**
 
@@ -620,7 +639,7 @@ Goal: represent real people and places
 - [x] Venue management - Schema defined in `db/schema.ts`
 - [x] Organization member management - Schema defined, Better Auth `member` table + custom `organizationMembers` table
 - [ ] Public student registration form (minimal) - Not yet implemented
-- [ ] i18n (internationalization) - Not yet implemented
+- [x] i18n (internationalization) - Implemented with next-intl, supports Spanish (default) and English with locale-based routing
 
 Deliverable:
 - [x] Real-world entities represented correctly (Schema complete, UI/API implementation pending)
@@ -783,19 +802,38 @@ Goal: long-term sustainability
 Deliverable:
 - [ ] Cadence as infrastructure
 
-📁 Project Structure (early)
+📁 Project Structure
 
-cadence/
+ritmo/
+├─ app/
+│  ├─ [locale]/          # Locale-based routing (es, en)
+│  │  ├─ layout.tsx      # Locale-aware layout with NextIntlClientProvider
+│  │  ├─ page.tsx        # Home page
+│  │  ├─ dashboard/      # Dashboard page
+│  │  ├─ signin/         # Sign in page
+│  │  ├─ signup/         # Sign up page
+│  │  └─ organizations/  # Organization management
+│  ├─ api/               # API routes (no locale routing)
+│  │  ├─ auth/           # BetterAuth routes
+│  │  └─ organizations/  # Organization API
+│  └─ layout.tsx         # Root layout
+├─ messages/             # Translation files
+│  ├─ es.json            # Spanish translations (default)
+│  └─ en.json            # English translations
+├─ i18n/
+│  ├─ request.ts         # next-intl request configuration
+│  └─ navigation.ts      # Locale-aware navigation helpers
+├─ middleware.ts         # Locale detection and routing
 ├─ db/
-│ └─ schema.ts
+│  ├─ schema.ts          # Database schema (Drizzle)
+│  └─ index.ts           # Database connection
 ├─ auth/
-│ └─ better-auth.ts
-├─ services/
-│ ├─ attendance/
-│ ├─ payments/
-│ └─ payouts/
-├─ ai/
-│ └─ insights/
+│  └─ better-auth.ts     # BetterAuth configuration
+├─ lib/
+│  ├─ auth-client.ts     # BetterAuth client
+│  └─ utils.ts          # Utility functions
+├─ components/           # React components
+│  └─ ui/                # UI components (shadcn)
 └─ README.md
 
 🚀 Long-Term Goal

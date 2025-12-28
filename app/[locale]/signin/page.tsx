@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link, useRouter as useI18nRouter } from "@/i18n/navigation";
 
 export default function SignInPage() {
-	const router = useRouter();
+	const router = useI18nRouter();
+	const t = useTranslations("SignIn");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState<string | null>(null);
@@ -24,7 +26,7 @@ export default function SignInPage() {
 			});
 
 			if (result.error) {
-				setError(result.error.message || "Sign in failed");
+				setError(result.error.message || t("error"));
 			} else {
 				// Redirect to dashboard after successful sign in
 				router.push("/dashboard");
@@ -41,15 +43,15 @@ export default function SignInPage() {
 			<div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
 				<div>
 					<h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-						Sign in to your account
+						{t("title")}
 					</h2>
 					<p className="mt-2 text-center text-sm text-gray-600">
-						Or{" "}
+						{t("or")}{" "}
 						<Link
 							href="/signup"
 							className="font-medium text-blue-600 hover:text-blue-500"
 						>
-							create a new account
+							{t("createAccount")}
 						</Link>
 					</p>
 				</div>
@@ -65,7 +67,7 @@ export default function SignInPage() {
 								htmlFor="email"
 								className="block text-sm font-medium text-gray-700"
 							>
-								Email address
+								{t("email")}
 							</label>
 							<input
 								id="email"
@@ -76,7 +78,7 @@ export default function SignInPage() {
 								value={email}
 								onChange={(e) => setEmail(e.target.value)}
 								className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-								placeholder="Email address"
+								placeholder={t("emailPlaceholder")}
 							/>
 						</div>
 						<div>
@@ -84,7 +86,7 @@ export default function SignInPage() {
 								htmlFor="password"
 								className="block text-sm font-medium text-gray-700"
 							>
-								Password
+								{t("password")}
 							</label>
 							<input
 								id="password"
@@ -95,7 +97,7 @@ export default function SignInPage() {
 								value={password}
 								onChange={(e) => setPassword(e.target.value)}
 								className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-								placeholder="Password"
+								placeholder={t("passwordPlaceholder")}
 							/>
 						</div>
 					</div>
@@ -106,7 +108,7 @@ export default function SignInPage() {
 							disabled={loading}
 							className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
 						>
-							{loading ? "Signing in..." : "Sign in"}
+							{loading ? t("signingIn") : t("signIn")}
 						</button>
 					</div>
 				</form>
