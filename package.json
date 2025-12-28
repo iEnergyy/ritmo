@@ -10,10 +10,14 @@
 	},
 	"dependencies": {
 		"@base-ui/react": "^1.0.0",
+		"better-auth": "^1.4.9",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
+		"dotenv": "^17.2.3",
+		"drizzle-orm": "^0.45.1",
 		"lucide-react": "^0.562.0",
 		"next": "16.1.1",
+		"postgres": "^3.4.7",
 		"radix-ui": "^1.4.3",
 		"react": "19.2.3",
 		"react-dom": "19.2.3",
@@ -27,9 +31,11 @@
 		"@types/node": "^20",
 		"@types/react": "^19",
 		"@types/react-dom": "^19",
+		"drizzle-kit": "^0.31.8",
 		"eslint": "^9",
 		"eslint-config-next": "16.1.1",
 		"tailwindcss": "^4",
+		"tsx": "^4.21.0",
 		"typescript": "^5"
 	}
 }

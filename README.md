@@ -591,35 +591,37 @@ export const teacherPayouts = pgTable("teacher_payouts", {
 
 Each phase is independently shippable and reduces real-world pain.
 
+**Current Status:** Phase 0 is ~90% complete. Core infrastructure (auth, database, organization management) is in place. Schema definitions for all domain entities are complete. UI/API implementations for domain entities are pending.
+
 **Phase 0 — Groundwork**
 
 Goal: make the system safe to build on
 
-- [ ] Project scaffolding (repo, linting, env)
-- [ ] PostgreSQL + Drizzle setup
-- [ ] BetterAuth integration
-- [ ] Organization (tenant) creation
-- [ ] Organization types:
-  - [ ] school
-  - [ ] independent_teacher
-- [ ] Basic role system (admin / teacher / staff)
-- [ ] Tenant isolation enforcement
+- [x] Project scaffolding (repo, linting, env)
+- [x] PostgreSQL + Drizzle setup
+- [x] BetterAuth integration
+- [x] Organization (tenant) creation - UI and API implemented
+- [x] Organization types:
+  - [x] school
+  - [x] independent_teacher
+- [x] Basic role system (admin / teacher / staff) - Schema defined with `organizationMembers` table, UI pending
+- [ ] Tenant isolation enforcement - Not yet implemented
 
 Deliverable:
-- [ ] Secure, multi-tenant foundation
+- [x] Secure, multi-tenant foundation (Core infrastructure complete: auth, org creation, schema defined. Tenant isolation enforcement pending)
 
 **Phase 1 — Core Actors**
 
 Goal: represent real people and places
 
-- [ ] Student entity (no-login support)
-- [ ] Teacher entity (user-linked or standalone)
-- [ ] Venue management
-- [ ] Organization member management
-- [ ] Public student registration form (minimal)
+- [x] Student entity (no-login support) - Schema defined in `db/schema.ts`
+- [x] Teacher entity (user-linked or standalone) - Schema defined in `db/schema.ts`
+- [x] Venue management - Schema defined in `db/schema.ts`
+- [x] Organization member management - Schema defined, Better Auth `member` table + custom `organizationMembers` table
+- [ ] Public student registration form (minimal) - Not yet implemented
 
 Deliverable:
-- [ ] Real-world entities represented correctly
+- [x] Real-world entities represented correctly (Schema complete, UI/API implementation pending)
 
 **Phase 2 — Groups & Membership**
 
