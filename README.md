@@ -606,9 +606,10 @@ Goal: make the system safe to build on
   - [x] independent_teacher
 - [x] Basic role system (admin / teacher / staff) - Schema defined with `organizationMembers` table, UI pending
 - [ ] Tenant isolation enforcement - Not yet implemented
+- [ ] Multi-tenant login via URL (e.g., `tenantslug.localhost/dashboard`) - Not yet implemented
 
 Deliverable:
-- [x] Secure, multi-tenant foundation (Core infrastructure complete: auth, org creation, schema defined. Tenant isolation enforcement pending)
+- [x] Secure, multi-tenant foundation (Core infrastructure complete: auth, org creation, schema defined. Tenant isolation enforcement and URL-based tenant routing pending)
 
 **Phase 1 — Core Actors**
 
@@ -619,6 +620,7 @@ Goal: represent real people and places
 - [x] Venue management - Schema defined in `db/schema.ts`
 - [x] Organization member management - Schema defined, Better Auth `member` table + custom `organizationMembers` table
 - [ ] Public student registration form (minimal) - Not yet implemented
+- [ ] i18n (internationalization) - Not yet implemented
 
 Deliverable:
 - [x] Real-world entities represented correctly (Schema complete, UI/API implementation pending)
