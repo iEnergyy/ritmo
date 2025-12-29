@@ -1,12 +1,12 @@
-import "dotenv/config";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - drizzle-orm/postgres-js is a valid export, this is a TypeScript language server cache issue
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "./schema";
+import { DATABASE_URL } from "@/lib/env";
 
 // Create the postgres client
-const client = postgres(process.env.DATABASE_URL!, {
+const client = postgres(DATABASE_URL, {
 	prepare: false, // Disable prepared statements for Supabase Transaction pool mode
 });
 

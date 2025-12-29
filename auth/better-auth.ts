@@ -1,17 +1,37 @@
-import "dotenv/config";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { organization } from "better-auth/plugins";
 import { db } from "@/db";
+import { BETTER_AUTH_URL, BETTER_AUTH_SECRET } from "@/lib/env";
+import * as schema from "@/db/schema";
 
+// Initialize BetterAuth with drizzle adapter
+// BetterAuth's drizzleAdapter requires explicit schema tables to construct queries
+// We pass the entire schema object so it can find all tables
 export const auth = betterAuth({
-	baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+	baseURL: BETTER_AUTH_URL,
 	basePath: "/api/auth",
+	secret: BETTER_AUTH_SECRET,
 	database: drizzleAdapter(db, {
 		provider: "pg",
+		schema: {
+			user: schema.user,
+			session: schema.session,
+			account: schema.account,
+			verification: schema.verification,
+			organization: schema.organization,
+			member: schema.member,
+			invitation: schema.invitation,
+		},
 	}),
 	emailAndPassword: {
 		enabled: true,
+	},
+	session: {
+		cookieCache: {
+			enabled: true,
+			maxAge: 5 * 60, // 5 minutes cache duration
+		},
 	},
 	plugins: [
 		organization({

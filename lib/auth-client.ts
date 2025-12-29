@@ -13,5 +13,9 @@ export const authClient = createAuthClient({
 	plugins: [organizationClient()],
 });
 
+// Note: NEXT_PUBLIC_BETTER_AUTH_URL is accessed directly here because
+// it's a client-side file and needs to use process.env for Next.js to
+// properly inject the public env variable at build time
+
 // Export commonly used methods for convenience
 export const { signIn, signUp, signOut, useSession } = authClient;

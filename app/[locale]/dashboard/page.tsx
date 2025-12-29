@@ -234,18 +234,26 @@ export default function DashboardPage() {
 													</span>
 												)}
 											</div>
-											<button
-												onClick={async () => {
-													await authClient.organization.setActive({
-														organizationId: org.id,
-													});
-													window.location.reload();
-												}}
-												className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-												disabled={activeOrg?.id === org.id}
-											>
-												{activeOrg?.id === org.id ? t("active") : t("setActive")}
-											</button>
+											<div className="flex gap-2">
+												<Link
+													href={`/organizations/${org.id}/members`}
+													className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm"
+												>
+													Manage Members
+												</Link>
+												<button
+													onClick={async () => {
+														await authClient.organization.setActive({
+															organizationId: org.id,
+														});
+														window.location.reload();
+													}}
+													className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+													disabled={activeOrg?.id === org.id}
+												>
+													{activeOrg?.id === org.id ? t("active") : t("setActive")}
+												</button>
+											</div>
 										</div>
 									</div>
 								))}

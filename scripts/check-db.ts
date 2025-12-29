@@ -1,6 +1,7 @@
-import "dotenv/config";
+import "dotenv/config"; // Load .env for standalone scripts
 import { db } from "@/db";
 import { sql } from "drizzle-orm";
+import "@/lib/env"; // Validate environment variables
 
 async function checkDatabase() {
 	try {
