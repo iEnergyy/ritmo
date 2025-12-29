@@ -277,6 +277,8 @@ AI-ready data modeling
 
 The initial database schema represents the core domain model:
 
+**Note:** The actual implementation uses BetterAuth's built-in tables (`user`, `organization`, `member`, `session`, `account`, `verification`, `invitation`) with text-based IDs. The domain entities (students, teachers, venues, groups, etc.) use UUIDs and reference BetterAuth's `organization` table. The schema below represents the conceptual domain model.
+
 ```typescript
 import {
   pgTable,
@@ -609,7 +611,7 @@ export const teacherPayouts = pgTable("teacher_payouts", {
 
 Each phase is independently shippable and reduces real-world pain.
 
-**Current Status:** Phase 0 is ~90% complete. Core infrastructure (auth, database, organization management, internationalization) is in place. Schema definitions for all domain entities are complete. UI/API implementations for domain entities are pending.
+**Current Status:** Phase 0 is ~95% complete. Core infrastructure (auth, database, organization management, internationalization, tenant isolation) is in place. Schema definitions for all domain entities are complete. Organization member management UI is implemented. UI/API implementations for students, teachers, venues, and groups are pending.
 
 **Phase 0 — Groundwork**
 
@@ -622,27 +624,28 @@ Goal: make the system safe to build on
 - [x] Organization types:
   - [x] school
   - [x] independent_teacher
-- [x] Basic role system (admin / teacher / staff) - Schema defined with `organizationMembers` table, UI pending
+- [x] Basic role system (admin / teacher / staff) - Fully implemented: Schema (`organizationMembers` table), API routes, and UI (`/organizations/[id]/members`)
 - [x] Internationalization (i18n) - Implemented with next-intl, locale-based routing, Spanish (default) and English support
-- [ ] Tenant isolation enforcement - Not yet implemented
-- [ ] Multi-tenant login via URL (e.g., `tenantslug.localhost/dashboard`) - Not yet implemented
+- [x] Tenant isolation enforcement - Implemented: `enforceTenantIsolation` function used in all organization API routes (`/api/organizations/*`)
+- [x] Organization member management - Fully implemented: UI for inviting members, managing roles, removing members, viewing pending invitations
+- [~] Multi-tenant login via subdomain - Partially implemented: Middleware exists for subdomain-based tenant routing (`middleware.ts`), but may need additional client-side handling
 
 Deliverable:
-- [x] Secure, multi-tenant foundation (Core infrastructure complete: auth, org creation, i18n, schema defined. Tenant isolation enforcement and URL-based tenant routing pending)
+- [x] Secure, multi-tenant foundation (Core infrastructure complete: auth, org creation, i18n, tenant isolation, member management. Subdomain routing partially implemented)
 
 **Phase 1 — Core Actors**
 
 Goal: represent real people and places
 
-- [x] Student entity (no-login support) - Schema defined in `db/schema.ts`
-- [x] Teacher entity (user-linked or standalone) - Schema defined in `db/schema.ts`
-- [x] Venue management - Schema defined in `db/schema.ts`
-- [x] Organization member management - Schema defined, Better Auth `member` table + custom `organizationMembers` table
+- [x] Student entity (no-login support) - Schema defined in `db/schema.ts`, UI/API pending
+- [x] Teacher entity (user-linked or standalone) - Schema defined in `db/schema.ts`, UI/API pending
+- [x] Venue management - Schema defined in `db/schema.ts`, UI/API pending
+- [x] Organization member management - Fully implemented: Schema (Better Auth `member` table + custom `organizationMembers` table), API routes, and UI (`/organizations/[id]/members`)
 - [ ] Public student registration form (minimal) - Not yet implemented
 - [x] i18n (internationalization) - Implemented with next-intl, supports Spanish (default) and English with locale-based routing
 
 Deliverable:
-- [x] Real-world entities represented correctly (Schema complete, UI/API implementation pending)
+- [~] Real-world entities represented correctly (Schema complete for all entities. Organization member management fully implemented. Students, teachers, and venues: schema only, UI/API pending)
 
 **Phase 2 — Groups & Membership**
 
@@ -813,9 +816,15 @@ ritmo/
 │  │  ├─ signin/         # Sign in page
 │  │  ├─ signup/         # Sign up page
 │  │  └─ organizations/  # Organization management
+│  │     ├─ create/      # Create organization page
+│  │     └─ [id]/members/ # Organization members management page
 │  ├─ api/               # API routes (no locale routing)
 │  │  ├─ auth/           # BetterAuth routes
 │  │  └─ organizations/  # Organization API
+│  │     ├─ metadata/    # Organization type metadata
+│  │     └─ [id]/        # Organization-specific routes
+│  │        ├─ members/  # Member management API
+│  │        └─ invitations/ # Invitation management API
 │  └─ layout.tsx         # Root layout
 ├─ messages/             # Translation files
 │  ├─ es.json            # Spanish translations (default)
@@ -823,17 +832,28 @@ ritmo/
 ├─ i18n/
 │  ├─ request.ts         # next-intl request configuration
 │  └─ navigation.ts      # Locale-aware navigation helpers
-├─ middleware.ts         # Locale detection and routing
+├─ middleware.ts         # Locale detection, routing, and tenant subdomain resolution
 ├─ db/
-│  ├─ schema.ts          # Database schema (Drizzle)
+│  ├─ schema.ts          # Database schema (Drizzle) - includes BetterAuth tables and domain entities
 │  └─ index.ts           # Database connection
 ├─ auth/
 │  └─ better-auth.ts     # BetterAuth configuration
 ├─ lib/
 │  ├─ auth-client.ts     # BetterAuth client
+│  ├─ auth-helpers.ts    # Role and permission helpers
+│  ├─ api-helpers.ts     # API route helpers (tenant isolation, authentication)
+│  ├─ tenant-context.ts  # Tenant context resolution
+│  ├─ tenant-errors.ts  # Tenant-specific error handling
+│  ├─ tenant-resolver.ts # Tenant subdomain resolution
+│  ├─ db-helpers.ts      # Database query helpers
+│  ├─ env.ts             # Environment variable validation
 │  └─ utils.ts          # Utility functions
 ├─ components/           # React components
-│  └─ ui/                # UI components (shadcn)
+│  ├─ ui/                # UI components (shadcn)
+│  └─ tenant-switcher.tsx # Organization switcher component
+├─ scripts/              # Utility scripts
+│  ├─ setup-better-auth-tables.ts # BetterAuth table setup
+│  └─ check-db.ts        # Database connection check
 └─ README.md
 
 🚀 Long-Term Goal
