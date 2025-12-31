@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { member, organizationMembers } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, asc } from "drizzle-orm";
 import { verifyOrganizationMembership } from "./tenant-context";
 
 /**
@@ -68,13 +68,35 @@ export async function requireRole(
 		.where(eq(organizationMembers.memberId, memberRecord[0].id))
 		.limit(1);
 
-	if (orgMember.length === 0) {
-		// If no custom role is set, default to checking the base member role
-		// BetterAuth member.role defaults to "member", so we need to check organizationMembers
-		throw new Error("User role not found");
-	}
+	let userRole: "admin" | "teacher" | "staff";
 
-	const userRole = orgMember[0].role;
+	if (orgMember.length === 0) {
+		// If no custom role is set in organizationMembers, the user doesn't have a role yet
+		// This can happen when a member is created but no role has been assigned
+		// Check if this is the first member (organization owner) - they should be admin
+		const allMembers = await db
+			.select()
+			.from(member)
+			.where(eq(member.organizationId, organizationId))
+			.orderBy(asc(member.createdAt));
+
+		// If this is the first member (oldest), auto-assign admin role
+		if (allMembers.length > 0 && allMembers[0].id === memberRecord[0].id) {
+			// Create admin role for the organization owner
+			await db.insert(organizationMembers).values({
+				memberId: memberRecord[0].id,
+				role: "admin",
+			});
+			userRole = "admin";
+		} else {
+			// For other members without roles, deny access
+			throw new Error(
+				"User does not have an assigned role. Please assign a role (admin, teacher, or staff) to this member.",
+			);
+		}
+	} else {
+		userRole = orgMember[0].role;
+	}
 
 	if (userRole !== requiredRole) {
 		throw new Error(
