@@ -35,7 +35,12 @@ import {
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
-import { Field, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field";
+import {
+	Field,
+	FieldGroup,
+	FieldLabel,
+	FieldError,
+} from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { useForm } from "@/components/ui/form";
@@ -247,135 +252,33 @@ export default function VenuesPage() {
 	return (
 		<AppLayout organizationId={organizationId}>
 			<div className="space-y-6">
-					<div className="flex justify-between items-center">
-						<div>
-							<h1 className="text-3xl font-bold text-gray-900">{t("title")}</h1>
-							<p className="mt-2 text-sm text-gray-600">
-								Manage venues in your organization
-							</p>
-						</div>
-						<Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-							<DialogTrigger asChild>
-								<Button>
-									<Plus className="mr-2 h-4 w-4" />
-									{t("createButton")}
-								</Button>
-							</DialogTrigger>
-							<DialogContent>
-								<DialogHeader>
-									<DialogTitle>{t("createTitle")}</DialogTitle>
-									<DialogDescription>{t("createDescription")}</DialogDescription>
-								</DialogHeader>
-								<form onSubmit={createForm.handleSubmit(handleCreate)}>
-									<FieldGroup>
-										<Controller
-											name="name"
-											control={createForm.control}
-											render={({ field, fieldState }) => (
-												<Field data-invalid={fieldState.invalid}>
-													<FieldLabel>{t("name")}</FieldLabel>
-													<Input {...field} />
-													{fieldState.invalid && (
-														<FieldError errors={[fieldState.error]} />
-													)}
-												</Field>
-											)}
-										/>
-										<Controller
-											name="address"
-											control={createForm.control}
-											render={({ field }) => (
-												<Field>
-													<FieldLabel>{t("address")}</FieldLabel>
-													<Input {...field} />
-												</Field>
-											)}
-										/>
-									</FieldGroup>
-									<DialogFooter>
-										<Button
-											type="button"
-											variant="outline"
-											onClick={() => setIsCreateDialogOpen(false)}
-										>
-											{t("cancel")}
-										</Button>
-										<Button type="submit">{t("create")}</Button>
-									</DialogFooter>
-								</form>
-							</DialogContent>
-						</Dialog>
+				<div className="flex justify-between items-center">
+					<div>
+						<h1 className="text-3xl font-bold text-gray-900">{t("title")}</h1>
+						<p className="mt-2 text-sm text-gray-600">
+							Manage venues in your organization
+						</p>
 					</div>
-
-					{/* Venues Table */}
-					<div className="bg-white shadow rounded-lg">
-						{loading ? (
-							<div className="p-6 space-y-4">
-								<Skeleton className="h-10 w-full" />
-								<Skeleton className="h-10 w-full" />
-								<Skeleton className="h-10 w-full" />
-							</div>
-						) : venues.length === 0 ? (
-							<div className="p-6 text-center text-gray-500">
-								{t("noVenues")}
-							</div>
-						) : (
-							<Table>
-								<TableHeader>
-									<TableRow>
-										<TableHead>{t("name")}</TableHead>
-										<TableHead>{t("address")}</TableHead>
-										<TableHead>{t("createdAt")}</TableHead>
-										<TableHead className="text-right">{t("actions")}</TableHead>
-									</TableRow>
-								</TableHeader>
-								<TableBody>
-									{venues.map((venue) => (
-										<TableRow key={venue.id}>
-											<TableCell className="font-medium">
-												{venue.name}
-											</TableCell>
-											<TableCell>{venue.address || "-"}</TableCell>
-											<TableCell>
-												{new Date(venue.createdAt).toLocaleDateString()}
-											</TableCell>
-											<TableCell className="text-right">
-												<div className="flex justify-end gap-2">
-													<Button
-														variant="ghost"
-														size="icon"
-														onClick={() => handleEdit(venue)}
-													>
-														<Pencil className="h-4 w-4" />
-													</Button>
-													<Button
-														variant="ghost"
-														size="icon"
-														onClick={() => handleDeleteClick(venue)}
-													>
-														<Trash2 className="h-4 w-4 text-red-600" />
-													</Button>
-												</div>
-											</TableCell>
-										</TableRow>
-									))}
-								</TableBody>
-							</Table>
-						)}
-					</div>
-
-					{/* Edit Dialog */}
-					<Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+					<Dialog
+						open={isCreateDialogOpen}
+						onOpenChange={setIsCreateDialogOpen}
+					>
+						<DialogTrigger asChild>
+							<Button>
+								<Plus className="mr-2 h-4 w-4" />
+								{t("createButton")}
+							</Button>
+						</DialogTrigger>
 						<DialogContent>
 							<DialogHeader>
-								<DialogTitle>{t("editTitle")}</DialogTitle>
-								<DialogDescription>{t("editDescription")}</DialogDescription>
+								<DialogTitle>{t("createTitle")}</DialogTitle>
+								<DialogDescription>{t("createDescription")}</DialogDescription>
 							</DialogHeader>
-							<form onSubmit={editForm.handleSubmit(handleUpdate)}>
+							<form onSubmit={createForm.handleSubmit(handleCreate)}>
 								<FieldGroup>
 									<Controller
 										name="name"
-										control={editForm.control}
+										control={createForm.control}
 										render={({ field, fieldState }) => (
 											<Field data-invalid={fieldState.invalid}>
 												<FieldLabel>{t("name")}</FieldLabel>
@@ -388,7 +291,7 @@ export default function VenuesPage() {
 									/>
 									<Controller
 										name="address"
-										control={editForm.control}
+										control={createForm.control}
 										render={({ field }) => (
 											<Field>
 												<FieldLabel>{t("address")}</FieldLabel>
@@ -401,37 +304,140 @@ export default function VenuesPage() {
 									<Button
 										type="button"
 										variant="outline"
-										onClick={() => setIsEditDialogOpen(false)}
+										onClick={() => setIsCreateDialogOpen(false)}
 									>
 										{t("cancel")}
 									</Button>
-									<Button type="submit">{t("update")}</Button>
+									<Button type="submit">{t("create")}</Button>
 								</DialogFooter>
 							</form>
 						</DialogContent>
 					</Dialog>
+				</div>
 
-					{/* Delete Confirmation Dialog */}
-					<AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-						<AlertDialogContent>
-							<AlertDialogHeader>
-								<AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
-								<AlertDialogDescription>
-									{t("deleteDescription", {
-										name: selectedVenue?.name,
-									})}
-								</AlertDialogDescription>
-							</AlertDialogHeader>
-							<AlertDialogFooter>
-								<AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
-								<AlertDialogAction onClick={handleDelete}>
-									{t("delete")}
-								</AlertDialogAction>
-							</AlertDialogFooter>
-						</AlertDialogContent>
-					</AlertDialog>
+				{/* Venues Table */}
+				<div className="bg-white shadow rounded-lg">
+					{loading ? (
+						<div className="p-6 space-y-4">
+							<Skeleton className="h-10 w-full" />
+							<Skeleton className="h-10 w-full" />
+							<Skeleton className="h-10 w-full" />
+						</div>
+					) : venues.length === 0 ? (
+						<div className="p-6 text-center text-gray-500">{t("noVenues")}</div>
+					) : (
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead>{t("name")}</TableHead>
+									<TableHead>{t("address")}</TableHead>
+									<TableHead>{t("createdAt")}</TableHead>
+									<TableHead className="text-right">{t("actions")}</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								{venues.map((venue) => (
+									<TableRow key={venue.id}>
+										<TableCell className="font-medium">{venue.name}</TableCell>
+										<TableCell>{venue.address || "-"}</TableCell>
+										<TableCell>
+											{new Date(venue.createdAt).toLocaleDateString()}
+										</TableCell>
+										<TableCell className="text-right">
+											<div className="flex justify-end gap-2">
+												<Button
+													variant="ghost"
+													size="icon"
+													onClick={() => handleEdit(venue)}
+												>
+													<Pencil className="h-4 w-4" />
+												</Button>
+												<Button
+													variant="ghost"
+													size="icon"
+													onClick={() => handleDeleteClick(venue)}
+												>
+													<Trash2 className="h-4 w-4 text-red-600" />
+												</Button>
+											</div>
+										</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+						</Table>
+					)}
+				</div>
+
+				{/* Edit Dialog */}
+				<Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+					<DialogContent>
+						<DialogHeader>
+							<DialogTitle>{t("editTitle")}</DialogTitle>
+							<DialogDescription>{t("editDescription")}</DialogDescription>
+						</DialogHeader>
+						<form onSubmit={editForm.handleSubmit(handleUpdate)}>
+							<FieldGroup>
+								<Controller
+									name="name"
+									control={editForm.control}
+									render={({ field, fieldState }) => (
+										<Field data-invalid={fieldState.invalid}>
+											<FieldLabel>{t("name")}</FieldLabel>
+											<Input {...field} />
+											{fieldState.invalid && (
+												<FieldError errors={[fieldState.error]} />
+											)}
+										</Field>
+									)}
+								/>
+								<Controller
+									name="address"
+									control={editForm.control}
+									render={({ field }) => (
+										<Field>
+											<FieldLabel>{t("address")}</FieldLabel>
+											<Input {...field} />
+										</Field>
+									)}
+								/>
+							</FieldGroup>
+							<DialogFooter>
+								<Button
+									type="button"
+									variant="outline"
+									onClick={() => setIsEditDialogOpen(false)}
+								>
+									{t("cancel")}
+								</Button>
+								<Button type="submit">{t("update")}</Button>
+							</DialogFooter>
+						</form>
+					</DialogContent>
+				</Dialog>
+
+				{/* Delete Confirmation Dialog */}
+				<AlertDialog
+					open={isDeleteDialogOpen}
+					onOpenChange={setIsDeleteDialogOpen}
+				>
+					<AlertDialogContent>
+						<AlertDialogHeader>
+							<AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
+							<AlertDialogDescription>
+								{t("deleteDescription", {
+									name: selectedVenue?.name,
+								})}
+							</AlertDialogDescription>
+						</AlertDialogHeader>
+						<AlertDialogFooter>
+							<AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+							<AlertDialogAction onClick={handleDelete}>
+								{t("delete")}
+							</AlertDialogAction>
+						</AlertDialogFooter>
+					</AlertDialogContent>
+				</AlertDialog>
 			</div>
 		</AppLayout>
 	);
 }
-

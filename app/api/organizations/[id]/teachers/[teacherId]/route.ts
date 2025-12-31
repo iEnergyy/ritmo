@@ -30,10 +30,7 @@ export async function GET(
 		const teacher = await getTeacherById(organizationId, teacherId);
 
 		if (!teacher) {
-			return NextResponse.json(
-				{ error: "Teacher not found" },
-				{ status: 404 },
-			);
+			return NextResponse.json({ error: "Teacher not found" }, { status: 404 });
 		}
 
 		return NextResponse.json({ teacher });
@@ -81,10 +78,7 @@ export async function PATCH(
 		);
 
 		if (!existingTeacher) {
-			return NextResponse.json(
-				{ error: "Teacher not found" },
-				{ status: 404 },
-			);
+			return NextResponse.json({ error: "Teacher not found" }, { status: 404 });
 		}
 
 		// If userId is provided and different, verify the user is a member
@@ -109,7 +103,9 @@ export async function PATCH(
 			const validPaymentTypes = ["fixed_monthly", "per_head", "per_class"];
 			if (!validPaymentTypes.includes(paymentType)) {
 				return NextResponse.json(
-					{ error: `Payment type must be one of: ${validPaymentTypes.join(", ")}` },
+					{
+						error: `Payment type must be one of: ${validPaymentTypes.join(", ")}`,
+					},
 					{ status: 400 },
 				);
 			}
@@ -118,19 +114,31 @@ export async function PATCH(
 		const finalPaymentType = paymentType ?? existingTeacher.paymentType;
 
 		// Validate rates based on payment type
-		if (finalPaymentType === "fixed_monthly" && !monthlyRate && !existingTeacher.monthlyRate) {
+		if (
+			finalPaymentType === "fixed_monthly" &&
+			!monthlyRate &&
+			!existingTeacher.monthlyRate
+		) {
 			return NextResponse.json(
 				{ error: "Monthly rate is required for fixed monthly payment type" },
 				{ status: 400 },
 			);
 		}
-		if (finalPaymentType === "per_head" && !ratePerHead && !existingTeacher.ratePerHead) {
+		if (
+			finalPaymentType === "per_head" &&
+			!ratePerHead &&
+			!existingTeacher.ratePerHead
+		) {
 			return NextResponse.json(
 				{ error: "Rate per head is required for per head payment type" },
 				{ status: 400 },
 			);
 		}
-		if (finalPaymentType === "per_class" && !ratePerClass && !existingTeacher.ratePerClass) {
+		if (
+			finalPaymentType === "per_class" &&
+			!ratePerClass &&
+			!existingTeacher.ratePerClass
+		) {
 			return NextResponse.json(
 				{ error: "Rate per class is required for per class payment type" },
 				{ status: 400 },
@@ -182,10 +190,7 @@ export async function DELETE(
 		);
 
 		if (!existingTeacher) {
-			return NextResponse.json(
-				{ error: "Teacher not found" },
-				{ status: 404 },
-			);
+			return NextResponse.json({ error: "Teacher not found" }, { status: 404 });
 		}
 
 		// Delete teacher
@@ -203,4 +208,3 @@ export async function DELETE(
 		);
 	}
 }
-

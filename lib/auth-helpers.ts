@@ -50,10 +50,7 @@ export async function requireRole(
 		.select()
 		.from(member)
 		.where(
-			and(
-				eq(member.organizationId, organizationId),
-				eq(member.userId, userId),
-			),
+			and(eq(member.organizationId, organizationId), eq(member.userId, userId)),
 		)
 		.limit(1);
 
@@ -174,5 +171,3 @@ export async function isTeacher(
 ): Promise<boolean> {
 	return hasRole(organizationId, userId, "teacher");
 }
-
-

@@ -25,4 +25,3 @@ export async function getUsersByOrganization(
 		.innerJoin(user, eq(member.userId, user.id))
 		.where(eq(member.organizationId, organizationId));
 }
-

@@ -3,10 +3,7 @@ import {
 	getAuthenticatedSession,
 	enforceTenantIsolation,
 } from "@/lib/api-helpers";
-import {
-	getVenuesByOrganization,
-	createVenue,
-} from "@/db/queries/venues";
+import { getVenuesByOrganization, createVenue } from "@/db/queries/venues";
 
 /**
  * GET /api/organizations/[id]/venues
@@ -58,10 +55,7 @@ export async function POST(
 		const { name, address } = body;
 
 		if (!name) {
-			return NextResponse.json(
-				{ error: "Name is required" },
-				{ status: 400 },
-			);
+			return NextResponse.json({ error: "Name is required" }, { status: 400 });
 		}
 
 		// Create venue
@@ -83,4 +77,3 @@ export async function POST(
 		);
 	}
 }
-

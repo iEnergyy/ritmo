@@ -33,10 +33,7 @@ export async function getMembersByOrganization(
 		})
 		.from(member)
 		.innerJoin(user, eq(member.userId, user.id))
-		.leftJoin(
-			organizationMembers,
-			eq(member.id, organizationMembers.memberId),
-		)
+		.leftJoin(organizationMembers, eq(member.id, organizationMembers.memberId))
 		.where(eq(member.organizationId, organizationId));
 }
 
@@ -51,10 +48,7 @@ export async function getMemberById(
 		.select()
 		.from(member)
 		.where(
-			and(
-				eq(member.id, memberId),
-				eq(member.organizationId, organizationId),
-			),
+			and(eq(member.id, memberId), eq(member.organizationId, organizationId)),
 		)
 		.limit(1);
 
@@ -104,4 +98,3 @@ export async function updateOrganizationMemberRole(
 		});
 	}
 }
-

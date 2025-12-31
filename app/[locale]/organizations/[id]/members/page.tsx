@@ -80,7 +80,9 @@ export default function OrganizationMembersPage() {
 
 	const loadMembers = async () => {
 		try {
-			const response = await fetch(`/api/organizations/${organizationId}/members`);
+			const response = await fetch(
+				`/api/organizations/${organizationId}/members`,
+			);
 			if (response.ok) {
 				const data = await response.json();
 				setMembers(data.members || []);
@@ -362,7 +364,9 @@ export default function OrganizationMembersPage() {
 					</CardHeader>
 					<CardContent>
 						{invitations.length === 0 ? (
-							<div className="text-muted-foreground">No pending invitations</div>
+							<div className="text-muted-foreground">
+								No pending invitations
+							</div>
 						) : (
 							<div className="space-y-4">
 								{invitations.map((invitation) => (
@@ -394,15 +398,18 @@ export default function OrganizationMembersPage() {
 						<AlertDialogHeader>
 							<AlertDialogTitle>Remove Member</AlertDialogTitle>
 							<AlertDialogDescription>
-								Are you sure you want to remove this member? This action cannot be
-								undone.
+								Are you sure you want to remove this member? This action cannot
+								be undone.
 							</AlertDialogDescription>
 						</AlertDialogHeader>
 						<AlertDialogFooter>
 							<AlertDialogCancel onClick={() => setMemberToRemove(null)}>
 								Cancel
 							</AlertDialogCancel>
-							<AlertDialogAction onClick={handleRemoveMember} variant="destructive">
+							<AlertDialogAction
+								onClick={handleRemoveMember}
+								variant="destructive"
+							>
 								Remove
 							</AlertDialogAction>
 						</AlertDialogFooter>
@@ -412,5 +419,3 @@ export default function OrganizationMembersPage() {
 		</AppLayout>
 	);
 }
-
-

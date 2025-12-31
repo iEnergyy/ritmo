@@ -269,6 +269,12 @@ PostgreSQL
 
 BetterAuth (Organization Plugin)
 
+shadcn/ui (UI Component Library)
+
+Tailwind CSS
+
+Radix UI (Primitives for shadcn/ui)
+
 Event-driven domain design
 
 AI-ready data modeling
@@ -277,7 +283,7 @@ AI-ready data modeling
 
 The initial database schema represents the core domain model:
 
-**Note:** The actual implementation uses BetterAuth's built-in tables (`user`, `organization`, `member`, `session`, `account`, `verification`, `invitation`) with text-based IDs. The domain entities (students, teachers, venues, groups, etc.) use UUIDs and reference BetterAuth's `organization` table. The schema below represents the conceptual domain model.
+**Note:** The actual implementation uses BetterAuth's built-in tables (`user`, `organization`, `member`, `session`, `account`, `verification`, `invitation`) with text-based IDs. The domain entities (students, teachers, venues, groups, etc.) use UUIDs for their primary keys but reference BetterAuth's `organization` table using text-based `organization_id` columns. The `teachers.user_id` is also text to match `user.id`. The schema below represents the conceptual domain model.
 
 ```typescript
 import {
@@ -611,7 +617,7 @@ export const teacherPayouts = pgTable("teacher_payouts", {
 
 Each phase is independently shippable and reduces real-world pain.
 
-**Current Status:** Phase 0 is ~95% complete. Core infrastructure (auth, database, organization management, internationalization, tenant isolation) is in place. Schema definitions for all domain entities are complete. Organization member management UI is implemented. UI/API implementations for students, teachers, venues, and groups are pending.
+**Current Status:** Phase 0 is complete. Phase 1 is ~80% complete. Core infrastructure (auth, database, organization management, internationalization, tenant isolation) is fully implemented. Schema definitions for all domain entities are complete. Organization member management, students, teachers, and venues have full UI/API implementations with shadcn/ui components. Groups UI/API are pending.
 
 **Phase 0 — Groundwork**
 
@@ -629,6 +635,7 @@ Goal: make the system safe to build on
 - [x] Tenant isolation enforcement - Implemented: `enforceTenantIsolation` function used in all organization API routes (`/api/organizations/*`)
 - [x] Organization member management - Fully implemented: UI for inviting members, managing roles, removing members, viewing pending invitations
 - [~] Multi-tenant login via subdomain - Partially implemented: Middleware exists for subdomain-based tenant routing (`middleware.ts`), but may need additional client-side handling
+- [x] shadcn/ui component integration - Fully implemented: Sidebar, buttons, dropdowns, selects, dialogs, cards, tables, and other UI components now use shadcn/ui for consistency
 
 **UI Expectations:**
 - [x] Organization creation form with type selection (school/independent_teacher)
@@ -650,38 +657,37 @@ Deliverable:
 
 Goal: represent real people and places
 
-- [x] Student entity (no-login support) - Schema defined in `db/schema.ts`, UI/API pending
-- [x] Teacher entity (user-linked or standalone) - Schema defined in `db/schema.ts`, UI/API pending
-- [x] Venue management - Schema defined in `db/schema.ts`, UI/API pending
-- [x] Organization member management - Fully implemented: Schema (Better Auth `member` table + custom `organizationMembers` table), API routes, and UI (`/organizations/[id]/members`)
+- [x] Student entity (no-login support) - Fully implemented: Schema, API routes, and UI (`/organizations/[id]/students`) with full CRUD operations
+- [x] Teacher entity (user-linked or standalone) - Fully implemented: Schema, API routes, and UI (`/organizations/[id]/teachers`) with full CRUD, user linking, and payment configuration
+- [x] Venue management - Fully implemented: Schema, API routes, and UI (`/organizations/[id]/venues`) with full CRUD operations
+- [x] Organization member management - Fully implemented: Schema (Better Auth `member` table + custom `organizationMembers` table), API routes, and UI (`/organizations/[id]/members`) with role management, invitations, and member removal
 - [ ] Public student registration form (minimal) - Not yet implemented
 - [x] i18n (internationalization) - Implemented with next-intl, supports Spanish (default) and English with locale-based routing
+- [x] shadcn/ui component integration - All pages use shadcn/ui components (Button, Select, Dialog, Card, Table, AlertDialog, etc.) for consistent design
 
 **UI Expectations:**
-- [ ] Students management page (`/organizations/[id]/students`) with:
-  - [ ] Student list (table/cards) with search and filters
-  - [ ] Create student form (full name, email, phone)
-  - [ ] Edit student details
-  - [ ] View student profile with basic info
-  - [ ] Delete/archive student action
-- [ ] Teachers management page (`/organizations/[id]/teachers`) with:
-  - [ ] Teacher list with payment type indicators
-  - [ ] Create teacher form (full name, link to user account optional, payment type and rates)
-  - [ ] Edit teacher details and payment configuration
-  - [ ] View teacher profile
-  - [ ] Link/unlink teacher to user account
-- [ ] Venues management page (`/organizations/[id]/venues`) with:
-  - [ ] Venue list
-  - [ ] Create venue form (name, address)
-  - [ ] Edit venue details
-  - [ ] Delete venue action
+- [x] Students management page (`/organizations/[id]/students`) with:
+  - [x] Student list (table) with search capability
+  - [x] Create student form (full name, email, phone) using shadcn Dialog
+  - [x] Edit student details using shadcn Dialog
+  - [x] Delete student action using shadcn AlertDialog
+- [x] Teachers management page (`/organizations/[id]/teachers`) with:
+  - [x] Teacher list with payment type indicators (badges)
+  - [x] Create teacher form (full name, link to user account optional, payment type and rates) using shadcn Dialog
+  - [x] Edit teacher details and payment configuration using shadcn Dialog
+  - [x] Link/unlink teacher to user account using shadcn Select and Dialog
+- [x] Venues management page (`/organizations/[id]/venues`) with:
+  - [x] Venue list (table)
+  - [x] Create venue form (name, address) using shadcn Dialog
+  - [x] Edit venue details using shadcn Dialog
+  - [x] Delete venue action using shadcn AlertDialog
 - [ ] Public student registration form (minimal, accessible without login):
   - [ ] Simple form with student info
   - [ ] Organization selection or auto-assignment
   - [ ] Success confirmation
 
 Deliverable:
-- [~] Real-world entities represented correctly (Schema complete for all entities. Organization member management fully implemented. Students, teachers, and venues: schema only, UI/API pending)
+- [x] Real-world entities represented correctly (Schema, API routes, and UI fully implemented for students, teachers, venues, and organization members. All using shadcn/ui components for consistent design. Public registration form pending)
 
 **Phase 2 — Groups & Membership**
 
@@ -1271,14 +1277,26 @@ ritmo/
 │  │  ├─ signup/         # Sign up page
 │  │  └─ organizations/  # Organization management
 │  │     ├─ create/      # Create organization page
-│  │     └─ [id]/members/ # Organization members management page
+│  │     └─ [id]/        # Organization-specific pages
+│  │        ├─ members/  # Organization members management page
+│  │        ├─ students/ # Students management page
+│  │        ├─ teachers/ # Teachers management page
+│  │        └─ venues/   # Venues management page
 │  ├─ api/               # API routes (no locale routing)
 │  │  ├─ auth/           # BetterAuth routes
 │  │  └─ organizations/  # Organization API
 │  │     ├─ metadata/    # Organization type metadata
 │  │     └─ [id]/        # Organization-specific routes
 │  │        ├─ members/  # Member management API
-│  │        └─ invitations/ # Invitation management API
+│  │        │  └─ [memberId]/role/ # Role update API
+│  │        ├─ students/ # Students API
+│  │        │  └─ [studentId]/ # Student CRUD API
+│  │        ├─ teachers/ # Teachers API
+│  │        │  └─ [teacherId]/ # Teacher CRUD and user linking API
+│  │        ├─ venues/   # Venues API
+│  │        │  └─ [venueId]/ # Venue CRUD API
+│  │        ├─ invitations/ # Invitation management API
+│  │        └─ users/    # Users API (for teacher linking)
 │  └─ layout.tsx         # Root layout
 ├─ messages/             # Translation files
 │  ├─ es.json            # Spanish translations (default)
@@ -1303,8 +1321,17 @@ ritmo/
 │  ├─ env.ts             # Environment variable validation
 │  └─ utils.ts          # Utility functions
 ├─ components/           # React components
-│  ├─ ui/                # UI components (shadcn)
-│  └─ tenant-switcher.tsx # Organization switcher component
+│  ├─ ui/                # UI components (shadcn/ui)
+│  │  ├─ button.tsx     # Button component
+│  │  ├─ dialog.tsx      # Dialog component
+│  │  ├─ select.tsx     # Select component
+│  │  ├─ table.tsx      # Table component
+│  │  ├─ card.tsx       # Card component
+│  │  ├─ sidebar.tsx    # Sidebar component
+│  │  ├─ alert-dialog.tsx # AlertDialog component
+│  │  └─ ...            # Other shadcn/ui components
+│  ├─ app-layout.tsx     # Main application layout with sidebar
+│  └─ tenant-switcher.tsx # Organization switcher component (deprecated, now in app-layout)
 ├─ scripts/              # Utility scripts
 │  ├─ setup-better-auth-tables.ts # BetterAuth table setup
 │  └─ check-db.ts        # Database connection check

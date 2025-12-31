@@ -28,7 +28,10 @@ export function scopedQuery<T extends PgTable>(
 	if (!organizationId) {
 		throw new Error("Organization ID is required for scoped queries");
 	}
-	return db.select().from(table).where(eq(table.organizationId, organizationId));
+	return db
+		.select()
+		.from(table)
+		.where(eq(table.organizationId, organizationId));
 }
 
 /**
@@ -117,10 +120,7 @@ export async function getVenueById(venueId: string, organizationId: string) {
 		.select()
 		.from(venues)
 		.where(
-			and(
-				eq(venues.id, venueId),
-				eq(venues.organizationId, organizationId),
-			),
+			and(eq(venues.id, venueId), eq(venues.organizationId, organizationId)),
 		)
 		.limit(1);
 
@@ -147,10 +147,7 @@ export async function getGroupById(groupId: string, organizationId: string) {
 		.select()
 		.from(groups)
 		.where(
-			and(
-				eq(groups.id, groupId),
-				eq(groups.organizationId, organizationId),
-			),
+			and(eq(groups.id, groupId), eq(groups.organizationId, organizationId)),
 		)
 		.limit(1);
 
@@ -214,9 +211,7 @@ export async function getAttendanceRecordsByOrganization(
  * @param organizationId - The organization ID
  * @returns Array of private sessions
  */
-export async function getPrivateSessionsByOrganization(
-	organizationId: string,
-) {
+export async function getPrivateSessionsByOrganization(organizationId: string) {
 	return scopedQuery(privateSessions, organizationId);
 }
 
@@ -225,9 +220,7 @@ export async function getPrivateSessionsByOrganization(
  * @param organizationId - The organization ID
  * @returns Array of student payments
  */
-export async function getStudentPaymentsByOrganization(
-	organizationId: string,
-) {
+export async function getStudentPaymentsByOrganization(organizationId: string) {
 	return scopedQuery(studentPayments, organizationId);
 }
 
@@ -253,5 +246,3 @@ export async function getStudentGroupsByOrganization(organizationId: string) {
 		.innerJoin(students, eq(studentGroups.studentId, students.id))
 		.where(eq(students.organizationId, organizationId));
 }
-
-

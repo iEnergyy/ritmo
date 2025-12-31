@@ -73,7 +73,10 @@ export function AppLayout({ children, organizationId }: AppLayoutProps) {
 				(org) => org.id === session.session.activeOrganizationId,
 			);
 			setActiveOrg(org);
-		} else if (organizations.length > 0 && !session?.session?.activeOrganizationId) {
+		} else if (
+			organizations.length > 0 &&
+			!session?.session?.activeOrganizationId
+		) {
 			// Auto-set first organization
 			const firstOrg = organizations[0];
 			authClient.organization
@@ -218,7 +221,7 @@ export function AppLayout({ children, organizationId }: AppLayoutProps) {
 														onClick={() => handleOrgSwitch(org.id)}
 														className={cn(
 															"cursor-pointer",
-															activeOrg?.id === org.id && "bg-accent"
+															activeOrg?.id === org.id && "bg-accent",
 														)}
 													>
 														{org.name}
@@ -317,4 +320,3 @@ export function AppLayout({ children, organizationId }: AppLayoutProps) {
 		</SidebarProvider>
 	);
 }
-

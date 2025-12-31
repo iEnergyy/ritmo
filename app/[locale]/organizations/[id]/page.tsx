@@ -42,12 +42,21 @@ export default function OrganizationDashboardPage() {
 	const loadStats = async () => {
 		try {
 			setLoading(true);
-			const [studentsRes, teachersRes, venuesRes, membersRes] = await Promise.all([
-				fetch(`/api/organizations/${organizationId}/students`).catch(() => null),
-				fetch(`/api/organizations/${organizationId}/teachers`).catch(() => null),
-				fetch(`/api/organizations/${organizationId}/venues`).catch(() => null),
-				fetch(`/api/organizations/${organizationId}/members`).catch(() => null),
-			]);
+			const [studentsRes, teachersRes, venuesRes, membersRes] =
+				await Promise.all([
+					fetch(`/api/organizations/${organizationId}/students`).catch(
+						() => null,
+					),
+					fetch(`/api/organizations/${organizationId}/teachers`).catch(
+						() => null,
+					),
+					fetch(`/api/organizations/${organizationId}/venues`).catch(
+						() => null,
+					),
+					fetch(`/api/organizations/${organizationId}/members`).catch(
+						() => null,
+					),
+				]);
 
 			const stats: Stats = {
 				students: 0,
@@ -173,9 +182,7 @@ export default function OrganizationDashboardPage() {
 												{card.value}
 											</p>
 										</div>
-										<div
-											className={`${card.color} p-3 rounded-lg text-white`}
-										>
+										<div className={`${card.color} p-3 rounded-lg text-white`}>
 											<card.icon className="h-6 w-6" />
 										</div>
 									</div>
@@ -225,4 +232,3 @@ export default function OrganizationDashboardPage() {
 		</AppLayout>
 	);
 }
-

@@ -43,7 +43,12 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Field, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field";
+import {
+	Field,
+	FieldGroup,
+	FieldLabel,
+	FieldError,
+} from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { useForm } from "@/components/ui/form";
@@ -72,28 +77,33 @@ interface Teacher {
 	userName: string | null;
 }
 
-const teacherSchema = z.object({
-	fullName: z.string().min(1, "Full name is required"),
-	userId: z.string().optional(),
-	paymentType: z.enum(["fixed_monthly", "per_head", "per_class"]),
-	monthlyRate: z.string().optional(),
-	ratePerHead: z.string().optional(),
-	ratePerClass: z.string().optional(),
-}).refine((data) => {
-	if (data.paymentType === "fixed_monthly") {
-		return !!data.monthlyRate && parseFloat(data.monthlyRate) > 0;
-	}
-	if (data.paymentType === "per_head") {
-		return !!data.ratePerHead && parseFloat(data.ratePerHead) > 0;
-	}
-	if (data.paymentType === "per_class") {
-		return !!data.ratePerClass && parseFloat(data.ratePerClass) > 0;
-	}
-	return true;
-}, {
-	message: "Rate is required for the selected payment type",
-	path: ["monthlyRate"],
-});
+const teacherSchema = z
+	.object({
+		fullName: z.string().min(1, "Full name is required"),
+		userId: z.string().optional(),
+		paymentType: z.enum(["fixed_monthly", "per_head", "per_class"]),
+		monthlyRate: z.string().optional(),
+		ratePerHead: z.string().optional(),
+		ratePerClass: z.string().optional(),
+	})
+	.refine(
+		(data) => {
+			if (data.paymentType === "fixed_monthly") {
+				return !!data.monthlyRate && parseFloat(data.monthlyRate) > 0;
+			}
+			if (data.paymentType === "per_head") {
+				return !!data.ratePerHead && parseFloat(data.ratePerHead) > 0;
+			}
+			if (data.paymentType === "per_class") {
+				return !!data.ratePerClass && parseFloat(data.ratePerClass) > 0;
+			}
+			return true;
+		},
+		{
+			message: "Rate is required for the selected payment type",
+			path: ["monthlyRate"],
+		},
+	);
 
 type TeacherFormData = z.infer<typeof teacherSchema>;
 
@@ -191,9 +201,12 @@ export default function TeachersPage() {
 						fullName: data.fullName,
 						userId: data.userId || null,
 						paymentType: data.paymentType,
-						monthlyRate: data.paymentType === "fixed_monthly" ? data.monthlyRate : null,
-						ratePerHead: data.paymentType === "per_head" ? data.ratePerHead : null,
-						ratePerClass: data.paymentType === "per_class" ? data.ratePerClass : null,
+						monthlyRate:
+							data.paymentType === "fixed_monthly" ? data.monthlyRate : null,
+						ratePerHead:
+							data.paymentType === "per_head" ? data.ratePerHead : null,
+						ratePerClass:
+							data.paymentType === "per_class" ? data.ratePerClass : null,
 					}),
 				},
 			);
@@ -242,9 +255,12 @@ export default function TeachersPage() {
 						fullName: data.fullName,
 						userId: data.userId || null,
 						paymentType: data.paymentType,
-						monthlyRate: data.paymentType === "fixed_monthly" ? data.monthlyRate : null,
-						ratePerHead: data.paymentType === "per_head" ? data.ratePerHead : null,
-						ratePerClass: data.paymentType === "per_class" ? data.ratePerClass : null,
+						monthlyRate:
+							data.paymentType === "fixed_monthly" ? data.monthlyRate : null,
+						ratePerHead:
+							data.paymentType === "per_head" ? data.ratePerHead : null,
+						ratePerClass:
+							data.paymentType === "per_class" ? data.ratePerClass : null,
 					}),
 				},
 			);
@@ -323,7 +339,9 @@ export default function TeachersPage() {
 				return;
 			}
 
-			toast.success(userId ? "User linked successfully" : "User unlinked successfully");
+			toast.success(
+				userId ? "User linked successfully" : "User unlinked successfully",
+			);
 			setIsLinkDialogOpen(false);
 			setSelectedTeacher(null);
 			await loadTeachers();
@@ -393,252 +411,33 @@ export default function TeachersPage() {
 	return (
 		<AppLayout organizationId={organizationId}>
 			<div className="space-y-6">
-					<div className="flex justify-between items-center">
-						<div>
-							<h1 className="text-3xl font-bold text-gray-900">{t("title")}</h1>
-							<p className="mt-2 text-sm text-gray-600">
-								Manage teachers in your organization
-							</p>
-						</div>
-						<Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-							<DialogTrigger asChild>
-								<Button>
-									<Plus className="mr-2 h-4 w-4" />
-									{t("createButton")}
-								</Button>
-							</DialogTrigger>
-							<DialogContent className="max-w-2xl">
-								<DialogHeader>
-									<DialogTitle>{t("createTitle")}</DialogTitle>
-									<DialogDescription>{t("createDescription")}</DialogDescription>
-								</DialogHeader>
-								<form onSubmit={createForm.handleSubmit(handleCreate)}>
-									<FieldGroup>
-										<Controller
-											name="fullName"
-											control={createForm.control}
-											render={({ field, fieldState }) => (
-												<Field data-invalid={fieldState.invalid}>
-													<FieldLabel>{t("fullName")}</FieldLabel>
-													<Input {...field} />
-													{fieldState.invalid && (
-														<FieldError errors={[fieldState.error]} />
-													)}
-												</Field>
-											)}
-										/>
-										<Controller
-											name="userId"
-											control={createForm.control}
-											render={({ field }) => (
-												<Field>
-													<FieldLabel>{t("linkUser")}</FieldLabel>
-													<Select
-														value={field.value || "__none__"}
-														onValueChange={(value) => field.onChange(value === "__none__" ? null : value)}
-													>
-														<SelectTrigger>
-															<SelectValue placeholder={t("selectUser")} />
-														</SelectTrigger>
-														<SelectContent>
-															<SelectItem value="__none__">{t("noUser")}</SelectItem>
-															{users.map((user) => (
-																<SelectItem key={user.id} value={user.id}>
-																	{user.name || user.email}
-																</SelectItem>
-															))}
-														</SelectContent>
-													</Select>
-												</Field>
-											)}
-										/>
-										<Controller
-											name="paymentType"
-											control={createForm.control}
-											render={({ field }) => (
-												<Field>
-													<FieldLabel>{t("paymentType")}</FieldLabel>
-													<Select
-														value={field.value}
-														onValueChange={field.onChange}
-													>
-														<SelectTrigger>
-															<SelectValue />
-														</SelectTrigger>
-														<SelectContent>
-															<SelectItem value="fixed_monthly">
-																{t("paymentTypeOptions.fixedMonthly")}
-															</SelectItem>
-															<SelectItem value="per_head">
-																{t("paymentTypeOptions.perHead")}
-															</SelectItem>
-															<SelectItem value="per_class">
-																{t("paymentTypeOptions.perClass")}
-															</SelectItem>
-														</SelectContent>
-													</Select>
-												</Field>
-											)}
-										/>
-										{paymentType === "fixed_monthly" && (
-											<Controller
-												name="monthlyRate"
-												control={createForm.control}
-												render={({ field, fieldState }) => (
-													<Field data-invalid={fieldState.invalid}>
-														<FieldLabel>{t("monthlyRate")}</FieldLabel>
-														<Input type="number" step="0.01" {...field} />
-														{fieldState.invalid && (
-															<FieldError errors={[fieldState.error]} />
-														)}
-													</Field>
-												)}
-											/>
-										)}
-										{paymentType === "per_head" && (
-											<Controller
-												name="ratePerHead"
-												control={createForm.control}
-												render={({ field, fieldState }) => (
-													<Field data-invalid={fieldState.invalid}>
-														<FieldLabel>{t("ratePerHead")}</FieldLabel>
-														<Input type="number" step="0.01" {...field} />
-														{fieldState.invalid && (
-															<FieldError errors={[fieldState.error]} />
-														)}
-													</Field>
-												)}
-											/>
-										)}
-										{paymentType === "per_class" && (
-											<Controller
-												name="ratePerClass"
-												control={createForm.control}
-												render={({ field, fieldState }) => (
-													<Field data-invalid={fieldState.invalid}>
-														<FieldLabel>{t("ratePerClass")}</FieldLabel>
-														<Input type="number" step="0.01" {...field} />
-														{fieldState.invalid && (
-															<FieldError errors={[fieldState.error]} />
-														)}
-													</Field>
-												)}
-											/>
-										)}
-									</FieldGroup>
-									<DialogFooter>
-										<Button
-											type="button"
-											variant="outline"
-											onClick={() => setIsCreateDialogOpen(false)}
-										>
-											{t("cancel")}
-										</Button>
-										<Button type="submit">{t("create")}</Button>
-									</DialogFooter>
-								</form>
-							</DialogContent>
-						</Dialog>
+				<div className="flex justify-between items-center">
+					<div>
+						<h1 className="text-3xl font-bold text-gray-900">{t("title")}</h1>
+						<p className="mt-2 text-sm text-gray-600">
+							Manage teachers in your organization
+						</p>
 					</div>
-
-					{/* Teachers Table */}
-					<div className="bg-white shadow rounded-lg">
-						{loading ? (
-							<div className="p-6 space-y-4">
-								<Skeleton className="h-10 w-full" />
-								<Skeleton className="h-10 w-full" />
-								<Skeleton className="h-10 w-full" />
-							</div>
-						) : teachers.length === 0 ? (
-							<div className="p-6 text-center text-gray-500">
-								{t("noTeachers")}
-							</div>
-						) : (
-							<Table>
-								<TableHeader>
-									<TableRow>
-										<TableHead>{t("fullName")}</TableHead>
-										<TableHead>{t("paymentType")}</TableHead>
-										<TableHead>{t("rate")}</TableHead>
-										<TableHead>{t("userAccount")}</TableHead>
-										<TableHead>{t("createdAt")}</TableHead>
-										<TableHead className="text-right">{t("actions")}</TableHead>
-									</TableRow>
-								</TableHeader>
-								<TableBody>
-									{teachers.map((teacher) => (
-										<TableRow key={teacher.id}>
-											<TableCell className="font-medium">
-												{teacher.fullName}
-											</TableCell>
-											<TableCell>
-												<Badge variant={getPaymentTypeBadge(teacher.paymentType)}>
-													{getPaymentTypeLabel(teacher.paymentType)}
-												</Badge>
-											</TableCell>
-											<TableCell>{getRateDisplay(teacher)}</TableCell>
-											<TableCell>
-												{teacher.userEmail ? (
-													<span className="text-sm">
-														{teacher.userName || teacher.userEmail}
-													</span>
-												) : (
-													<span className="text-sm text-gray-400">
-														{t("notLinked")}
-													</span>
-												)}
-											</TableCell>
-											<TableCell>
-												{new Date(teacher.createdAt).toLocaleDateString()}
-											</TableCell>
-											<TableCell className="text-right">
-												<div className="flex justify-end gap-2">
-													<Button
-														variant="ghost"
-														size="icon"
-														onClick={() => handleEdit(teacher)}
-													>
-														<Pencil className="h-4 w-4" />
-													</Button>
-													<Button
-														variant="ghost"
-														size="icon"
-														onClick={() => handleLinkClick(teacher)}
-													>
-														{teacher.userId ? (
-															<Unlink className="h-4 w-4" />
-														) : (
-															<LinkIcon className="h-4 w-4" />
-														)}
-													</Button>
-													<Button
-														variant="ghost"
-														size="icon"
-														onClick={() => handleDeleteClick(teacher)}
-													>
-														<Trash2 className="h-4 w-4 text-red-600" />
-													</Button>
-												</div>
-											</TableCell>
-										</TableRow>
-									))}
-								</TableBody>
-							</Table>
-						)}
-					</div>
-
-					{/* Edit Dialog */}
-					<Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+					<Dialog
+						open={isCreateDialogOpen}
+						onOpenChange={setIsCreateDialogOpen}
+					>
+						<DialogTrigger asChild>
+							<Button>
+								<Plus className="mr-2 h-4 w-4" />
+								{t("createButton")}
+							</Button>
+						</DialogTrigger>
 						<DialogContent className="max-w-2xl">
 							<DialogHeader>
-								<DialogTitle>{t("editTitle")}</DialogTitle>
-								<DialogDescription>{t("editDescription")}</DialogDescription>
+								<DialogTitle>{t("createTitle")}</DialogTitle>
+								<DialogDescription>{t("createDescription")}</DialogDescription>
 							</DialogHeader>
-							<form onSubmit={editForm.handleSubmit(handleUpdate)}>
+							<form onSubmit={createForm.handleSubmit(handleCreate)}>
 								<FieldGroup>
 									<Controller
 										name="fullName"
-										control={editForm.control}
+										control={createForm.control}
 										render={({ field, fieldState }) => (
 											<Field data-invalid={fieldState.invalid}>
 												<FieldLabel>{t("fullName")}</FieldLabel>
@@ -651,19 +450,23 @@ export default function TeachersPage() {
 									/>
 									<Controller
 										name="userId"
-										control={editForm.control}
+										control={createForm.control}
 										render={({ field }) => (
 											<Field>
 												<FieldLabel>{t("linkUser")}</FieldLabel>
 												<Select
 													value={field.value || "__none__"}
-													onValueChange={(value) => field.onChange(value === "__none__" ? null : value)}
+													onValueChange={(value) =>
+														field.onChange(value === "__none__" ? null : value)
+													}
 												>
 													<SelectTrigger>
 														<SelectValue placeholder={t("selectUser")} />
 													</SelectTrigger>
 													<SelectContent>
-														<SelectItem value="__none__">{t("noUser")}</SelectItem>
+														<SelectItem value="__none__">
+															{t("noUser")}
+														</SelectItem>
 														{users.map((user) => (
 															<SelectItem key={user.id} value={user.id}>
 																{user.name || user.email}
@@ -676,7 +479,7 @@ export default function TeachersPage() {
 									/>
 									<Controller
 										name="paymentType"
-										control={editForm.control}
+										control={createForm.control}
 										render={({ field }) => (
 											<Field>
 												<FieldLabel>{t("paymentType")}</FieldLabel>
@@ -687,25 +490,25 @@ export default function TeachersPage() {
 													<SelectTrigger>
 														<SelectValue />
 													</SelectTrigger>
-														<SelectContent>
-															<SelectItem value="fixed_monthly">
-																{t("paymentTypeOptions.fixedMonthly")}
-															</SelectItem>
-															<SelectItem value="per_head">
-																{t("paymentTypeOptions.perHead")}
-															</SelectItem>
-															<SelectItem value="per_class">
-																{t("paymentTypeOptions.perClass")}
-															</SelectItem>
-														</SelectContent>
+													<SelectContent>
+														<SelectItem value="fixed_monthly">
+															{t("paymentTypeOptions.fixedMonthly")}
+														</SelectItem>
+														<SelectItem value="per_head">
+															{t("paymentTypeOptions.perHead")}
+														</SelectItem>
+														<SelectItem value="per_class">
+															{t("paymentTypeOptions.perClass")}
+														</SelectItem>
+													</SelectContent>
 												</Select>
 											</Field>
 										)}
 									/>
-									{editPaymentType === "fixed_monthly" && (
+									{paymentType === "fixed_monthly" && (
 										<Controller
 											name="monthlyRate"
-											control={editForm.control}
+											control={createForm.control}
 											render={({ field, fieldState }) => (
 												<Field data-invalid={fieldState.invalid}>
 													<FieldLabel>{t("monthlyRate")}</FieldLabel>
@@ -717,10 +520,10 @@ export default function TeachersPage() {
 											)}
 										/>
 									)}
-									{editPaymentType === "per_head" && (
+									{paymentType === "per_head" && (
 										<Controller
 											name="ratePerHead"
-											control={editForm.control}
+											control={createForm.control}
 											render={({ field, fieldState }) => (
 												<Field data-invalid={fieldState.invalid}>
 													<FieldLabel>{t("ratePerHead")}</FieldLabel>
@@ -732,10 +535,10 @@ export default function TeachersPage() {
 											)}
 										/>
 									)}
-									{editPaymentType === "per_class" && (
+									{paymentType === "per_class" && (
 										<Controller
 											name="ratePerClass"
-											control={editForm.control}
+											control={createForm.control}
 											render={({ field, fieldState }) => (
 												<Field data-invalid={fieldState.invalid}>
 													<FieldLabel>{t("ratePerClass")}</FieldLabel>
@@ -752,79 +555,309 @@ export default function TeachersPage() {
 									<Button
 										type="button"
 										variant="outline"
-										onClick={() => setIsEditDialogOpen(false)}
+										onClick={() => setIsCreateDialogOpen(false)}
 									>
 										{t("cancel")}
 									</Button>
-									<Button type="submit">{t("update")}</Button>
+									<Button type="submit">{t("create")}</Button>
 								</DialogFooter>
 							</form>
 						</DialogContent>
 					</Dialog>
+				</div>
 
-					{/* Link User Dialog */}
-					<Dialog open={isLinkDialogOpen} onOpenChange={setIsLinkDialogOpen}>
-						<DialogContent>
-							<DialogHeader>
-								<DialogTitle>
-									{selectedTeacher?.userId ? t("unlinkUser") : t("linkUser")}
-								</DialogTitle>
-								<DialogDescription>
-									{selectedTeacher?.userId
-										? t("unlinkUserDescription")
-										: t("linkUserDescription")}
-								</DialogDescription>
-							</DialogHeader>
-							<div className="space-y-4">
-								<Select
-									value={selectedTeacher?.userId || "__none__"}
-									onValueChange={(value) => handleLinkUser(value === "__none__" ? null : value)}
-								>
-									<SelectTrigger>
-										<SelectValue placeholder={t("selectUser")} />
-									</SelectTrigger>
-									<SelectContent>
-										<SelectItem value="__none__">{t("noUser")}</SelectItem>
-										{users.map((user) => (
-											<SelectItem key={user.id} value={user.id}>
-												{user.name || user.email}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-							</div>
+				{/* Teachers Table */}
+				<div className="bg-white shadow rounded-lg">
+					{loading ? (
+						<div className="p-6 space-y-4">
+							<Skeleton className="h-10 w-full" />
+							<Skeleton className="h-10 w-full" />
+							<Skeleton className="h-10 w-full" />
+						</div>
+					) : teachers.length === 0 ? (
+						<div className="p-6 text-center text-gray-500">
+							{t("noTeachers")}
+						</div>
+					) : (
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead>{t("fullName")}</TableHead>
+									<TableHead>{t("paymentType")}</TableHead>
+									<TableHead>{t("rate")}</TableHead>
+									<TableHead>{t("userAccount")}</TableHead>
+									<TableHead>{t("createdAt")}</TableHead>
+									<TableHead className="text-right">{t("actions")}</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								{teachers.map((teacher) => (
+									<TableRow key={teacher.id}>
+										<TableCell className="font-medium">
+											{teacher.fullName}
+										</TableCell>
+										<TableCell>
+											<Badge variant={getPaymentTypeBadge(teacher.paymentType)}>
+												{getPaymentTypeLabel(teacher.paymentType)}
+											</Badge>
+										</TableCell>
+										<TableCell>{getRateDisplay(teacher)}</TableCell>
+										<TableCell>
+											{teacher.userEmail ? (
+												<span className="text-sm">
+													{teacher.userName || teacher.userEmail}
+												</span>
+											) : (
+												<span className="text-sm text-gray-400">
+													{t("notLinked")}
+												</span>
+											)}
+										</TableCell>
+										<TableCell>
+											{new Date(teacher.createdAt).toLocaleDateString()}
+										</TableCell>
+										<TableCell className="text-right">
+											<div className="flex justify-end gap-2">
+												<Button
+													variant="ghost"
+													size="icon"
+													onClick={() => handleEdit(teacher)}
+												>
+													<Pencil className="h-4 w-4" />
+												</Button>
+												<Button
+													variant="ghost"
+													size="icon"
+													onClick={() => handleLinkClick(teacher)}
+												>
+													{teacher.userId ? (
+														<Unlink className="h-4 w-4" />
+													) : (
+														<LinkIcon className="h-4 w-4" />
+													)}
+												</Button>
+												<Button
+													variant="ghost"
+													size="icon"
+													onClick={() => handleDeleteClick(teacher)}
+												>
+													<Trash2 className="h-4 w-4 text-red-600" />
+												</Button>
+											</div>
+										</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+						</Table>
+					)}
+				</div>
+
+				{/* Edit Dialog */}
+				<Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+					<DialogContent className="max-w-2xl">
+						<DialogHeader>
+							<DialogTitle>{t("editTitle")}</DialogTitle>
+							<DialogDescription>{t("editDescription")}</DialogDescription>
+						</DialogHeader>
+						<form onSubmit={editForm.handleSubmit(handleUpdate)}>
+							<FieldGroup>
+								<Controller
+									name="fullName"
+									control={editForm.control}
+									render={({ field, fieldState }) => (
+										<Field data-invalid={fieldState.invalid}>
+											<FieldLabel>{t("fullName")}</FieldLabel>
+											<Input {...field} />
+											{fieldState.invalid && (
+												<FieldError errors={[fieldState.error]} />
+											)}
+										</Field>
+									)}
+								/>
+								<Controller
+									name="userId"
+									control={editForm.control}
+									render={({ field }) => (
+										<Field>
+											<FieldLabel>{t("linkUser")}</FieldLabel>
+											<Select
+												value={field.value || "__none__"}
+												onValueChange={(value) =>
+													field.onChange(value === "__none__" ? null : value)
+												}
+											>
+												<SelectTrigger>
+													<SelectValue placeholder={t("selectUser")} />
+												</SelectTrigger>
+												<SelectContent>
+													<SelectItem value="__none__">
+														{t("noUser")}
+													</SelectItem>
+													{users.map((user) => (
+														<SelectItem key={user.id} value={user.id}>
+															{user.name || user.email}
+														</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
+										</Field>
+									)}
+								/>
+								<Controller
+									name="paymentType"
+									control={editForm.control}
+									render={({ field }) => (
+										<Field>
+											<FieldLabel>{t("paymentType")}</FieldLabel>
+											<Select
+												value={field.value}
+												onValueChange={field.onChange}
+											>
+												<SelectTrigger>
+													<SelectValue />
+												</SelectTrigger>
+												<SelectContent>
+													<SelectItem value="fixed_monthly">
+														{t("paymentTypeOptions.fixedMonthly")}
+													</SelectItem>
+													<SelectItem value="per_head">
+														{t("paymentTypeOptions.perHead")}
+													</SelectItem>
+													<SelectItem value="per_class">
+														{t("paymentTypeOptions.perClass")}
+													</SelectItem>
+												</SelectContent>
+											</Select>
+										</Field>
+									)}
+								/>
+								{editPaymentType === "fixed_monthly" && (
+									<Controller
+										name="monthlyRate"
+										control={editForm.control}
+										render={({ field, fieldState }) => (
+											<Field data-invalid={fieldState.invalid}>
+												<FieldLabel>{t("monthlyRate")}</FieldLabel>
+												<Input type="number" step="0.01" {...field} />
+												{fieldState.invalid && (
+													<FieldError errors={[fieldState.error]} />
+												)}
+											</Field>
+										)}
+									/>
+								)}
+								{editPaymentType === "per_head" && (
+									<Controller
+										name="ratePerHead"
+										control={editForm.control}
+										render={({ field, fieldState }) => (
+											<Field data-invalid={fieldState.invalid}>
+												<FieldLabel>{t("ratePerHead")}</FieldLabel>
+												<Input type="number" step="0.01" {...field} />
+												{fieldState.invalid && (
+													<FieldError errors={[fieldState.error]} />
+												)}
+											</Field>
+										)}
+									/>
+								)}
+								{editPaymentType === "per_class" && (
+									<Controller
+										name="ratePerClass"
+										control={editForm.control}
+										render={({ field, fieldState }) => (
+											<Field data-invalid={fieldState.invalid}>
+												<FieldLabel>{t("ratePerClass")}</FieldLabel>
+												<Input type="number" step="0.01" {...field} />
+												{fieldState.invalid && (
+													<FieldError errors={[fieldState.error]} />
+												)}
+											</Field>
+										)}
+									/>
+								)}
+							</FieldGroup>
 							<DialogFooter>
 								<Button
+									type="button"
 									variant="outline"
-									onClick={() => setIsLinkDialogOpen(false)}
+									onClick={() => setIsEditDialogOpen(false)}
 								>
 									{t("cancel")}
 								</Button>
+								<Button type="submit">{t("update")}</Button>
 							</DialogFooter>
-						</DialogContent>
-					</Dialog>
+						</form>
+					</DialogContent>
+				</Dialog>
 
-					{/* Delete Confirmation Dialog */}
-					<AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-						<AlertDialogContent>
-							<AlertDialogHeader>
-								<AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
-								<AlertDialogDescription>
-									{t("deleteDescription", {
-										name: selectedTeacher?.fullName,
-									})}
-								</AlertDialogDescription>
-							</AlertDialogHeader>
-							<AlertDialogFooter>
-								<AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
-								<AlertDialogAction onClick={handleDelete}>
-									{t("delete")}
-								</AlertDialogAction>
-							</AlertDialogFooter>
-						</AlertDialogContent>
-					</AlertDialog>
+				{/* Link User Dialog */}
+				<Dialog open={isLinkDialogOpen} onOpenChange={setIsLinkDialogOpen}>
+					<DialogContent>
+						<DialogHeader>
+							<DialogTitle>
+								{selectedTeacher?.userId ? t("unlinkUser") : t("linkUser")}
+							</DialogTitle>
+							<DialogDescription>
+								{selectedTeacher?.userId
+									? t("unlinkUserDescription")
+									: t("linkUserDescription")}
+							</DialogDescription>
+						</DialogHeader>
+						<div className="space-y-4">
+							<Select
+								value={selectedTeacher?.userId || "__none__"}
+								onValueChange={(value) =>
+									handleLinkUser(value === "__none__" ? null : value)
+								}
+							>
+								<SelectTrigger>
+									<SelectValue placeholder={t("selectUser")} />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="__none__">{t("noUser")}</SelectItem>
+									{users.map((user) => (
+										<SelectItem key={user.id} value={user.id}>
+											{user.name || user.email}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						</div>
+						<DialogFooter>
+							<Button
+								variant="outline"
+								onClick={() => setIsLinkDialogOpen(false)}
+							>
+								{t("cancel")}
+							</Button>
+						</DialogFooter>
+					</DialogContent>
+				</Dialog>
+
+				{/* Delete Confirmation Dialog */}
+				<AlertDialog
+					open={isDeleteDialogOpen}
+					onOpenChange={setIsDeleteDialogOpen}
+				>
+					<AlertDialogContent>
+						<AlertDialogHeader>
+							<AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
+							<AlertDialogDescription>
+								{t("deleteDescription", {
+									name: selectedTeacher?.fullName,
+								})}
+							</AlertDialogDescription>
+						</AlertDialogHeader>
+						<AlertDialogFooter>
+							<AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+							<AlertDialogAction onClick={handleDelete}>
+								{t("delete")}
+							</AlertDialogAction>
+						</AlertDialogFooter>
+					</AlertDialogContent>
+				</AlertDialog>
 			</div>
 		</AppLayout>
 	);
 }
-

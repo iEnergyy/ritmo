@@ -28,10 +28,7 @@ export async function getVenueById(
 		.select()
 		.from(venues)
 		.where(
-			and(
-				eq(venues.id, venueId),
-				eq(venues.organizationId, organizationId),
-			),
+			and(eq(venues.id, venueId), eq(venues.organizationId, organizationId)),
 		)
 		.limit(1);
 
@@ -73,7 +70,10 @@ export async function updateVenue(
 		.update(venues)
 		.set({
 			name: data.name ?? existingVenue.name,
-			address: data.address !== undefined ? data.address || null : existingVenue.address,
+			address:
+				data.address !== undefined
+					? data.address || null
+					: existingVenue.address,
 		})
 		.where(eq(venues.id, venueId))
 		.returning();
@@ -87,4 +87,3 @@ export async function updateVenue(
 export async function deleteVenue(venueId: string): Promise<void> {
 	await db.delete(venues).where(eq(venues.id, venueId));
 }
-

@@ -1,9 +1,9 @@
 /**
  * Centralized environment variable configuration
- * 
+ *
  * Note: Next.js automatically loads .env files, so we don't need to import dotenv/config here.
  * This file validates and exports environment variables with proper defaults.
- * 
+ *
  * For standalone scripts, import dotenv/config directly in those files.
  */
 
@@ -50,4 +50,3 @@ export function validateEnv(): void {
 if (globalThis.window === undefined) {
 	validateEnv();
 }
-

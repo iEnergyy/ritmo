@@ -82,7 +82,9 @@ export async function POST(
 		const validPaymentTypes = ["fixed_monthly", "per_head", "per_class"];
 		if (!validPaymentTypes.includes(paymentType)) {
 			return NextResponse.json(
-				{ error: `Payment type must be one of: ${validPaymentTypes.join(", ")}` },
+				{
+					error: `Payment type must be one of: ${validPaymentTypes.join(", ")}`,
+				},
 				{ status: 400 },
 			);
 		}
@@ -109,10 +111,7 @@ export async function POST(
 
 		// If userId is provided, verify the user is a member of the organization
 		if (userId) {
-			const isMember = await isUserMemberOfOrganization(
-				userId,
-				organizationId,
-			);
+			const isMember = await isUserMemberOfOrganization(userId, organizationId);
 
 			if (!isMember) {
 				return NextResponse.json(
@@ -145,4 +144,3 @@ export async function POST(
 		);
 	}
 }
-

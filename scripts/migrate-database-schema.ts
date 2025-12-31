@@ -8,8 +8,10 @@ async function migrateDatabaseSchema() {
 		console.log("Starting database schema migration...\n");
 
 		// Step 1: Fix organization_id types from UUID to text
-		console.log("Step 1: Converting organization_id columns from UUID to text...");
-		
+		console.log(
+			"Step 1: Converting organization_id columns from UUID to text...",
+		);
+
 		// Check if we need to convert
 		const checkTypes = await db.execute(sql`
 			SELECT table_name, data_type 
@@ -20,23 +22,33 @@ async function migrateDatabaseSchema() {
 			AND data_type = 'uuid';
 		`);
 
-		const uuidTables = Array.isArray(checkTypes) ? checkTypes : (checkTypes as any).rows || [];
-		
+		const uuidTables = Array.isArray(checkTypes)
+			? checkTypes
+			: (checkTypes as any).rows || [];
+
 		if (uuidTables.length > 0) {
-			console.log(`Found ${uuidTables.length} tables with UUID organization_id that need conversion`);
-			
+			console.log(
+				`Found ${uuidTables.length} tables with UUID organization_id that need conversion`,
+			);
+
 			for (const row of uuidTables) {
 				const tableName = row.table_name || row[0];
-				console.log(`\nConverting ${tableName}.organization_id from UUID to text...`);
-				
+				console.log(
+					`\nConverting ${tableName}.organization_id from UUID to text...`,
+				);
+
 				// This is a complex migration - we need to:
 				// 1. Add a new text column
 				// 2. Convert UUID to text (but organization.id is text, so this won't work)
 				// Actually, if organization.id is text, we can't convert UUIDs to it
 				// This suggests the data might be inconsistent
-				
-				console.log(`⚠️  ${tableName}: Cannot automatically convert UUID to text without data mapping`);
-				console.log(`   You may need to manually update the organization_id values`);
+
+				console.log(
+					`⚠️  ${tableName}: Cannot automatically convert UUID to text without data mapping`,
+				);
+				console.log(
+					`   You may need to manually update the organization_id values`,
+				);
 			}
 		} else {
 			console.log("✅ All organization_id columns are already text type");
@@ -44,7 +56,7 @@ async function migrateDatabaseSchema() {
 
 		// Step 2: Fix organization_members table structure
 		console.log("\nStep 2: Fixing organization_members table structure...");
-		
+
 		const checkOrgMembers = await db.execute(sql`
 			SELECT column_name 
 			FROM information_schema.columns 
@@ -52,28 +64,38 @@ async function migrateDatabaseSchema() {
 			AND table_name = 'organization_members';
 		`);
 
-		const columns = Array.isArray(checkOrgMembers) ? checkOrgMembers : (checkOrgMembers as any).rows || [];
+		const columns = Array.isArray(checkOrgMembers)
+			? checkOrgMembers
+			: (checkOrgMembers as any).rows || [];
 		const columnNames = columns.map((row: any) => row.column_name || row[0]);
 
-		if (columnNames.includes("organization_id") && columnNames.includes("user_id") && !columnNames.includes("member_id")) {
+		if (
+			columnNames.includes("organization_id") &&
+			columnNames.includes("user_id") &&
+			!columnNames.includes("member_id")
+		) {
 			console.log("⚠️  organization_members needs restructuring");
 			console.log("   Current: organization_id, user_id");
 			console.log("   Needed: member_id (references member.id)");
 			console.log("\n   This requires:");
-			console.log("   1. Finding or creating member records for each organization_members entry");
+			console.log(
+				"   1. Finding or creating member records for each organization_members entry",
+			);
 			console.log("   2. Adding member_id column");
 			console.log("   3. Populating member_id from member table");
 			console.log("   4. Dropping organization_id and user_id columns");
-			console.log("\n   ⚠️  This is a complex migration. Proceeding with caution...\n");
+			console.log(
+				"\n   ⚠️  This is a complex migration. Proceeding with caution...\n",
+			);
 
 			// Check if we have member records that match
 			const existingMembers = await db.execute(sql`
 				SELECT COUNT(*) as count FROM member;
 			`);
-			const memberCount = Array.isArray(existingMembers) 
+			const memberCount = Array.isArray(existingMembers)
 				? (existingMembers[0] as any)?.count || 0
 				: ((existingMembers as any).rows?.[0] as any)?.count || 0;
-			
+
 			console.log(`Found ${memberCount} member records`);
 
 			// Try to create member_id column and populate it
@@ -100,7 +122,9 @@ async function migrateDatabaseSchema() {
 					console.log("✅ Populated member_id from existing member records");
 				} catch (updateError: any) {
 					// If the above fails, try a simpler approach
-					console.log("⚠️  First update attempt failed, trying alternative approach...");
+					console.log(
+						"⚠️  First update attempt failed, trying alternative approach...",
+					);
 					await db.execute(sql`
 						UPDATE organization_members om
 						SET member_id = m.id
@@ -118,12 +142,14 @@ async function migrateDatabaseSchema() {
 					FROM organization_members 
 					WHERE member_id IS NULL;
 				`);
-				const nulls = Array.isArray(nullCount) 
+				const nulls = Array.isArray(nullCount)
 					? (nullCount[0] as any)?.count || 0
 					: ((nullCount as any).rows?.[0] as any)?.count || 0;
 
 				if (nulls > 0) {
-					console.log(`⚠️  ${nulls} organization_members entries don't have matching member records`);
+					console.log(
+						`⚠️  ${nulls} organization_members entries don't have matching member records`,
+					);
 					console.log("   You may need to create member records for these");
 				}
 
@@ -151,13 +177,16 @@ async function migrateDatabaseSchema() {
 					`);
 					console.log("✅ Dropped old organization_id and user_id columns");
 				} else {
-					console.log("⚠️  Not dropping old columns yet - some entries need member records");
+					console.log(
+						"⚠️  Not dropping old columns yet - some entries need member records",
+					);
 				}
-
 			} catch (error: any) {
 				console.error("❌ Error during migration:", error.message);
 				if (error.message.includes("violates foreign key constraint")) {
-					console.log("   Some organization_members entries don't have matching member records");
+					console.log(
+						"   Some organization_members entries don't have matching member records",
+					);
 					console.log("   You need to create member records first");
 				}
 			}
@@ -166,8 +195,12 @@ async function migrateDatabaseSchema() {
 		}
 
 		console.log("\n✅ Migration check complete!");
-		console.log("\n⚠️  Note: organization_id type conversion (UUID -> text) requires manual data mapping");
-		console.log("   You may need to update organization_id values in students, venues, and teachers tables");
+		console.log(
+			"\n⚠️  Note: organization_id type conversion (UUID -> text) requires manual data mapping",
+		);
+		console.log(
+			"   You may need to update organization_id values in students, venues, and teachers tables",
+		);
 
 		process.exit(0);
 	} catch (error) {
@@ -177,4 +210,3 @@ async function migrateDatabaseSchema() {
 }
 
 migrateDatabaseSchema();
-

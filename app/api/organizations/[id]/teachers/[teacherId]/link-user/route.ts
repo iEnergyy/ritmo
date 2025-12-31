@@ -34,18 +34,12 @@ export async function PATCH(
 		);
 
 		if (!existingTeacher) {
-			return NextResponse.json(
-				{ error: "Teacher not found" },
-				{ status: 404 },
-			);
+			return NextResponse.json({ error: "Teacher not found" }, { status: 404 });
 		}
 
 		// If userId is provided, verify the user is a member of the organization
 		if (userId) {
-			const isMember = await isUserMemberOfOrganization(
-				userId,
-				organizationId,
-			);
+			const isMember = await isUserMemberOfOrganization(userId, organizationId);
 
 			if (!isMember) {
 				return NextResponse.json(
@@ -60,7 +54,9 @@ export async function PATCH(
 
 		return NextResponse.json({
 			teacher: updatedTeacher,
-			message: userId ? "User linked successfully" : "User unlinked successfully",
+			message: userId
+				? "User linked successfully"
+				: "User unlinked successfully",
 		});
 	} catch (error) {
 		if (error instanceof NextResponse) {
@@ -73,4 +69,3 @@ export async function PATCH(
 		);
 	}
 }
-

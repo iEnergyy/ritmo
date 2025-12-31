@@ -101,10 +101,7 @@ export async function isUserMemberOfOrganization(
 		.select()
 		.from(member)
 		.where(
-			and(
-				eq(member.userId, userId),
-				eq(member.organizationId, organizationId),
-			),
+			and(eq(member.userId, userId), eq(member.organizationId, organizationId)),
 		)
 		.limit(1);
 
@@ -158,11 +155,23 @@ export async function updateTeacher(
 		.update(teachers)
 		.set({
 			fullName: data.fullName ?? existingTeacher.fullName,
-			userId: data.userId !== undefined ? data.userId || null : existingTeacher.userId,
+			userId:
+				data.userId !== undefined
+					? data.userId || null
+					: existingTeacher.userId,
 			paymentType: data.paymentType ?? existingTeacher.paymentType,
-			monthlyRate: data.monthlyRate !== undefined ? data.monthlyRate || null : existingTeacher.monthlyRate,
-			ratePerHead: data.ratePerHead !== undefined ? data.ratePerHead || null : existingTeacher.ratePerHead,
-			ratePerClass: data.ratePerClass !== undefined ? data.ratePerClass || null : existingTeacher.ratePerClass,
+			monthlyRate:
+				data.monthlyRate !== undefined
+					? data.monthlyRate || null
+					: existingTeacher.monthlyRate,
+			ratePerHead:
+				data.ratePerHead !== undefined
+					? data.ratePerHead || null
+					: existingTeacher.ratePerHead,
+			ratePerClass:
+				data.ratePerClass !== undefined
+					? data.ratePerClass || null
+					: existingTeacher.ratePerClass,
 		})
 		.where(eq(teachers.id, teacherId))
 		.returning();
@@ -194,4 +203,3 @@ export async function updateTeacherUserLink(
 export async function deleteTeacher(teacherId: string): Promise<void> {
 	await db.delete(teachers).where(eq(teachers.id, teacherId));
 }
-

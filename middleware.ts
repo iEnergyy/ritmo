@@ -101,14 +101,15 @@ export default async function middleware(request: NextRequest) {
 		// Subdomain found but user is not authenticated
 		// Check if already on signin page with correct tenant parameter
 		const locale = pathname.split("/")[1] || "es";
-		const isSignInPage = pathname === `/${locale}/signin` || pathname === "/signin";
+		const isSignInPage =
+			pathname === `/${locale}/signin` || pathname === "/signin";
 		const urlTenant = request.nextUrl.searchParams.get("tenant");
-		
+
 		// If already on signin page with correct tenant, don't redirect
 		if (isSignInPage && urlTenant === tenantSlug) {
 			return intlMiddleware(request);
 		}
-		
+
 		// Redirect to sign-in with tenant parameter
 		const signInUrl = new URL(`/${locale}/signin`, request.url);
 		signInUrl.searchParams.set("tenant", tenantSlug);
@@ -132,4 +133,3 @@ export const config = {
 	// Match only internationalized pathnames
 	matcher: ["/", "/(es|en)/:path*", "/((?!api|_next|_vercel|.*\\..*).*)"],
 };
-

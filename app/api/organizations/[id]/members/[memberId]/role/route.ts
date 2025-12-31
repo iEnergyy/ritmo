@@ -46,10 +46,7 @@ export async function PATCH(
 		const memberRecord = await getMemberById(organizationId, memberId);
 
 		if (!memberRecord) {
-			return NextResponse.json(
-				{ error: "Member not found" },
-				{ status: 404 },
-			);
+			return NextResponse.json({ error: "Member not found" }, { status: 404 });
 		}
 
 		// Update or create organizationMembers record
@@ -70,5 +67,3 @@ export async function PATCH(
 		);
 	}
 }
-
-

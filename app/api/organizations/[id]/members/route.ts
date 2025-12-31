@@ -63,10 +63,7 @@ export async function DELETE(
 		const memberRecord = await getMemberById(organizationId, memberId);
 
 		if (!memberRecord) {
-			return NextResponse.json(
-				{ error: "Member not found" },
-				{ status: 404 },
-			);
+			return NextResponse.json({ error: "Member not found" }, { status: 404 });
 		}
 
 		// Prevent removing yourself
@@ -92,5 +89,3 @@ export async function DELETE(
 		);
 	}
 }
-
-

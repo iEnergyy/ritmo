@@ -38,39 +38,24 @@ export class TenantMembershipError extends Error {
  */
 export function handleTenantError(error: unknown): NextResponse {
 	if (error instanceof TenantNotFoundError) {
-		return NextResponse.json(
-			{ error: error.message },
-			{ status: 404 },
-		);
+		return NextResponse.json({ error: error.message }, { status: 404 });
 	}
 
 	if (error instanceof TenantAccessDeniedError) {
-		return NextResponse.json(
-			{ error: error.message },
-			{ status: 403 },
-		);
+		return NextResponse.json({ error: error.message }, { status: 403 });
 	}
 
 	if (error instanceof NoActiveTenantError) {
-		return NextResponse.json(
-			{ error: error.message },
-			{ status: 400 },
-		);
+		return NextResponse.json({ error: error.message }, { status: 400 });
 	}
 
 	if (error instanceof TenantMembershipError) {
-		return NextResponse.json(
-			{ error: error.message },
-			{ status: 403 },
-		);
+		return NextResponse.json({ error: error.message }, { status: 403 });
 	}
 
 	// Unknown error
 	console.error("Unhandled tenant error:", error);
-	return NextResponse.json(
-		{ error: "Internal server error" },
-		{ status: 500 },
-	);
+	return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 }
 
 /**
@@ -89,5 +74,3 @@ export function createTenantErrorRedirect(
 	url.searchParams.set("error", errorParam || error);
 	return NextResponse.redirect(url);
 }
-
-

@@ -143,9 +143,7 @@ export default function DashboardPage() {
 												<h3 className="text-lg font-semibold text-gray-900">
 													{org.name}
 												</h3>
-												<p className="text-sm text-gray-500 mt-1">
-													{org.slug}
-												</p>
+												<p className="text-sm text-gray-500 mt-1">{org.slug}</p>
 											</div>
 											<Building2 className="h-5 w-5 text-gray-400" />
 										</div>

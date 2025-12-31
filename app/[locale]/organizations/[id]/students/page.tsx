@@ -36,7 +36,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Field, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field";
+import {
+	Field,
+	FieldGroup,
+	FieldLabel,
+	FieldError,
+} from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { useForm } from "@/components/ui/form";
@@ -257,165 +262,33 @@ export default function StudentsPage() {
 	return (
 		<AppLayout organizationId={organizationId}>
 			<div className="space-y-6">
-
-					<div className="flex justify-between items-center">
-						<div>
-							<h1 className="text-3xl font-bold text-gray-900">{t("title")}</h1>
-							<p className="mt-2 text-sm text-gray-600">
-								Manage students in your organization
-							</p>
-						</div>
-						<Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-							<DialogTrigger asChild>
-								<Button>
-									<Plus className="mr-2 h-4 w-4" />
-									{t("createButton")}
-								</Button>
-							</DialogTrigger>
-							<DialogContent>
-								<DialogHeader>
-									<DialogTitle>{t("createTitle")}</DialogTitle>
-									<DialogDescription>{t("createDescription")}</DialogDescription>
-								</DialogHeader>
-								<form onSubmit={createForm.handleSubmit(handleCreate)}>
-									<FieldGroup className="mb-2">
-										<Controller
-											name="fullName"
-											control={createForm.control}
-											render={({ field, fieldState }) => (
-												<Field data-invalid={fieldState.invalid}>
-													<FieldLabel>{t("fullName")}</FieldLabel>
-													<Input {...field} />
-													{fieldState.invalid && (
-														<FieldError errors={[fieldState.error]} />
-													)}
-												</Field>
-											)}
-										/>
-										<Controller
-											name="email"
-											control={createForm.control}
-											render={({ field, fieldState }) => (
-												<Field data-invalid={fieldState.invalid}>
-													<FieldLabel>{t("email")}</FieldLabel>
-													<Input type="email" {...field} />
-													{fieldState.invalid && (
-														<FieldError errors={[fieldState.error]} />
-													)}
-												</Field>
-											)}
-										/>
-										<Controller
-											name="phone"
-											control={createForm.control}
-											render={({ field }) => (
-												<Field>
-													<FieldLabel>{t("phone")}</FieldLabel>
-													<Input {...field} />
-												</Field>
-											)}
-										/>
-									</FieldGroup>
-									<DialogFooter>
-										<Button
-											type="button"
-											variant="outline"
-											onClick={() => setIsCreateDialogOpen(false)}
-										>
-											{t("cancel")}
-										</Button>
-										<Button type="submit">{t("create")}</Button>
-									</DialogFooter>
-								</form>
-							</DialogContent>
-						</Dialog>
+				<div className="flex justify-between items-center">
+					<div>
+						<h1 className="text-3xl font-bold text-gray-900">{t("title")}</h1>
+						<p className="mt-2 text-sm text-gray-600">
+							Manage students in your organization
+						</p>
 					</div>
-
-					{/* Search */}
-					<div className="mb-6">
-						<div className="relative">
-							<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-							<Input
-								type="text"
-								placeholder={t("searchPlaceholder")}
-								value={searchQuery}
-								onChange={(e) => setSearchQuery(e.target.value)}
-								className="pl-10"
-							/>
-						</div>
-					</div>
-
-					{/* Students Table */}
-					<div className="bg-white shadow rounded-lg">
-						{loading ? (
-							<div className="p-6 space-y-4">
-								<Skeleton className="h-10 w-full" />
-								<Skeleton className="h-10 w-full" />
-								<Skeleton className="h-10 w-full" />
-							</div>
-						) : students.length === 0 ? (
-							<div className="p-6 text-center text-gray-500">
-								{t("noStudents")}
-							</div>
-						) : (
-							<Table>
-								<TableHeader>
-									<TableRow>
-										<TableHead>{t("fullName")}</TableHead>
-										<TableHead>{t("email")}</TableHead>
-										<TableHead>{t("phone")}</TableHead>
-										<TableHead>{t("createdAt")}</TableHead>
-										<TableHead className="text-right">{t("actions")}</TableHead>
-									</TableRow>
-								</TableHeader>
-								<TableBody>
-									{students.map((student) => (
-										<TableRow key={student.id}>
-											<TableCell className="font-medium">
-												{student.fullName}
-											</TableCell>
-											<TableCell>{student.email || "-"}</TableCell>
-											<TableCell>{student.phone || "-"}</TableCell>
-											<TableCell>
-												{new Date(student.createdAt).toLocaleDateString()}
-											</TableCell>
-											<TableCell className="text-right">
-												<div className="flex justify-end gap-2">
-													<Button
-														variant="ghost"
-														size="icon"
-														onClick={() => handleEdit(student)}
-													>
-														<Pencil className="h-4 w-4" />
-													</Button>
-													<Button
-														variant="ghost"
-														size="icon"
-														onClick={() => handleDeleteClick(student)}
-													>
-														<Trash2 className="h-4 w-4 text-red-600" />
-													</Button>
-												</div>
-											</TableCell>
-										</TableRow>
-									))}
-								</TableBody>
-							</Table>
-						)}
-					</div>
-
-					{/* Edit Dialog */}
-					<Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+					<Dialog
+						open={isCreateDialogOpen}
+						onOpenChange={setIsCreateDialogOpen}
+					>
+						<DialogTrigger asChild>
+							<Button>
+								<Plus className="mr-2 h-4 w-4" />
+								{t("createButton")}
+							</Button>
+						</DialogTrigger>
 						<DialogContent>
 							<DialogHeader>
-								<DialogTitle>{t("editTitle")}</DialogTitle>
-								<DialogDescription>{t("editDescription")}</DialogDescription>
+								<DialogTitle>{t("createTitle")}</DialogTitle>
+								<DialogDescription>{t("createDescription")}</DialogDescription>
 							</DialogHeader>
-							<form onSubmit={editForm.handleSubmit(handleUpdate)}>
-								<FieldGroup>
+							<form onSubmit={createForm.handleSubmit(handleCreate)}>
+								<FieldGroup className="mb-2">
 									<Controller
 										name="fullName"
-										control={editForm.control}
+										control={createForm.control}
 										render={({ field, fieldState }) => (
 											<Field data-invalid={fieldState.invalid}>
 												<FieldLabel>{t("fullName")}</FieldLabel>
@@ -428,7 +301,7 @@ export default function StudentsPage() {
 									/>
 									<Controller
 										name="email"
-										control={editForm.control}
+										control={createForm.control}
 										render={({ field, fieldState }) => (
 											<Field data-invalid={fieldState.invalid}>
 												<FieldLabel>{t("email")}</FieldLabel>
@@ -441,7 +314,7 @@ export default function StudentsPage() {
 									/>
 									<Controller
 										name="phone"
-										control={editForm.control}
+										control={createForm.control}
 										render={({ field }) => (
 											<Field>
 												<FieldLabel>{t("phone")}</FieldLabel>
@@ -454,37 +327,173 @@ export default function StudentsPage() {
 									<Button
 										type="button"
 										variant="outline"
-										onClick={() => setIsEditDialogOpen(false)}
+										onClick={() => setIsCreateDialogOpen(false)}
 									>
 										{t("cancel")}
 									</Button>
-									<Button type="submit">{t("update")}</Button>
+									<Button type="submit">{t("create")}</Button>
 								</DialogFooter>
 							</form>
 						</DialogContent>
 					</Dialog>
+				</div>
 
-					{/* Delete Confirmation Dialog */}
-					<AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-						<AlertDialogContent>
-							<AlertDialogHeader>
-								<AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
-								<AlertDialogDescription>
-									{t("deleteDescription", {
-										name: selectedStudent?.fullName,
-									})}
-								</AlertDialogDescription>
-							</AlertDialogHeader>
-							<AlertDialogFooter>
-								<AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
-								<AlertDialogAction onClick={handleDelete}>
-									{t("delete")}
-								</AlertDialogAction>
-							</AlertDialogFooter>
-						</AlertDialogContent>
-					</AlertDialog>
+				{/* Search */}
+				<div className="mb-6">
+					<div className="relative">
+						<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+						<Input
+							type="text"
+							placeholder={t("searchPlaceholder")}
+							value={searchQuery}
+							onChange={(e) => setSearchQuery(e.target.value)}
+							className="pl-10"
+						/>
+					</div>
+				</div>
+
+				{/* Students Table */}
+				<div className="bg-white shadow rounded-lg">
+					{loading ? (
+						<div className="p-6 space-y-4">
+							<Skeleton className="h-10 w-full" />
+							<Skeleton className="h-10 w-full" />
+							<Skeleton className="h-10 w-full" />
+						</div>
+					) : students.length === 0 ? (
+						<div className="p-6 text-center text-gray-500">
+							{t("noStudents")}
+						</div>
+					) : (
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead>{t("fullName")}</TableHead>
+									<TableHead>{t("email")}</TableHead>
+									<TableHead>{t("phone")}</TableHead>
+									<TableHead>{t("createdAt")}</TableHead>
+									<TableHead className="text-right">{t("actions")}</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								{students.map((student) => (
+									<TableRow key={student.id}>
+										<TableCell className="font-medium">
+											{student.fullName}
+										</TableCell>
+										<TableCell>{student.email || "-"}</TableCell>
+										<TableCell>{student.phone || "-"}</TableCell>
+										<TableCell>
+											{new Date(student.createdAt).toLocaleDateString()}
+										</TableCell>
+										<TableCell className="text-right">
+											<div className="flex justify-end gap-2">
+												<Button
+													variant="ghost"
+													size="icon"
+													onClick={() => handleEdit(student)}
+												>
+													<Pencil className="h-4 w-4" />
+												</Button>
+												<Button
+													variant="ghost"
+													size="icon"
+													onClick={() => handleDeleteClick(student)}
+												>
+													<Trash2 className="h-4 w-4 text-red-600" />
+												</Button>
+											</div>
+										</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+						</Table>
+					)}
+				</div>
+
+				{/* Edit Dialog */}
+				<Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+					<DialogContent>
+						<DialogHeader>
+							<DialogTitle>{t("editTitle")}</DialogTitle>
+							<DialogDescription>{t("editDescription")}</DialogDescription>
+						</DialogHeader>
+						<form onSubmit={editForm.handleSubmit(handleUpdate)}>
+							<FieldGroup>
+								<Controller
+									name="fullName"
+									control={editForm.control}
+									render={({ field, fieldState }) => (
+										<Field data-invalid={fieldState.invalid}>
+											<FieldLabel>{t("fullName")}</FieldLabel>
+											<Input {...field} />
+											{fieldState.invalid && (
+												<FieldError errors={[fieldState.error]} />
+											)}
+										</Field>
+									)}
+								/>
+								<Controller
+									name="email"
+									control={editForm.control}
+									render={({ field, fieldState }) => (
+										<Field data-invalid={fieldState.invalid}>
+											<FieldLabel>{t("email")}</FieldLabel>
+											<Input type="email" {...field} />
+											{fieldState.invalid && (
+												<FieldError errors={[fieldState.error]} />
+											)}
+										</Field>
+									)}
+								/>
+								<Controller
+									name="phone"
+									control={editForm.control}
+									render={({ field }) => (
+										<Field>
+											<FieldLabel>{t("phone")}</FieldLabel>
+											<Input {...field} />
+										</Field>
+									)}
+								/>
+							</FieldGroup>
+							<DialogFooter>
+								<Button
+									type="button"
+									variant="outline"
+									onClick={() => setIsEditDialogOpen(false)}
+								>
+									{t("cancel")}
+								</Button>
+								<Button type="submit">{t("update")}</Button>
+							</DialogFooter>
+						</form>
+					</DialogContent>
+				</Dialog>
+
+				{/* Delete Confirmation Dialog */}
+				<AlertDialog
+					open={isDeleteDialogOpen}
+					onOpenChange={setIsDeleteDialogOpen}
+				>
+					<AlertDialogContent>
+						<AlertDialogHeader>
+							<AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
+							<AlertDialogDescription>
+								{t("deleteDescription", {
+									name: selectedStudent?.fullName,
+								})}
+							</AlertDialogDescription>
+						</AlertDialogHeader>
+						<AlertDialogFooter>
+							<AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+							<AlertDialogAction onClick={handleDelete}>
+								{t("delete")}
+							</AlertDialogAction>
+						</AlertDialogFooter>
+					</AlertDialogContent>
+				</AlertDialog>
 			</div>
 		</AppLayout>
 	);
 }
-

@@ -9,4 +9,3 @@ export default defineConfig({
 		url: DATABASE_URL,
 	},
 });
-

@@ -3,11 +3,7 @@ import {
 	getAuthenticatedSession,
 	enforceTenantIsolation,
 } from "@/lib/api-helpers";
-import {
-	getVenueById,
-	updateVenue,
-	deleteVenue,
-} from "@/db/queries/venues";
+import { getVenueById, updateVenue, deleteVenue } from "@/db/queries/venues";
 
 /**
  * GET /api/organizations/[id]/venues/[venueId]
@@ -28,10 +24,7 @@ export async function GET(
 		const venue = await getVenueById(organizationId, venueId);
 
 		if (!venue) {
-			return NextResponse.json(
-				{ error: "Venue not found" },
-				{ status: 404 },
-			);
+			return NextResponse.json({ error: "Venue not found" }, { status: 404 });
 		}
 
 		return NextResponse.json({ venue });
@@ -69,10 +62,7 @@ export async function PATCH(
 		const existingVenue = await getVenueById(organizationId, venueId);
 
 		if (!existingVenue) {
-			return NextResponse.json(
-				{ error: "Venue not found" },
-				{ status: 404 },
-			);
+			return NextResponse.json({ error: "Venue not found" }, { status: 404 });
 		}
 
 		// Update venue
@@ -113,10 +103,7 @@ export async function DELETE(
 		const existingVenue = await getVenueById(organizationId, venueId);
 
 		if (!existingVenue) {
-			return NextResponse.json(
-				{ error: "Venue not found" },
-				{ status: 404 },
-			);
+			return NextResponse.json({ error: "Venue not found" }, { status: 404 });
 		}
 
 		// Delete venue
@@ -134,4 +121,3 @@ export async function DELETE(
 		);
 	}
 }
-

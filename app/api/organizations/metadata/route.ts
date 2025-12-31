@@ -40,10 +40,7 @@ export async function GET(request: NextRequest) {
 				await enforceTenantIsolation(orgId, session.user.id);
 			}
 		} catch (error) {
-			if (
-				error instanceof TenantAccessDeniedError ||
-				error instanceof Error
-			) {
+			if (error instanceof TenantAccessDeniedError || error instanceof Error) {
 				return handleTenantError(error);
 			}
 			throw error;
@@ -91,10 +88,7 @@ export async function POST(request: NextRequest) {
 		try {
 			await enforceTenantIsolation(organizationId, session.user.id);
 		} catch (error) {
-			if (
-				error instanceof TenantAccessDeniedError ||
-				error instanceof Error
-			) {
+			if (error instanceof TenantAccessDeniedError || error instanceof Error) {
 				return handleTenantError(error);
 			}
 			throw error;

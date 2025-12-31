@@ -22,10 +22,9 @@ export async function getAuthenticatedSession(request: NextRequest) {
 	const session = await auth.api.getSession({ headers: request.headers });
 
 	if (!session?.user) {
-		throw new NextResponse(
-			JSON.stringify({ error: "Unauthorized" }),
-			{ status: 401 },
-		);
+		throw new NextResponse(JSON.stringify({ error: "Unauthorized" }), {
+			status: 401,
+		});
 	}
 
 	return session;
@@ -118,4 +117,3 @@ export function withTenantIsolation<T>(
 		}
 	};
 }
-

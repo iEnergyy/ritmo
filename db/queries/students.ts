@@ -88,8 +88,10 @@ export async function updateStudent(
 		.update(students)
 		.set({
 			fullName: data.fullName ?? existingStudent.fullName,
-			email: data.email !== undefined ? data.email || null : existingStudent.email,
-			phone: data.phone !== undefined ? data.phone || null : existingStudent.phone,
+			email:
+				data.email !== undefined ? data.email || null : existingStudent.email,
+			phone:
+				data.phone !== undefined ? data.phone || null : existingStudent.phone,
 		})
 		.where(eq(students.id, studentId))
 		.returning();
@@ -103,4 +105,3 @@ export async function updateStudent(
 export async function deleteStudent(studentId: string): Promise<void> {
 	await db.delete(students).where(eq(students.id, studentId));
 }
-

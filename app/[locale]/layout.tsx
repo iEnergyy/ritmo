@@ -51,4 +51,3 @@ export default async function LocaleLayout({ children, params }: Props) {
 		</html>
 	);
 }
-

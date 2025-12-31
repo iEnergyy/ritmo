@@ -28,10 +28,7 @@ export async function GET(
 		const student = await getStudentById(organizationId, studentId);
 
 		if (!student) {
-			return NextResponse.json(
-				{ error: "Student not found" },
-				{ status: 404 },
-			);
+			return NextResponse.json({ error: "Student not found" }, { status: 404 });
 		}
 
 		return NextResponse.json({ student });
@@ -69,10 +66,7 @@ export async function PATCH(
 		const existingStudent = await getStudentById(organizationId, studentId);
 
 		if (!existingStudent) {
-			return NextResponse.json(
-				{ error: "Student not found" },
-				{ status: 404 },
-			);
+			return NextResponse.json({ error: "Student not found" }, { status: 404 });
 		}
 
 		// Update student
@@ -114,10 +108,7 @@ export async function DELETE(
 		const existingStudent = await getStudentById(organizationId, studentId);
 
 		if (!existingStudent) {
-			return NextResponse.json(
-				{ error: "Student not found" },
-				{ status: 404 },
-			);
+			return NextResponse.json({ error: "Student not found" }, { status: 404 });
 		}
 
 		// Delete student
@@ -135,4 +126,3 @@ export async function DELETE(
 		);
 	}
 }
-

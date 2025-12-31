@@ -122,5 +122,3 @@ export async function withTenantIsolation<T>(
 	}
 	return queryFn(organizationId);
 }
-
-

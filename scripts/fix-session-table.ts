@@ -23,9 +23,13 @@ async function fixSessionTable() {
 		const hasColumn = rows.length > 0;
 
 		if (hasColumn) {
-			console.log("✅ Column 'active_organization_id' already exists in session table");
+			console.log(
+				"✅ Column 'active_organization_id' already exists in session table",
+			);
 		} else {
-			console.log("⚠️  Column 'active_organization_id' is missing. Adding it...");
+			console.log(
+				"⚠️  Column 'active_organization_id' is missing. Adding it...",
+			);
 
 			// Add the column
 			await db.execute(sql`
@@ -70,4 +74,3 @@ async function fixSessionTable() {
 }
 
 fixSessionTable();
-
