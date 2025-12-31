@@ -1,7 +1,7 @@
 import { getRequestConfig } from "next-intl/server";
 
 export default getRequestConfig(async ({ requestLocale }) => {
-	// This will typically be called from the middleware
+	// This will typically be called from the proxy
 	// with a locale determined by the URL or other logic
 	let locale = await requestLocale;
 

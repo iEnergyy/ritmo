@@ -634,7 +634,7 @@ Goal: make the system safe to build on
 - [x] Internationalization (i18n) - Implemented with next-intl, locale-based routing, Spanish (default) and English support
 - [x] Tenant isolation enforcement - Implemented: `enforceTenantIsolation` function used in all organization API routes (`/api/organizations/*`)
 - [x] Organization member management - Fully implemented: UI for inviting members, managing roles, removing members, viewing pending invitations
-- [~] Multi-tenant login via subdomain - Partially implemented: Middleware exists for subdomain-based tenant routing (`middleware.ts`), but may need additional client-side handling
+- [~] Multi-tenant login via subdomain - Partially implemented: Proxy exists for subdomain-based tenant routing (`proxy.ts`), but may need additional client-side handling
 - [x] shadcn/ui component integration - Fully implemented: Sidebar, buttons, dropdowns, selects, dialogs, cards, tables, and other UI components now use shadcn/ui for consistency
 
 **UI Expectations:**
@@ -1304,7 +1304,7 @@ ritmo/
 ├─ i18n/
 │  ├─ request.ts         # next-intl request configuration
 │  └─ navigation.ts      # Locale-aware navigation helpers
-├─ middleware.ts         # Locale detection, routing, and tenant subdomain resolution
+├─ proxy.ts              # Locale detection, routing, and tenant subdomain resolution
 ├─ db/
 │  ├─ schema.ts          # Database schema (Drizzle) - includes BetterAuth tables and domain entities
 │  └─ index.ts           # Database connection

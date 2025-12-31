@@ -15,7 +15,7 @@ const intlMiddleware = createIntlMiddleware({
 	defaultLocale: "es",
 });
 
-export default async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
 	const { pathname, search } = request.nextUrl;
 	const hostname = request.headers.get("host") || "";
 
@@ -30,7 +30,7 @@ export default async function middleware(request: NextRequest) {
 	}
 
 	// Get session from cookie cache (works in Edge runtime without database queries)
-	// This is safe for middleware as it validates the signed cookie
+	// This is safe for proxy as it validates the signed cookie
 	let session = null;
 	try {
 		session = await getCookieCache(request);
@@ -55,7 +55,7 @@ export default async function middleware(request: NextRequest) {
 			const currentOrgId = session.organization?.id;
 
 			// If the active organization doesn't match the subdomain, we need to set it
-			// However, we can't directly modify the session in middleware
+			// However, we can't directly modify the session in proxy
 			// BetterAuth handles this via API calls, so we'll add a header
 			// and let the client-side handle the organization switch if needed
 			if (currentOrgId !== tenantInfo.organizationId) {
@@ -133,3 +133,4 @@ export const config = {
 	// Match only internationalized pathnames
 	matcher: ["/", "/(es|en)/:path*", "/((?!api|_next|_vercel|.*\\..*).*)"],
 };
+
