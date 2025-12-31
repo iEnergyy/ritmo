@@ -617,7 +617,7 @@ export const teacherPayouts = pgTable("teacher_payouts", {
 
 Each phase is independently shippable and reduces real-world pain.
 
-**Current Status:** Phase 0 is complete. Phase 1 is ~80% complete. Core infrastructure (auth, database, organization management, internationalization, tenant isolation) is fully implemented. Schema definitions for all domain entities are complete. Organization member management, students, teachers, and venues have full UI/API implementations with shadcn/ui components. Groups UI/API are pending.
+**Current Status:** Phase 0 is complete. Phase 1 is complete. Core infrastructure (auth, database, organization management, internationalization, tenant isolation) is fully implemented. Schema definitions for all domain entities are complete. Organization member management, students, teachers, venues, and public student registration have full UI/API implementations with shadcn/ui components. Phase 2 (Unit & Integration Testing) is next. Groups UI/API are pending (Phase 3).
 
 **Phase 0 — Groundwork**
 
@@ -661,7 +661,7 @@ Goal: represent real people and places
 - [x] Teacher entity (user-linked or standalone) - Fully implemented: Schema, API routes, and UI (`/organizations/[id]/teachers`) with full CRUD, user linking, and payment configuration
 - [x] Venue management - Fully implemented: Schema, API routes, and UI (`/organizations/[id]/venues`) with full CRUD operations
 - [x] Organization member management - Fully implemented: Schema (Better Auth `member` table + custom `organizationMembers` table), API routes, and UI (`/organizations/[id]/members`) with role management, invitations, and member removal
-- [ ] Public student registration form (minimal) - Not yet implemented
+- [x] Public student registration form (minimal) - Fully implemented: Public registration page (`/register`) with subdomain-based organization detection, API endpoint (`/api/public/organizations/[slug]/register`), and success page
 - [x] i18n (internationalization) - Implemented with next-intl, supports Spanish (default) and English with locale-based routing
 - [x] shadcn/ui component integration - All pages use shadcn/ui components (Button, Select, Dialog, Card, Table, AlertDialog, etc.) for consistent design
 
@@ -681,15 +681,49 @@ Goal: represent real people and places
   - [x] Create venue form (name, address) using shadcn Dialog
   - [x] Edit venue details using shadcn Dialog
   - [x] Delete venue action using shadcn AlertDialog
-- [ ] Public student registration form (minimal, accessible without login):
-  - [ ] Simple form with student info
-  - [ ] Organization selection or auto-assignment
-  - [ ] Success confirmation
+- [x] Public student registration form (minimal, accessible without login):
+  - [x] Simple form with student info (full name, email, phone)
+  - [x] Organization auto-assignment via subdomain detection
+  - [x] Success confirmation page with student and organization details
 
 Deliverable:
-- [x] Real-world entities represented correctly (Schema, API routes, and UI fully implemented for students, teachers, venues, and organization members. All using shadcn/ui components for consistent design. Public registration form pending)
+- [x] Real-world entities represented correctly (Schema, API routes, and UI fully implemented for students, teachers, venues, and organization members. Public student registration form implemented with subdomain-based organization detection. All using shadcn/ui components for consistent design)
 
-**Phase 2 — Groups & Membership**
+**Phase 2 — Unit & Integration Testing**
+
+Goal: ensure reliability and prevent regressions
+
+- [ ] Test framework setup (Vitest or Jest)
+- [ ] Unit tests for:
+  - [ ] Database helpers and queries
+  - [ ] API route handlers
+  - [ ] Authentication and authorization logic
+  - [ ] Tenant isolation enforcement
+  - [ ] Utility functions
+  - [ ] Business logic functions
+- [ ] Integration tests for:
+  - [ ] API endpoints (CRUD operations)
+  - [ ] Authentication flows
+  - [ ] Multi-tenant data isolation
+  - [ ] Database transactions
+  - [ ] Organization member management
+  - [ ] Student/Teacher/Venue operations
+- [ ] Test database setup and teardown
+- [ ] CI/CD integration for automated testing
+- [ ] Test coverage reporting
+- [ ] Test coverage targets (80%+)
+
+**UI Expectations:**
+- [ ] Test runner configuration
+- [ ] Test utilities and helpers
+- [ ] Mock data factories
+- [ ] Database test fixtures
+- [ ] API test helpers (authentication, tenant context)
+
+Deliverable:
+- [ ] Confidence to refactor and extend safely
+
+**Phase 3 — Groups & Membership**
 
 Goal: model ongoing classes accurately
 
@@ -723,7 +757,7 @@ Goal: model ongoing classes accurately
 Deliverable:
 - [ ] Flexible class structure without data loss
 
-**Phase 3 — Class Sessions**
+**Phase 4 — Class Sessions**
 
 Goal: introduce time as a first-class concept
 
@@ -763,7 +797,7 @@ Goal: introduce time as a first-class concept
 Deliverable:
 - [ ] Everything important happens in time
 
-**Phase 4 — Attendance**
+**Phase 5 — Attendance**
 
 Goal: capture what actually happened
 
@@ -802,7 +836,7 @@ Goal: capture what actually happened
 Deliverable:
 - [ ] Reliable operational truth
 
-**Phase 5 — Private Classes**
+**Phase 6 — Private Classes**
 
 Goal: support 1-on-1 teaching
 
@@ -840,7 +874,7 @@ Goal: support 1-on-1 teaching
 Deliverable:
 - [ ] Solo teachers fully supported
 
-**Phase 6 — Student Payments**
+**Phase 7 — Student Payments**
 
 Goal: replace manual tracking
 
@@ -885,7 +919,7 @@ Goal: replace manual tracking
 Deliverable:
 - [ ] Clear payment visibility without payment processing
 
-**Phase 7 — Teacher Payouts**
+**Phase 8 — Teacher Payouts**
 
 Goal: make compensation transparent
 
@@ -934,7 +968,7 @@ Goal: make compensation transparent
 Deliverable:
 - [ ] Teachers trust the numbers
 
-**Phase 8 — Scheduling Automation**
+**Phase 9 — Scheduling Automation**
 
 Goal: reduce repetitive work
 
@@ -982,7 +1016,7 @@ Goal: reduce repetitive work
 Deliverable:
 - [ ] Fewer manual operations
 
-**Phase 9 — Notifications**
+**Phase 10 — Notifications**
 
 Goal: reduce chasing people
 
@@ -1033,7 +1067,7 @@ Goal: reduce chasing people
 Deliverable:
 - [ ] System nudges replace human chasing
 
-**Phase 10 — Reporting**
+**Phase 11 — Reporting**
 
 Goal: basic operational visibility
 
@@ -1092,7 +1126,7 @@ Goal: basic operational visibility
 Deliverable:
 - [ ] Admins understand what's happening
 
-**Phase 11 — Intelligence (v1)**
+**Phase 12 — Intelligence (v1)**
 
 Goal: insight, not just data
 
@@ -1149,7 +1183,7 @@ Goal: insight, not just data
 Deliverable:
 - [ ] Cadence becomes proactive
 
-**Phase 12 — AI Copilot**
+**Phase 13 — AI Copilot**
 
 Goal: natural language operations
 
@@ -1200,7 +1234,7 @@ Goal: natural language operations
 Deliverable:
 - [ ] The system feels alive
 
-**Phase 13 — Platform & Scale**
+**Phase 14 — Platform & Scale**
 
 Goal: long-term sustainability
 
