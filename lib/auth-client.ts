@@ -4,11 +4,10 @@ import { createAuthClient } from "better-auth/react";
 import { organizationClient } from "better-auth/client/plugins";
 
 export const authClient = createAuthClient({
-	baseURL:
-		process.env.NEXT_PUBLIC_BETTER_AUTH_URL ||
-		(typeof window !== "undefined"
-			? window.location.origin
-			: "http://localhost:3000"),
+	// Always use the current origin to support subdomain-based tenants
+	// This ensures that nrgschool.localhost:3000 calls nrgschool.localhost:3000/api/auth
+	// instead of localhost:3000/api/auth (which would cause CORS errors)
+	baseURL: typeof window !== "undefined" ? window.location.origin : "http://localhost:3000",
 	basePath: "/api/auth",
 	plugins: [organizationClient()],
 });

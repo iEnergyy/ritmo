@@ -33,6 +33,18 @@ export const auth = betterAuth({
 			maxAge: 5 * 60, // 5 minutes cache duration
 		},
 	},
+	// Allow subdomain-based tenants to access the auth API
+	trustedOrigins: [
+		"http://localhost:3000",
+		"http://*.localhost:3000", // Allow any subdomain on localhost with HTTP
+	],
+	advanced: {
+		// Enable cross-subdomain cookies so that sessions work across tenant subdomains
+		crossSubDomainCookies: {
+			enabled: true,
+			domain: "localhost", // Share cookies across all *.localhost subdomains
+		},
+	},
 	plugins: [
 		organization({
 			// Organization plugin configuration

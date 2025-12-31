@@ -2,12 +2,11 @@
 
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { Link, useRouter as useI18nRouter } from "@/i18n/navigation";
+import { useTranslations, useLocale } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 export default function SignInPage() {
-	const router = useI18nRouter();
+	const locale = useLocale();
 	const t = useTranslations("SignIn");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -16,24 +15,68 @@ export default function SignInPage() {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+		console.log("=== SIGNIN FORM SUBMITTED ===");
+		console.log("Email:", email);
+		console.log("Locale:", locale);
+		
 		setError(null);
 		setLoading(true);
 
 		try {
-			const result = await authClient.signIn.email({
-				email,
-				password,
-			});
+			console.log("Calling authClient.signIn.email...");
+			const { data, error } = await authClient.signIn.email(
+				{
+					email,
+					password,
+				},
+				{
+					onRequest: () => {
+						console.log("✓ onRequest callback fired");
+					},
+					onSuccess: (ctx) => {
+						console.log("✓ onSuccess callback fired");
+						console.log("Success context:", ctx);
+						// Redirect to dashboard after successful sign in
+						const redirectUrl = `/${locale}/dashboard`;
+						console.log("Redirecting to:", redirectUrl);
+						globalThis.location.href = redirectUrl;
+					},
+					onError: (ctx) => {
+						console.error("✗ onError callback fired");
+						console.error("Error context:", ctx.error);
+						setError(ctx.error.message || t("error"));
+						setLoading(false);
+					},
+				},
+			);
 
-			if (result.error) {
-				setError(result.error.message || t("error"));
+			console.log("=== SIGNIN RESPONSE ===");
+			console.log("Data:", data);
+			console.log("Error:", error);
+
+			// Fallback check if callbacks don't fire
+			if (error) {
+				console.error("Fallback error handling triggered");
+				setError(error.message || t("error"));
+				setLoading(false);
+			} else if (data) {
+				console.log("Fallback success handling triggered");
+				console.log("Sign in data received:", data);
+				// Only redirect here if onSuccess didn't fire
+				const currentPath = globalThis.location.pathname;
+				console.log("Current path:", currentPath);
+				if (currentPath.includes("/signin")) {
+					const redirectUrl = `/${locale}/dashboard`;
+					console.log("Fallback redirect to:", redirectUrl);
+					globalThis.location.href = redirectUrl;
+				}
 			} else {
-				// Redirect to dashboard after successful sign in
-				router.push("/dashboard");
+				console.warn("No data and no error - unexpected state");
 			}
 		} catch (err) {
+			console.error("=== SIGNIN EXCEPTION ===");
+			console.error("Exception:", err);
 			setError(err instanceof Error ? err.message : "An error occurred");
-		} finally {
 			setLoading(false);
 		}
 	};
