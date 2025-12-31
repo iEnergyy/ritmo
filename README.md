@@ -631,17 +631,17 @@ Goal: make the system safe to build on
 - [~] Multi-tenant login via subdomain - Partially implemented: Middleware exists for subdomain-based tenant routing (`middleware.ts`), but may need additional client-side handling
 
 **UI Expectations:**
-- [ ] Organization creation form with type selection (school/independent_teacher)
-- [ ] Organization member management page (`/organizations/[id]/members`) with:
-  - [ ] Member list with roles
-  - [ ] Invite member form (email + role selection)
-  - [ ] Role change interface
-  - [ ] Remove member action
-  - [ ] Pending invitations list
-- [ ] Organization switcher component in navigation
-- [ ] Language switcher in navigation
-- [ ] Sign in/sign up pages with locale support
-- [ ] Dashboard page with organization context
+- [x] Organization creation form with type selection (school/independent_teacher)
+- [x] Organization member management page (`/organizations/[id]/members`) with:
+  - [x] Member list with roles
+  - [x] Invite member form (email + role selection)
+  - [x] Role change interface
+  - [x] Remove member action
+  - [x] Pending invitations list
+- [x] Organization switcher component in navigation
+- [x] Language switcher in navigation
+- [x] Sign in/sign up pages with locale support
+- [x] Dashboard page with organization context
 
 Deliverable:
 - [x] Secure, multi-tenant foundation (Core infrastructure complete: auth, org creation, i18n, tenant isolation, member management. Subdomain routing partially implemented)
