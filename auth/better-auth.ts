@@ -38,13 +38,8 @@ export const auth = betterAuth({
 		"http://localhost:3000",
 		"http://*.localhost:3000", // Allow any subdomain on localhost with HTTP
 	],
-	advanced: {
-		// Enable cross-subdomain cookies so that sessions work across tenant subdomains
-		crossSubDomainCookies: {
-			enabled: true,
-			domain: "localhost", // Share cookies across all *.localhost subdomains
-		},
-	},
+	// Note: For localhost development, we don't use crossSubDomainCookies
+	// because browsers treat localhost specially. Cookies will be set for the specific subdomain.
 	plugins: [
 		organization({
 			// Organization plugin configuration
