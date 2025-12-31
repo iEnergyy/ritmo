@@ -481,7 +481,7 @@ export default function StudentsPage() {
 							<AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
 							<AlertDialogDescription>
 								{t("deleteDescription", {
-									name: selectedStudent?.fullName,
+									name: selectedStudent?.fullName ?? "",
 								})}
 							</AlertDialogDescription>
 						</AlertDialogHeader>

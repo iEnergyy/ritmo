@@ -66,7 +66,7 @@ export function TenantSwitcher() {
 		}
 
 		// Get current active organization
-		const currentOrgId = session.organization?.id;
+		const currentOrgId = session.session?.activeOrganizationId;
 
 		// Find organization with matching slug
 		// We need to check if user has access to this organization

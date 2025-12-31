@@ -425,7 +425,7 @@ export default function VenuesPage() {
 							<AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
 							<AlertDialogDescription>
 								{t("deleteDescription", {
-									name: selectedVenue?.name,
+									name: selectedVenue?.name ?? "",
 								})}
 							</AlertDialogDescription>
 						</AlertDialogHeader>

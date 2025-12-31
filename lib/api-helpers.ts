@@ -41,7 +41,7 @@ export async function getTenantContextWithAuth(request: NextRequest) {
 
 	if (!tenantContext) {
 		// Check if user has an active organization but is not a member
-		const activeOrgId = session.organization?.id;
+		const activeOrgId = session.session?.activeOrganizationId;
 		if (activeOrgId) {
 			const isMember = await verifyOrganizationMembership(
 				session.user.id,
@@ -107,13 +107,13 @@ export function withTenantIsolation<T>(
 				error instanceof NoActiveTenantError ||
 				error instanceof TenantMembershipError
 			) {
-				return handleTenantError(error);
+				return handleTenantError(error) as NextResponse<T>;
 			}
 			console.error("Error in tenant-isolated handler:", error);
 			return NextResponse.json(
 				{ error: "Internal server error" },
 				{ status: 500 },
-			);
+			) as NextResponse<T>;
 		}
 	};
 }

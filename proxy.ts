@@ -52,7 +52,7 @@ export default async function proxy(request: NextRequest) {
 
 		if (tenantInfo) {
 			// User is a member of the organization
-			const currentOrgId = session.organization?.id;
+			const currentOrgId = session.session?.activeOrganizationId;
 
 			// If the active organization doesn't match the subdomain, we need to set it
 			// However, we can't directly modify the session in proxy
@@ -117,7 +117,7 @@ export default async function proxy(request: NextRequest) {
 	} else if (!tenantSlug && session?.user?.id) {
 		// No subdomain but user is authenticated
 		// Extract active organization from session cookie cache and add to headers
-		const activeOrgId = session.organization?.id || null;
+		const activeOrgId = session.session?.activeOrganizationId || null;
 		if (activeOrgId) {
 			const response = intlMiddleware(request);
 			response.headers.set("x-tenant-organization-id", activeOrgId);

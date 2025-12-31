@@ -21,7 +21,7 @@ import type { PgTable } from "drizzle-orm/pg-core";
  * @param organizationId - The organization ID to filter by
  * @returns A query builder with organizationId filter applied
  */
-export function scopedQuery<T extends PgTable>(
+export function scopedQuery<T extends PgTable<any>>(
 	table: T,
 	organizationId: string,
 ) {
@@ -30,8 +30,8 @@ export function scopedQuery<T extends PgTable>(
 	}
 	return db
 		.select()
-		.from(table)
-		.where(eq(table.organizationId, organizationId));
+		.from(table as any)
+		.where(eq((table as any).organizationId, organizationId));
 }
 
 /**

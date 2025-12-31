@@ -14,7 +14,7 @@ export async function getActiveOrganization(
 ): Promise<string | null> {
 	try {
 		const session = await auth.api.getSession({ headers: request.headers });
-		return session?.organization?.id || null;
+		return session?.session?.activeOrganizationId || null;
 	} catch (error) {
 		console.error("Error getting active organization:", error);
 		return null;
@@ -81,7 +81,7 @@ export async function getTenantContext(
 			return null;
 		}
 
-		const organizationId = session?.organization?.id;
+		const organizationId = session?.session?.activeOrganizationId;
 		if (!organizationId) {
 			return null;
 		}
