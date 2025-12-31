@@ -43,12 +43,13 @@ import {
 	FieldError,
 } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useForm } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Controller } from "react-hook-form";
-import { Search, Plus, Pencil, Trash2 } from "lucide-react";
+import { Search, Plus, Pencil, Trash2, Copy, Check, Link as LinkIcon } from "lucide-react";
 
 interface Student {
 	id: string;
@@ -79,6 +80,9 @@ export default function StudentsPage() {
 	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 	const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+	const [organizationSlug, setOrganizationSlug] = useState<string | null>(null);
+	const [registrationUrl, setRegistrationUrl] = useState<string>("");
+	const [copied, setCopied] = useState(false);
 
 	const createForm = useForm<StudentFormData>({
 		resolver: zodResolver(studentSchema),
@@ -101,8 +105,58 @@ export default function StudentsPage() {
 	useEffect(() => {
 		if (session?.user && !sessionLoading) {
 			loadStudents();
+			loadOrganizationInfo();
 		}
 	}, [session, sessionLoading, organizationId, searchQuery]);
+
+	const loadOrganizationInfo = async () => {
+		try {
+			const response = await fetch(`/api/organizations/${organizationId}/info`);
+			if (response.ok) {
+				const data = await response.json();
+				const slug = data.organization?.slug;
+				if (slug) {
+					setOrganizationSlug(slug);
+					// Build registration URL based on current hostname
+					const hostname = window.location.hostname;
+					const protocol = window.location.protocol;
+					const port = window.location.port ? `:${window.location.port}` : "";
+					const locale = window.location.pathname.split("/")[1] || "es";
+					
+					// Extract base domain (remove current subdomain if any)
+					let baseDomain = hostname;
+					if (hostname.includes("localhost")) {
+						// For localhost, use the slug as subdomain
+						baseDomain = `${slug}.localhost`;
+					} else {
+						// For production, extract base domain and prepend slug
+						const parts = hostname.split(".");
+						if (parts.length >= 2) {
+							// Remove first part (current subdomain) and add new one
+							const domainParts = parts.slice(1);
+							baseDomain = `${slug}.${domainParts.join(".")}`;
+						}
+					}
+					
+					setRegistrationUrl(`${protocol}//${baseDomain}${port}/${locale}/register`);
+				}
+			}
+		} catch (error) {
+			console.error("Failed to load organization info:", error);
+		}
+	};
+
+	const handleCopyLink = async () => {
+		try {
+			await navigator.clipboard.writeText(registrationUrl);
+			setCopied(true);
+			toast.success(t("linkCopied"));
+			setTimeout(() => setCopied(false), 2000);
+		} catch (error) {
+			console.error("Failed to copy link:", error);
+			toast.error(t("copyFailed"));
+		}
+	};
 
 	const loadStudents = async () => {
 		try {
@@ -337,6 +391,42 @@ export default function StudentsPage() {
 						</DialogContent>
 					</Dialog>
 				</div>
+
+				{/* Registration Link Card */}
+				{organizationSlug && registrationUrl && (
+					<Card>
+						<CardHeader>
+							<CardTitle className="flex items-center gap-2">
+								<LinkIcon className="h-5 w-5" />
+								{t("registrationLink")}
+							</CardTitle>
+							<CardDescription>
+								{t("registrationLinkDescription")}
+							</CardDescription>
+						</CardHeader>
+						<CardContent>
+							<div className="flex items-center gap-2">
+								<Input
+									value={registrationUrl}
+									readOnly
+									className="flex-1 font-mono text-sm"
+								/>
+								<Button
+									onClick={handleCopyLink}
+									variant="outline"
+									size="icon"
+									title={t("copyLink")}
+								>
+									{copied ? (
+										<Check className="h-4 w-4 text-green-600" />
+									) : (
+										<Copy className="h-4 w-4" />
+									)}
+								</Button>
+							</div>
+						</CardContent>
+					</Card>
+				)}
 
 				{/* Search */}
 				<div className="mb-6">

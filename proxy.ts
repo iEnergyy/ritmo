@@ -99,8 +99,24 @@ export default async function proxy(request: NextRequest) {
 		}
 	} else if (tenantSlug && !session?.user?.id) {
 		// Subdomain found but user is not authenticated
-		// Check if already on signin page with correct tenant parameter
 		const locale = pathname.split("/")[1] || "es";
+		
+		// Allow public access to registration routes
+		const isRegisterPage = pathname === `/${locale}/register` || pathname === "/register";
+		const isRegisterSuccessPage = pathname === `/${locale}/register/success` || pathname === "/register/success";
+		
+		if (isRegisterPage || isRegisterSuccessPage) {
+			// Verify organization exists for registration routes
+			const org = await getOrganizationBySlug(tenantSlug);
+			if (!org && isRegisterPage) {
+				// Organization doesn't exist, but let the page handle the error
+				// This allows the registration page to show a proper error message
+			}
+			// Allow access to registration routes
+			return intlMiddleware(request);
+		}
+		
+		// Check if already on signin page with correct tenant parameter
 		const isSignInPage =
 			pathname === `/${locale}/signin` || pathname === "/signin";
 		const urlTenant = request.nextUrl.searchParams.get("tenant");

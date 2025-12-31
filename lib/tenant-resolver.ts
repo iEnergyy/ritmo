@@ -2,6 +2,7 @@ import { db } from "@/db";
 import { organization } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { auth } from "@/auth/better-auth";
+import { getOrganizationBySlug as getOrganizationBySlugQuery } from "@/db/queries/organizations";
 
 /**
  * Extract tenant slug from subdomain
@@ -45,28 +46,14 @@ export function resolveTenantFromSubdomain(hostname: string): string | null {
 
 /**
  * Get organization by slug from database
+ * Re-exported from queries for backward compatibility
  * @param slug - The organization slug
  * @returns The organization or null if not found
  */
 export async function getOrganizationBySlug(
 	slug: string,
 ): Promise<typeof organization.$inferSelect | null> {
-	if (!slug) {
-		return null;
-	}
-
-	try {
-		const result = await db
-			.select()
-			.from(organization)
-			.where(eq(organization.slug, slug))
-			.limit(1);
-
-		return result[0] || null;
-	} catch (error) {
-		console.error("Error getting organization by slug:", error);
-		return null;
-	}
+	return getOrganizationBySlugQuery(slug);
 }
 
 /**

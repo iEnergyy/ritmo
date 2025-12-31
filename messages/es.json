@@ -108,7 +108,12 @@
 		"cancel": "Cancelar",
 		"create": "Crear",
 		"update": "Actualizar",
-		"delete": "Eliminar"
+		"delete": "Eliminar",
+		"registrationLink": "Enlace de Registro Público",
+		"registrationLinkDescription": "Comparte este enlace para que los estudiantes se registren públicamente",
+		"copyLink": "Copiar enlace",
+		"linkCopied": "Enlace copiado",
+		"copyFailed": "Error al copiar enlace"
 	},
 	"Teachers": {
 		"title": "Profesores",
@@ -165,5 +170,36 @@
 		"create": "Crear",
 		"update": "Actualizar",
 		"delete": "Eliminar"
+	},
+	"Register": {
+		"title": "Registro de Estudiante",
+		"description": "Completa el formulario para registrarte como estudiante",
+		"organizationLabel": "Organización",
+		"fullName": "Nombre Completo",
+		"fullNamePlaceholder": "Ingresa tu nombre completo",
+		"email": "Correo Electrónico",
+		"emailPlaceholder": "correo@ejemplo.com (opcional)",
+		"phone": "Teléfono",
+		"phonePlaceholder": "Teléfono (opcional)",
+		"submit": "Registrarse",
+		"submitting": "Registrando...",
+		"success": "Registro exitoso",
+		"error": "Error al registrar",
+		"organizationNotFound": "Organización no encontrada",
+		"organizationNotFoundDescription": "La organización especificada no existe. Por favor, verifica la URL.",
+		"validationErrors": {
+			"fullNameRequired": "El nombre completo es requerido",
+			"invalidEmail": "El formato del correo electrónico no es válido"
+		},
+		"loading": "Cargando información de la organización...",
+		"errorLoading": "Error al cargar la información de la organización"
+	},
+	"RegisterSuccess": {
+		"title": "¡Registro Exitoso!",
+		"message": "Te has registrado exitosamente como estudiante",
+		"studentName": "Estudiante",
+		"organizationName": "Organización",
+		"registerAnother": "Registrar otro estudiante",
+		"thankYou": "Gracias por registrarte"
 	}
 }
