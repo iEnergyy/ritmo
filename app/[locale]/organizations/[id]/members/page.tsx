@@ -5,6 +5,34 @@ import { useSession } from "@/lib/auth-client";
 import { useRouter, useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { AppLayout } from "@/components/app-layout";
+import { Button } from "@/components/ui/button";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 
 interface Member {
 	memberId: string;
@@ -40,6 +68,8 @@ export default function OrganizationMembersPage() {
 	);
 	const [inviting, setInviting] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
+	const [memberToRemove, setMemberToRemove] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (session?.user && !sessionLoading) {
@@ -115,14 +145,12 @@ export default function OrganizationMembersPage() {
 		}
 	};
 
-	const handleRemoveMember = async (memberId: string) => {
-		if (!confirm("Are you sure you want to remove this member?")) {
-			return;
-		}
+	const handleRemoveMember = async () => {
+		if (!memberToRemove) return;
 
 		try {
 			const response = await fetch(
-				`/api/organizations/${organizationId}/members/${memberId}`,
+				`/api/organizations/${organizationId}/members/${memberToRemove}`,
 				{
 					method: "DELETE",
 				},
@@ -130,15 +158,22 @@ export default function OrganizationMembersPage() {
 
 			if (!response.ok) {
 				const data = await response.json();
-				alert(data.error || "Failed to remove member");
+				setError(data.error || "Failed to remove member");
 				return;
 			}
 
+			setRemoveDialogOpen(false);
+			setMemberToRemove(null);
 			await loadMembers();
 		} catch (error) {
 			console.error("Remove member error:", error);
-			alert("An error occurred while removing the member");
+			setError("An error occurred while removing the member");
 		}
+	};
+
+	const openRemoveDialog = (memberId: string) => {
+		setMemberToRemove(memberId);
+		setRemoveDialogOpen(true);
 	};
 
 	const handleUpdateRole = async (
@@ -159,22 +194,24 @@ export default function OrganizationMembersPage() {
 
 			if (!response.ok) {
 				const data = await response.json();
-				alert(data.error || "Failed to update role");
+				setError(data.error || "Failed to update role");
 				return;
 			}
 
 			await loadMembers();
 		} catch (error) {
 			console.error("Update role error:", error);
-			alert("An error occurred while updating the role");
+			setError("An error occurred while updating the role");
 		}
 	};
 
 	if (sessionLoading) {
 		return (
-			<div className="min-h-screen flex items-center justify-center">
-				<div className="text-lg">Loading...</div>
-			</div>
+			<AppLayout organizationId={organizationId}>
+				<div className="flex items-center justify-center min-h-[400px]">
+					<div className="text-lg">Loading...</div>
+				</div>
+			</AppLayout>
 		);
 	}
 
@@ -195,89 +232,77 @@ export default function OrganizationMembersPage() {
 	}
 
 	return (
-		<div className="min-h-screen bg-gray-50">
-			<div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-				<div className="px-4 py-6 sm:px-0">
-					<div className="mb-6">
-						<Link
-							href="/dashboard"
-							className="text-blue-600 hover:text-blue-500 underline"
-						>
-							← Back to Dashboard
-						</Link>
-					</div>
+		<AppLayout organizationId={organizationId}>
+			<div className="space-y-6">
+				<div>
+					<h1 className="text-3xl font-bold">Organization Members</h1>
+					<p className="mt-2 text-sm text-muted-foreground">
+						Manage members and invite new users to your organization
+					</p>
+				</div>
 
-					<h1 className="text-3xl font-bold mb-6">Organization Members</h1>
-
-					{/* Invite New Member */}
-					<div className="bg-white shadow rounded-lg p-6 mb-6">
-						<h2 className="text-xl font-bold mb-4">Invite New Member</h2>
+				{/* Invite New Member */}
+				<Card>
+					<CardHeader>
+						<CardTitle>Invite New Member</CardTitle>
+					</CardHeader>
+					<CardContent>
 						<form onSubmit={handleInvite} className="space-y-4">
 							{error && (
-								<div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+								<div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-md text-sm">
 									{error}
 								</div>
 							)}
 							<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-								<div>
-									<label
-										htmlFor="email"
-										className="block text-sm font-medium text-gray-700 mb-1"
-									>
-										Email
-									</label>
-									<input
+								<Field>
+									<FieldLabel htmlFor="email">Email</FieldLabel>
+									<Input
 										id="email"
 										type="email"
 										required
 										value={inviteEmail}
 										onChange={(e) => setInviteEmail(e.target.value)}
-										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
 										placeholder="user@example.com"
 									/>
-								</div>
-								<div>
-									<label
-										htmlFor="role"
-										className="block text-sm font-medium text-gray-700 mb-1"
-									>
-										Role
-									</label>
-									<select
-										id="role"
+								</Field>
+								<Field>
+									<FieldLabel htmlFor="role">Role</FieldLabel>
+									<Select
 										value={inviteRole}
-										onChange={(e) =>
-											setInviteRole(
-												e.target.value as "admin" | "teacher" | "staff",
-											)
+										onValueChange={(value) =>
+											setInviteRole(value as "admin" | "teacher" | "staff")
 										}
-										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
 									>
-										<option value="staff">Staff</option>
-										<option value="teacher">Teacher</option>
-										<option value="admin">Admin</option>
-									</select>
-								</div>
+										<SelectTrigger id="role">
+											<SelectValue />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value="staff">Staff</SelectItem>
+											<SelectItem value="teacher">Teacher</SelectItem>
+											<SelectItem value="admin">Admin</SelectItem>
+										</SelectContent>
+									</Select>
+								</Field>
 								<div className="flex items-end">
-									<button
-										type="submit"
-										disabled={inviting}
-										className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-									>
+									<Button type="submit" disabled={inviting} className="w-full">
 										{inviting ? "Sending..." : "Send Invitation"}
-									</button>
+									</Button>
 								</div>
 							</div>
 						</form>
-					</div>
+					</CardContent>
+				</Card>
 
-					{/* Current Members */}
-					<div className="bg-white shadow rounded-lg p-6 mb-6">
-						<h2 className="text-xl font-bold mb-4">Current Members</h2>
+				{/* Current Members */}
+				<Card>
+					<CardHeader>
+						<CardTitle>Current Members</CardTitle>
+					</CardHeader>
+					<CardContent>
 						{loading ? (
 							<div>Loading...</div>
 						) : members.length === 0 ? (
-							<div className="text-gray-500">No members yet</div>
+							<div className="text-muted-foreground">No members yet</div>
 						) : (
 							<div className="space-y-4">
 								{members.map((member) => (
@@ -289,49 +314,55 @@ export default function OrganizationMembersPage() {
 											<div className="font-semibold">
 												{member.userName || member.userEmail}
 											</div>
-											<div className="text-sm text-gray-600">
+											<div className="text-sm text-muted-foreground">
 												{member.userEmail}
 											</div>
-											<div className="text-sm text-gray-500">
+											<div className="text-sm text-muted-foreground">
 												Role: {member.role || "member"}
 											</div>
 										</div>
 										<div className="flex items-center gap-2">
-											<select
+											<Select
 												value={member.role || "staff"}
-												onChange={(e) =>
+												onValueChange={(value) =>
 													handleUpdateRole(
 														member.memberId,
-														e.target.value as
-															| "admin"
-															| "teacher"
-															| "staff",
+														value as "admin" | "teacher" | "staff",
 													)
 												}
-												className="px-3 py-1 border border-gray-300 rounded-md text-sm"
 											>
-												<option value="staff">Staff</option>
-												<option value="teacher">Teacher</option>
-												<option value="admin">Admin</option>
-											</select>
-											<button
-												onClick={() => handleRemoveMember(member.memberId)}
-												className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
+												<SelectTrigger className="w-[140px]">
+													<SelectValue />
+												</SelectTrigger>
+												<SelectContent>
+													<SelectItem value="staff">Staff</SelectItem>
+													<SelectItem value="teacher">Teacher</SelectItem>
+													<SelectItem value="admin">Admin</SelectItem>
+												</SelectContent>
+											</Select>
+											<Button
+												variant="destructive"
+												size="sm"
+												onClick={() => openRemoveDialog(member.memberId)}
 											>
 												Remove
-											</button>
+											</Button>
 										</div>
 									</div>
 								))}
 							</div>
 						)}
-					</div>
+					</CardContent>
+				</Card>
 
-					{/* Pending Invitations */}
-					<div className="bg-white shadow rounded-lg p-6">
-						<h2 className="text-xl font-bold mb-4">Pending Invitations</h2>
+				{/* Pending Invitations */}
+				<Card>
+					<CardHeader>
+						<CardTitle>Pending Invitations</CardTitle>
+					</CardHeader>
+					<CardContent>
 						{invitations.length === 0 ? (
-							<div className="text-gray-500">No pending invitations</div>
+							<div className="text-muted-foreground">No pending invitations</div>
 						) : (
 							<div className="space-y-4">
 								{invitations.map((invitation) => (
@@ -341,11 +372,11 @@ export default function OrganizationMembersPage() {
 									>
 										<div>
 											<div className="font-semibold">{invitation.email}</div>
-											<div className="text-sm text-gray-500">
+											<div className="text-sm text-muted-foreground">
 												Role: {invitation.role || "staff"} • Status:{" "}
 												{invitation.status}
 											</div>
-											<div className="text-xs text-gray-400">
+											<div className="text-xs text-muted-foreground">
 												Expires:{" "}
 												{new Date(invitation.expiresAt).toLocaleDateString()}
 											</div>
@@ -354,10 +385,31 @@ export default function OrganizationMembersPage() {
 								))}
 							</div>
 						)}
-					</div>
-				</div>
+					</CardContent>
+				</Card>
+
+				{/* Remove Member Confirmation Dialog */}
+				<AlertDialog open={removeDialogOpen} onOpenChange={setRemoveDialogOpen}>
+					<AlertDialogContent>
+						<AlertDialogHeader>
+							<AlertDialogTitle>Remove Member</AlertDialogTitle>
+							<AlertDialogDescription>
+								Are you sure you want to remove this member? This action cannot be
+								undone.
+							</AlertDialogDescription>
+						</AlertDialogHeader>
+						<AlertDialogFooter>
+							<AlertDialogCancel onClick={() => setMemberToRemove(null)}>
+								Cancel
+							</AlertDialogCancel>
+							<AlertDialogAction onClick={handleRemoveMember} variant="destructive">
+								Remove
+							</AlertDialogAction>
+						</AlertDialogFooter>
+					</AlertDialogContent>
+				</AlertDialog>
 			</div>
-		</div>
+		</AppLayout>
 	);
 }
 

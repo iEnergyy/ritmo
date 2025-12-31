@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db";
-import { member, organizationMembers } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
 import {
 	getAuthenticatedSession,
 	enforceTenantIsolation,
 } from "@/lib/api-helpers";
 import { requireRole } from "@/lib/auth-helpers";
+import {
+	getMemberById,
+	updateOrganizationMemberRole,
+} from "@/db/queries/members";
 
 /**
  * PATCH /api/organizations/[id]/members/[memberId]/role
@@ -42,18 +43,9 @@ export async function PATCH(
 		}
 
 		// Verify the member belongs to this organization
-		const memberRecord = await db
-			.select()
-			.from(member)
-			.where(
-				and(
-					eq(member.id, memberId),
-					eq(member.organizationId, organizationId),
-				),
-			)
-			.limit(1);
+		const memberRecord = await getMemberById(organizationId, memberId);
 
-		if (memberRecord.length === 0) {
+		if (!memberRecord) {
 			return NextResponse.json(
 				{ error: "Member not found" },
 				{ status: 404 },
@@ -61,25 +53,10 @@ export async function PATCH(
 		}
 
 		// Update or create organizationMembers record
-		const existingOrgMember = await db
-			.select()
-			.from(organizationMembers)
-			.where(eq(organizationMembers.memberId, memberId))
-			.limit(1);
-
-		if (existingOrgMember.length > 0) {
-			// Update existing role
-			await db
-				.update(organizationMembers)
-				.set({ role })
-				.where(eq(organizationMembers.memberId, memberId));
-		} else {
-			// Create new role record
-			await db.insert(organizationMembers).values({
-				memberId,
-				role,
-			});
-		}
+		await updateOrganizationMemberRole(
+			memberId,
+			role as "admin" | "teacher" | "staff",
+		);
 
 		return NextResponse.json({ message: "Role updated successfully" });
 	} catch (error) {

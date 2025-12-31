@@ -3,6 +3,7 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import { TenantSwitcher } from "@/components/tenant-switcher";
+import { Toaster } from "@/components/ui/sonner";
 import "../globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -44,6 +45,7 @@ export default async function LocaleLayout({ children, params }: Props) {
 				<NextIntlClientProvider messages={messages}>
 					<TenantSwitcher />
 					{children}
+					<Toaster />
 				</NextIntlClientProvider>
 			</body>
 		</html>

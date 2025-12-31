@@ -1,17 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth/better-auth";
-import { db } from "@/db";
-import { invitation, organizationMembers, member, user } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
+import { randomUUID } from "node:crypto";
 import {
 	getAuthenticatedSession,
 	enforceTenantIsolation,
 } from "@/lib/api-helpers";
 import { requireRole } from "@/lib/auth-helpers";
-// Generate a unique ID for invitations
-function generateId(): string {
-	return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-}
+import {
+	getInvitationsByOrganization,
+	isEmailMemberOfOrganization,
+	hasPendingInvitation,
+	createInvitation,
+} from "@/db/queries/invitations";
 
 /**
  * GET /api/organizations/[id]/invitations
@@ -32,11 +31,7 @@ export async function GET(
 		await requireRole(organizationId, session.user.id, "admin");
 
 		// Fetch invitations
-		const invitations = await db
-			.select()
-			.from(invitation)
-			.where(eq(invitation.organizationId, organizationId))
-			.orderBy(invitation.createdAt);
+		const invitations = await getInvitationsByOrganization(organizationId);
 
 		return NextResponse.json({ invitations });
 	} catch (error) {
@@ -84,20 +79,9 @@ export async function POST(
 		const userRole = role && validRoles.includes(role) ? role : "staff";
 
 		// Check if user with this email is already a member
-		// We'll check this by looking for users with this email who are members
-		const existingMember = await db
-			.select()
-			.from(member)
-			.innerJoin(user, eq(member.userId, user.id))
-			.where(
-				and(
-					eq(member.organizationId, organizationId),
-					eq(user.email, email),
-				),
-			)
-			.limit(1);
+		const isMember = await isEmailMemberOfOrganization(email, organizationId);
 
-		if (existingMember.length > 0) {
+		if (isMember) {
 			return NextResponse.json(
 				{ error: "User is already a member of this organization" },
 				{ status: 400 },
@@ -105,19 +89,9 @@ export async function POST(
 		}
 
 		// Check if invitation already exists
-		const existingInvitation = await db
-			.select()
-			.from(invitation)
-			.where(
-				and(
-					eq(invitation.organizationId, organizationId),
-					eq(invitation.email, email),
-					eq(invitation.status, "pending"),
-				),
-			)
-			.limit(1);
+		const hasPending = await hasPendingInvitation(email, organizationId);
 
-		if (existingInvitation.length > 0) {
+		if (hasPending) {
 			return NextResponse.json(
 				{ error: "Invitation already exists for this email" },
 				{ status: 400 },
@@ -128,23 +102,20 @@ export async function POST(
 		const expiresAt = new Date();
 		expiresAt.setDate(expiresAt.getDate() + 7);
 
-		const newInvitation = await db
-			.insert(invitation)
-			.values({
-				id: generateId(),
-				organizationId,
-				email,
-				role: userRole,
-				status: "pending",
-				expiresAt,
-				inviterId: session.user.id,
-			})
-			.returning();
+		const newInvitation = await createInvitation({
+			id: randomUUID(),
+			organizationId,
+			email,
+			role: userRole,
+			status: "pending",
+			expiresAt,
+			inviterId: session.user.id,
+		});
 
 		// TODO: Send invitation email here
 
 		return NextResponse.json({
-			invitation: newInvitation[0],
+			invitation: newInvitation,
 			message: "Invitation created successfully",
 		});
 	} catch (error) {

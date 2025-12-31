@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db";
-import { member, organizationMembers, user } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
 import {
 	getAuthenticatedSession,
 	enforceTenantIsolation,
 } from "@/lib/api-helpers";
 import { requireRole } from "@/lib/auth-helpers";
+import {
+	getMembersByOrganization,
+	getMemberById,
+	deleteMember,
+} from "@/db/queries/members";
 
 /**
  * GET /api/organizations/[id]/members
@@ -24,22 +26,7 @@ export async function GET(
 		await enforceTenantIsolation(organizationId, session.user.id);
 
 		// Fetch members with their user info and custom roles
-		const members = await db
-			.select({
-				memberId: member.id,
-				userId: member.userId,
-				userEmail: user.email,
-				userName: user.name,
-				role: organizationMembers.role,
-				createdAt: member.createdAt,
-			})
-			.from(member)
-			.innerJoin(user, eq(member.userId, user.id))
-			.leftJoin(
-				organizationMembers,
-				eq(member.id, organizationMembers.memberId),
-			)
-			.where(eq(member.organizationId, organizationId));
+		const members = await getMembersByOrganization(organizationId);
 
 		return NextResponse.json({ members });
 	} catch (error) {
@@ -73,18 +60,9 @@ export async function DELETE(
 		await requireRole(organizationId, session.user.id, "admin");
 
 		// Verify the member belongs to this organization
-		const memberRecord = await db
-			.select()
-			.from(member)
-			.where(
-				and(
-					eq(member.id, memberId),
-					eq(member.organizationId, organizationId),
-				),
-			)
-			.limit(1);
+		const memberRecord = await getMemberById(organizationId, memberId);
 
-		if (memberRecord.length === 0) {
+		if (!memberRecord) {
 			return NextResponse.json(
 				{ error: "Member not found" },
 				{ status: 404 },
@@ -92,7 +70,7 @@ export async function DELETE(
 		}
 
 		// Prevent removing yourself
-		if (memberRecord[0].userId === session.user.id) {
+		if (memberRecord.userId === session.user.id) {
 			return NextResponse.json(
 				{ error: "Cannot remove yourself from the organization" },
 				{ status: 400 },
@@ -100,7 +78,7 @@ export async function DELETE(
 		}
 
 		// Delete the member (cascade will handle organizationMembers)
-		await db.delete(member).where(eq(member.id, memberId));
+		await deleteMember(memberId);
 
 		return NextResponse.json({ message: "Member removed successfully" });
 	} catch (error) {

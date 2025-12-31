@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db";
-import { organizationMetadata, member } from "@/db/schema";
-import { eq, inArray, and } from "drizzle-orm";
 import {
 	getAuthenticatedSession,
-	getTenantContextWithAuth,
 	enforceTenantIsolation,
 } from "@/lib/api-helpers";
 import {
 	TenantAccessDeniedError,
 	handleTenantError,
 } from "@/lib/tenant-errors";
+import {
+	getOrganizationMetadata,
+	upsertOrganizationMetadata,
+} from "@/db/queries/organizations";
 
 export async function GET(request: NextRequest) {
 	try {
@@ -50,15 +50,7 @@ export async function GET(request: NextRequest) {
 		}
 
 		// Fetch organization types only for organizations the user has access to
-		const metadata = await db
-			.select()
-			.from(organizationMetadata)
-			.where(inArray(organizationMetadata.organizationId, orgIds));
-
-		const types: Record<string, string> = {};
-		metadata.forEach((meta) => {
-			types[meta.organizationId] = meta.type;
-		});
+		const types = await getOrganizationMetadata(orgIds);
 
 		return NextResponse.json({ types });
 	} catch (error) {
@@ -108,26 +100,8 @@ export async function POST(request: NextRequest) {
 			throw error;
 		}
 
-		// Check if metadata already exists
-		const existing = await db
-			.select()
-			.from(organizationMetadata)
-			.where(eq(organizationMetadata.organizationId, organizationId))
-			.limit(1);
-
-		if (existing.length > 0) {
-			// Update existing metadata
-			await db
-				.update(organizationMetadata)
-				.set({ type })
-				.where(eq(organizationMetadata.organizationId, organizationId));
-		} else {
-			// Insert new metadata
-			await db.insert(organizationMetadata).values({
-				organizationId,
-				type,
-			});
-		}
+		// Create or update metadata
+		await upsertOrganizationMetadata(organizationId, type);
 
 		return NextResponse.json({ success: true });
 	} catch (error) {
