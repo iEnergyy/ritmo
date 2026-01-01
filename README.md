@@ -1384,4 +1384,4 @@ With intelligence built in
 ✨ Name
 
 Cadence
-Because rhythm, timing, consistency — and movement — matter.
+Because rhythm, timing, consistency — and movement — matter...
