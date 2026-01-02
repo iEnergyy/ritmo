@@ -43,13 +43,27 @@ import {
 	FieldError,
 } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { toast } from "sonner";
 import { useForm } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Controller } from "react-hook-form";
-import { Search, Plus, Pencil, Trash2, Copy, Check, Link as LinkIcon } from "lucide-react";
+import {
+	Search,
+	Plus,
+	Pencil,
+	Trash2,
+	Copy,
+	Check,
+	Link as LinkIcon,
+} from "lucide-react";
 
 interface Student {
 	id: string;
@@ -122,7 +136,7 @@ export default function StudentsPage() {
 					const protocol = window.location.protocol;
 					const port = window.location.port ? `:${window.location.port}` : "";
 					const locale = window.location.pathname.split("/")[1] || "es";
-					
+
 					// Extract base domain (remove current subdomain if any)
 					let baseDomain = hostname;
 					if (hostname.includes("localhost")) {
@@ -137,8 +151,10 @@ export default function StudentsPage() {
 							baseDomain = `${slug}.${domainParts.join(".")}`;
 						}
 					}
-					
-					setRegistrationUrl(`${protocol}//${baseDomain}${port}/${locale}/register`);
+
+					setRegistrationUrl(
+						`${protocol}//${baseDomain}${port}/${locale}/register`,
+					);
 				}
 			}
 		} catch (error) {

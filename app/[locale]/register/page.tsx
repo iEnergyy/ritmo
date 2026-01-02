@@ -11,7 +11,13 @@ import {
 	FieldLabel,
 	FieldError,
 } from "@/components/ui/field";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { toast } from "sonner";
 import { useForm } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -65,7 +71,8 @@ export default function RegisterPage() {
 	const router = useRouter();
 	const t = useTranslations("Register");
 	const [organizationSlug, setOrganizationSlug] = useState<string | null>(null);
-	const [organizationInfo, setOrganizationInfo] = useState<OrganizationInfo | null>(null);
+	const [organizationInfo, setOrganizationInfo] =
+		useState<OrganizationInfo | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [submitting, setSubmitting] = useState(false);
 
@@ -83,7 +90,7 @@ export default function RegisterPage() {
 		if (typeof window !== "undefined") {
 			const hostname = window.location.hostname;
 			const slug = resolveTenantFromSubdomain(hostname);
-			
+
 			if (!slug) {
 				toast.error(t("organizationNotFound"));
 				setLoading(false);
@@ -98,7 +105,7 @@ export default function RegisterPage() {
 	const loadOrganizationInfo = async (slug: string) => {
 		try {
 			const response = await fetch(`/api/public/organizations/${slug}/public`);
-			
+
 			if (!response.ok) {
 				if (response.status === 404) {
 					toast.error(t("organizationNotFound"));
@@ -128,17 +135,20 @@ export default function RegisterPage() {
 		setSubmitting(true);
 
 		try {
-			const response = await fetch(`/api/public/organizations/${organizationSlug}/register`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
+			const response = await fetch(
+				`/api/public/organizations/${organizationSlug}/register`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						fullName: data.fullName,
+						email: data.email || null,
+						phone: data.phone || null,
+					}),
 				},
-				body: JSON.stringify({
-					fullName: data.fullName,
-					email: data.email || null,
-					phone: data.phone || null,
-				}),
-			});
+			);
 
 			if (!response.ok) {
 				const errorData = await response.json();
@@ -149,9 +159,11 @@ export default function RegisterPage() {
 
 			const result = await response.json();
 			toast.success(t("success"));
-			
+
 			// Redirect to success page with student name
-			router.push(`/register/success?name=${encodeURIComponent(result.student.fullName)}&org=${encodeURIComponent(result.organization.name)}`);
+			router.push(
+				`/register/success?name=${encodeURIComponent(result.student.fullName)}&org=${encodeURIComponent(result.organization.name)}`,
+			);
 		} catch (error) {
 			console.error("Registration error:", error);
 			toast.error(t("error"));
@@ -253,11 +265,7 @@ export default function RegisterPage() {
 								)}
 							/>
 						</FieldGroup>
-						<Button
-							type="submit"
-							className="w-full mt-6"
-							disabled={submitting}
-						>
+						<Button type="submit" className="w-full mt-6" disabled={submitting}>
 							{submitting ? t("submitting") : t("submit")}
 						</Button>
 					</form>
@@ -266,4 +274,3 @@ export default function RegisterPage() {
 		</div>
 	);
 }
-

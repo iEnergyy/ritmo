@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  getAuthenticatedSession,
-  enforceTenantIsolation,
+	getAuthenticatedSession,
+	enforceTenantIsolation,
 } from "@/lib/api-helpers";
 import { getOrganizationById } from "@/db/queries/organizations";
 
@@ -10,35 +10,35 @@ import { getOrganizationById } from "@/db/queries/organizations";
  * Get organization information including slug
  */
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+	request: NextRequest,
+	{ params }: { params: Promise<{ id: string }> },
 ) {
-  try {
-    const { id: organizationId } = await params;
-    const session = await getAuthenticatedSession(request);
+	try {
+		const { id: organizationId } = await params;
+		const session = await getAuthenticatedSession(request);
 
-    // Verify user has access to this organization
-    await enforceTenantIsolation(organizationId, session.user.id);
+		// Verify user has access to this organization
+		await enforceTenantIsolation(organizationId, session.user.id);
 
-    // Get organization from database
-    const org = await getOrganizationById(organizationId);
+		// Get organization from database
+		const org = await getOrganizationById(organizationId);
 
-    if (!org) {
-      return NextResponse.json(
-        { error: "Organization not found" },
-        { status: 404 },
-      );
-    }
+		if (!org) {
+			return NextResponse.json(
+				{ error: "Organization not found" },
+				{ status: 404 },
+			);
+		}
 
-    return NextResponse.json({ organization: org });
-  } catch (error) {
-    if (error instanceof NextResponse) {
-      return error;
-    }
-    console.error("Error fetching organization info:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
-  }
+		return NextResponse.json({ organization: org });
+	} catch (error) {
+		if (error instanceof NextResponse) {
+			return error;
+		}
+		console.error("Error fetching organization info:", error);
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 },
+		);
+	}
 }

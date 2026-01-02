@@ -6,14 +6,15 @@ import "@/lib/env"; // Validate environment variables
 
 async function seedTeachers() {
 	try {
-		const organizationId =
-			process.env.ORGANIZATION_ID || process.argv[2];
+		const organizationId = process.env.ORGANIZATION_ID || process.argv[2];
 
 		if (!organizationId) {
 			console.error(
 				"❌ Error: ORGANIZATION_ID is required. Provide it as an environment variable or command-line argument.",
 			);
-			console.error("Usage: ORGANIZATION_ID=org_xxx tsx scripts/seed-teachers.ts");
+			console.error(
+				"Usage: ORGANIZATION_ID=org_xxx tsx scripts/seed-teachers.ts",
+			);
 			process.exit(1);
 		}
 
@@ -27,7 +28,9 @@ async function seedTeachers() {
 			.limit(1);
 
 		if (org.length === 0) {
-			console.error(`❌ Error: Organization with ID ${organizationId} not found.`);
+			console.error(
+				`❌ Error: Organization with ID ${organizationId} not found.`,
+			);
 			process.exit(1);
 		}
 
@@ -83,9 +86,15 @@ async function seedTeachers() {
 		await db.insert(teachers).values(teachersToInsert);
 
 		console.log(`✅ Successfully seeded ${teacherData.length} teachers!`);
-		console.log(`   - ${teacherData.filter((t) => t.paymentType === "fixed_monthly").length} with fixed_monthly payment`);
-		console.log(`   - ${teacherData.filter((t) => t.paymentType === "per_head").length} with per_head payment`);
-		console.log(`   - ${teacherData.filter((t) => t.paymentType === "per_class").length} with per_class payment\n`);
+		console.log(
+			`   - ${teacherData.filter((t) => t.paymentType === "fixed_monthly").length} with fixed_monthly payment`,
+		);
+		console.log(
+			`   - ${teacherData.filter((t) => t.paymentType === "per_head").length} with per_head payment`,
+		);
+		console.log(
+			`   - ${teacherData.filter((t) => t.paymentType === "per_class").length} with per_class payment\n`,
+		);
 
 		process.exit(0);
 	} catch (error) {
@@ -95,4 +104,3 @@ async function seedTeachers() {
 }
 
 seedTeachers();
-

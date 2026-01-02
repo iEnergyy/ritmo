@@ -6,14 +6,15 @@ import "@/lib/env"; // Validate environment variables
 
 async function seedVenues() {
 	try {
-		const organizationId =
-			process.env.ORGANIZATION_ID || process.argv[2];
+		const organizationId = process.env.ORGANIZATION_ID || process.argv[2];
 
 		if (!organizationId) {
 			console.error(
 				"❌ Error: ORGANIZATION_ID is required. Provide it as an environment variable or command-line argument.",
 			);
-			console.error("Usage: ORGANIZATION_ID=org_xxx tsx scripts/seed-venues.ts");
+			console.error(
+				"Usage: ORGANIZATION_ID=org_xxx tsx scripts/seed-venues.ts",
+			);
 			process.exit(1);
 		}
 
@@ -27,7 +28,9 @@ async function seedVenues() {
 			.limit(1);
 
 		if (org.length === 0) {
-			console.error(`❌ Error: Organization with ID ${organizationId} not found.`);
+			console.error(
+				`❌ Error: Organization with ID ${organizationId} not found.`,
+			);
 			process.exit(1);
 		}
 
@@ -59,8 +62,12 @@ async function seedVenues() {
 		await db.insert(venues).values(venuesToInsert);
 
 		console.log(`✅ Successfully seeded ${venueData.length} venues!`);
-		console.log(`   - ${venueData.filter((v) => v.address).length} with addresses`);
-		console.log(`   - ${venueData.filter((v) => !v.address).length} without addresses\n`);
+		console.log(
+			`   - ${venueData.filter((v) => v.address).length} with addresses`,
+		);
+		console.log(
+			`   - ${venueData.filter((v) => !v.address).length} without addresses\n`,
+		);
 
 		process.exit(0);
 	} catch (error) {
@@ -70,4 +77,3 @@ async function seedVenues() {
 }
 
 seedVenues();
-

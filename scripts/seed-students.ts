@@ -6,14 +6,15 @@ import "@/lib/env"; // Validate environment variables
 
 async function seedStudents() {
 	try {
-		const organizationId =
-			process.env.ORGANIZATION_ID || process.argv[2];
+		const organizationId = process.env.ORGANIZATION_ID || process.argv[2];
 
 		if (!organizationId) {
 			console.error(
 				"❌ Error: ORGANIZATION_ID is required. Provide it as an environment variable or command-line argument.",
 			);
-			console.error("Usage: ORGANIZATION_ID=org_xxx tsx scripts/seed-students.ts");
+			console.error(
+				"Usage: ORGANIZATION_ID=org_xxx tsx scripts/seed-students.ts",
+			);
 			process.exit(1);
 		}
 
@@ -27,7 +28,9 @@ async function seedStudents() {
 			.limit(1);
 
 		if (org.length === 0) {
-			console.error(`❌ Error: Organization with ID ${organizationId} not found.`);
+			console.error(
+				`❌ Error: Organization with ID ${organizationId} not found.`,
+			);
 			process.exit(1);
 		}
 
@@ -208,10 +211,18 @@ async function seedStudents() {
 		await db.insert(students).values(studentsToInsert);
 
 		console.log(`✅ Successfully seeded ${studentData.length} students!`);
-		console.log(`   - ${studentData.filter((s) => s.email && s.phone).length} with email and phone`);
-		console.log(`   - ${studentData.filter((s) => s.email && !s.phone).length} with email only`);
-		console.log(`   - ${studentData.filter((s) => !s.email && s.phone).length} with phone only`);
-		console.log(`   - ${studentData.filter((s) => !s.email && !s.phone).length} with minimal data\n`);
+		console.log(
+			`   - ${studentData.filter((s) => s.email && s.phone).length} with email and phone`,
+		);
+		console.log(
+			`   - ${studentData.filter((s) => s.email && !s.phone).length} with email only`,
+		);
+		console.log(
+			`   - ${studentData.filter((s) => !s.email && s.phone).length} with phone only`,
+		);
+		console.log(
+			`   - ${studentData.filter((s) => !s.email && !s.phone).length} with minimal data\n`,
+		);
 
 		process.exit(0);
 	} catch (error) {
@@ -221,4 +232,3 @@ async function seedStudents() {
 }
 
 seedStudents();
-

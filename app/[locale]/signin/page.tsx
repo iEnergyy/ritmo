@@ -33,8 +33,8 @@ export default function SignInPage() {
 			if (data?.user) {
 				// Wait for cookies to be set before redirecting
 				// This ensures the middleware can read the session
-				await new Promise(resolve => setTimeout(resolve, 1000));
-				
+				await new Promise((resolve) => setTimeout(resolve, 1000));
+
 				// Use window.location.href for full page reload to ensure cookies are available
 				// Next.js router.push() doesn't guarantee middleware will see new cookies
 				// eslint-disable-next-line no-restricted-globals

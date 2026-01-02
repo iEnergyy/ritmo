@@ -1,11 +1,6 @@
 import "dotenv/config"; // Load .env for standalone scripts
 import { db } from "@/db";
-import {
-	user,
-	member,
-	organizationMembers,
-	organization,
-} from "@/db/schema";
+import { user, member, organizationMembers, organization } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { randomBytes } from "crypto";
 import "@/lib/env"; // Validate environment variables
@@ -17,14 +12,15 @@ function generateId(size = 32): string {
 
 async function seedMembers() {
 	try {
-		const organizationId =
-			process.env.ORGANIZATION_ID || process.argv[2];
+		const organizationId = process.env.ORGANIZATION_ID || process.argv[2];
 
 		if (!organizationId) {
 			console.error(
 				"❌ Error: ORGANIZATION_ID is required. Provide it as an environment variable or command-line argument.",
 			);
-			console.error("Usage: ORGANIZATION_ID=org_xxx tsx scripts/seed-members.ts");
+			console.error(
+				"Usage: ORGANIZATION_ID=org_xxx tsx scripts/seed-members.ts",
+			);
 			process.exit(1);
 		}
 
@@ -38,7 +34,9 @@ async function seedMembers() {
 			.limit(1);
 
 		if (org.length === 0) {
-			console.error(`❌ Error: Organization with ID ${organizationId} not found.`);
+			console.error(
+				`❌ Error: Organization with ID ${organizationId} not found.`,
+			);
 			process.exit(1);
 		}
 
@@ -131,7 +129,9 @@ async function seedMembers() {
 
 		await db.insert(organizationMembers).values(organizationMembersToInsert);
 
-		console.log(`✅ Created ${organizationMembersToInsert.length} organization members with roles\n`);
+		console.log(
+			`✅ Created ${organizationMembersToInsert.length} organization members with roles\n`,
+		);
 
 		// Summary
 		const adminCount = memberData.filter((m) => m.role === "admin").length;
@@ -151,4 +151,3 @@ async function seedMembers() {
 }
 
 seedMembers();
-

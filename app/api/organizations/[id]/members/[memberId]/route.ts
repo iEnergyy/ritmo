@@ -4,10 +4,7 @@ import {
 	enforceTenantIsolation,
 } from "@/lib/api-helpers";
 import { requireRole } from "@/lib/auth-helpers";
-import {
-	getMemberById,
-	deleteMember,
-} from "@/db/queries/members";
+import { getMemberById, deleteMember } from "@/db/queries/members";
 
 /**
  * DELETE /api/organizations/[id]/members/[memberId]
@@ -57,5 +54,3 @@ export async function DELETE(
 		);
 	}
 }
-
-

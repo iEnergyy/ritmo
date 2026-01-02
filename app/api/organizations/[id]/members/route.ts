@@ -4,9 +4,7 @@ import {
 	enforceTenantIsolation,
 } from "@/lib/api-helpers";
 import { requireRole } from "@/lib/auth-helpers";
-import {
-	getMembersByOrganization,
-} from "@/db/queries/members";
+import { getMembersByOrganization } from "@/db/queries/members";
 
 /**
  * GET /api/organizations/[id]/members
@@ -38,4 +36,3 @@ export async function GET(
 		);
 	}
 }
-

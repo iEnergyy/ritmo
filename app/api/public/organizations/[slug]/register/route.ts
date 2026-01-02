@@ -28,7 +28,11 @@ export async function POST(
 		const { fullName, email, phone } = body;
 
 		// Validate required fields
-		if (!fullName || typeof fullName !== "string" || fullName.trim().length === 0) {
+		if (
+			!fullName ||
+			typeof fullName !== "string" ||
+			fullName.trim().length === 0
+		) {
 			return NextResponse.json(
 				{ error: "Full name is required" },
 				{ status: 400 },
@@ -81,4 +85,3 @@ export async function POST(
 		);
 	}
 }
-

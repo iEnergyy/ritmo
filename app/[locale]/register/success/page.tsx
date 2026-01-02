@@ -3,7 +3,13 @@
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2 } from "lucide-react";
 
@@ -33,19 +39,21 @@ export default function RegisterSuccessPage() {
 				<CardContent className="space-y-4">
 					{studentName && (
 						<div className="text-center">
-							<div className="text-sm text-gray-600 mb-1">{t("studentName")}</div>
+							<div className="text-sm text-gray-600 mb-1">
+								{t("studentName")}
+							</div>
 							<div className="text-lg font-semibold">{studentName}</div>
 						</div>
 					)}
 					{organizationName && (
 						<div className="text-center">
-							<div className="text-sm text-gray-600 mb-1">{t("organizationName")}</div>
+							<div className="text-sm text-gray-600 mb-1">
+								{t("organizationName")}
+							</div>
 							<div className="text-lg font-semibold">{organizationName}</div>
 						</div>
 					)}
-					<div className="text-center text-gray-600 mt-6">
-						{t("thankYou")}
-					</div>
+					<div className="text-center text-gray-600 mt-6">{t("thankYou")}</div>
 					<Button
 						onClick={handleRegisterAnother}
 						className="w-full mt-6"
@@ -58,4 +66,3 @@ export default function RegisterSuccessPage() {
 		</div>
 	);
 }
-

@@ -174,8 +174,11 @@ export default async function proxy(request: NextRequest) {
 		}
 
 		// Allow public access to registration routes
-		const isRegisterPage = pathname === `/${locale}/register` || pathname === "/register";
-		const isRegisterSuccessPage = pathname === `/${locale}/register/success` || pathname === "/register/success";
+		const isRegisterPage =
+			pathname === `/${locale}/register` || pathname === "/register";
+		const isRegisterSuccessPage =
+			pathname === `/${locale}/register/success` ||
+			pathname === "/register/success";
 
 		if (isRegisterPage || isRegisterSuccessPage) {
 			// Verify organization exists for registration routes
@@ -250,4 +253,3 @@ export const config = {
 	// Match only internationalized pathnames
 	matcher: ["/", "/(es|en)/:path*", "/((?!api|_next|_vercel|.*\\..*).*)"],
 };
-
