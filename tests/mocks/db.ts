@@ -19,14 +19,14 @@ export function createMockQueryBuilder<T = unknown>(mockData: T[] = []) {
 	} as unknown as Mock;
 
 	// Make it a proper thenable that works with await
-	mockBuilder.then = function (
+	(mockBuilder as any).then = function (
 		onFulfilled?: (value: T[]) => any,
 		onRejected?: (error: any) => any,
 	) {
 		const promise = Promise.resolve(mockData);
 		return promise.then(onFulfilled, onRejected);
 	};
-	mockBuilder.catch = function (onRejected?: (error: any) => any) {
+	(mockBuilder as any).catch = function (onRejected?: (error: any) => any) {
 		return Promise.resolve(mockData).catch(onRejected);
 	};
 

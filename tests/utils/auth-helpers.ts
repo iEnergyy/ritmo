@@ -1,5 +1,5 @@
 import { vi } from "vitest";
-import type { NextRequest } from "next/server";
+import { NextRequest } from "next/server";
 import {
 	createMockSession,
 	createMockAuth,
@@ -53,8 +53,15 @@ export function createMockRequest(
 		headers.set("cookie", `better-auth.session_token=${sessionId}`);
 	}
 
-	return new NextRequest("http://localhost:3000", {
+	// Filter out signal: null to match Next.js RequestInit type
+	const requestInit = {
 		...overrides,
 		headers,
-	});
+	};
+	if (requestInit.signal === null) {
+		delete requestInit.signal;
+	}
+
+	// Type assertion to match Next.js RequestInit (which doesn't allow signal: null)
+	return new NextRequest("http://localhost:3000", requestInit as ConstructorParameters<typeof NextRequest>[1]);
 }
