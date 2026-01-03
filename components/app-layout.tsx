@@ -43,6 +43,7 @@ import {
 	Building2,
 	ChevronDown,
 	CheckIcon,
+	UsersRound,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -148,6 +149,11 @@ export function AppLayout({ children, organizationId }: AppLayoutProps) {
 					name: "Students",
 					href: `/organizations/${organizationId}/students`,
 					icon: GraduationCap,
+				},
+				{
+					name: "Groups",
+					href: `/organizations/${organizationId}/groups`,
+					icon: UsersRound,
 				},
 				{
 					name: "Teachers",
