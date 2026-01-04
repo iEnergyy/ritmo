@@ -104,3 +104,4 @@ async function seedTeachers() {
 }
 
 seedTeachers();
+
