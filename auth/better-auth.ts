@@ -39,14 +39,12 @@ export const auth = betterAuth({
 		"http://*.localhost:3000", // Allow any subdomain on localhost with HTTP
 	],
 	advanced: {
-		// Enable cross-subdomain cookies to share session across subdomains
-		// Note: Browsers don't support .localhost domain for cookies due to security restrictions
-		// This means cookies set on localhost:3000 won't be accessible on nrgschool.localhost:3000
-		// The client-side auth will need to handle re-authentication when navigating to subdomains
+		// Disable cross-subdomain cookies for localhost since browsers don't support .localhost domain
+		// Cookies will be set for the specific subdomain (e.g., nrgschool.localhost:3000)
+		// This means each subdomain has its own session cookies, which is fine for localhost
+		// For production with a real domain, you would enable this and set domain: "yourdomain.com"
 		crossSubDomainCookies: {
-			enabled: true,
-			// Don't set domain for localhost - let BetterAuth handle it
-			// For production, you would set domain: "yourdomain.com"
+			enabled: false,
 		},
 	},
 	plugins: [

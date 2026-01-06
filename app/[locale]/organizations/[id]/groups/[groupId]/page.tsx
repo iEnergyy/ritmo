@@ -816,4 +816,3 @@ export default function GroupDetailPage() {
 		</AppLayout>
 	);
 }
-

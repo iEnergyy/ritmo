@@ -790,4 +790,3 @@ export default function GroupsPage() {
 		</AppLayout>
 	);
 }
-

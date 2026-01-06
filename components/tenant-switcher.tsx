@@ -70,7 +70,7 @@ export function TenantSwitcher() {
 
 		// Find organization with matching slug
 		// We need to check if user has access to this organization
-		// and switch if the current org doesn't match
+		// and switch if the current org doesn't match or is not set
 		const switchOrganization = async () => {
 			try {
 				// Get user's organizations
@@ -93,10 +93,10 @@ export function TenantSwitcher() {
 					return;
 				}
 
-				// If the active organization doesn't match, switch it
-				if (currentOrgId !== targetOrg.id) {
+				// If the active organization doesn't match or is not set, switch it
+				if (!currentOrgId || currentOrgId !== targetOrg.id) {
 					console.log(
-						`Switching organization from ${currentOrgId} to ${targetOrg.id} (${tenantSlug})`,
+						`Switching organization from ${currentOrgId || "none"} to ${targetOrg.id} (${tenantSlug})`,
 					);
 					await authClient.organization.setActive({
 						organizationId: targetOrg.id,

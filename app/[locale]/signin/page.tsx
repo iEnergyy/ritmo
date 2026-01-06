@@ -5,6 +5,37 @@ import { authClient } from "@/lib/auth-client";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 
+// Extract tenant slug from subdomain (client-side version)
+function extractTenantFromSubdomain(hostname: string): string | null {
+	if (!hostname) {
+		return null;
+	}
+
+	// Remove port if present
+	const hostWithoutPort = hostname.split(":")[0];
+
+	// Split by dots
+	const parts = hostWithoutPort.split(".");
+
+	// If we have at least 2 parts and the last part is "localhost",
+	// we want to extract the subdomain
+	if (parts.length >= 2) {
+		// For localhost: "tenant.localhost" -> ["tenant", "localhost"]
+		if (parts[parts.length - 1] === "localhost") {
+			return parts[0] || null;
+		}
+
+		// For production domains: "tenant.yourdomain.com" -> ["tenant", "yourdomain", "com"]
+		// We assume the first part is the subdomain if there are 3+ parts
+		if (parts.length >= 3) {
+			return parts[0] || null;
+		}
+	}
+
+	// No subdomain found
+	return null;
+}
+
 export default function SignInPage() {
 	const locale = useLocale();
 	const t = useTranslations("SignIn");
@@ -34,6 +65,35 @@ export default function SignInPage() {
 				// Wait for cookies to be set before redirecting
 				// This ensures the middleware can read the session
 				await new Promise((resolve) => setTimeout(resolve, 1000));
+
+				// If we're on a subdomain, try to set the active organization
+				const hostname = window.location.hostname;
+				const tenantSlug = extractTenantFromSubdomain(hostname);
+
+				if (tenantSlug) {
+					try {
+						// Get user's organizations
+						const orgsResult = await authClient.organization.list();
+						if (orgsResult.data) {
+							// Find organization with matching slug
+							const targetOrg = orgsResult.data.find(
+								(org: any) => org.slug === tenantSlug,
+							);
+
+							if (targetOrg) {
+								// Set the active organization based on subdomain
+								await authClient.organization.setActive({
+									organizationId: targetOrg.id,
+								});
+								// Wait a bit for the organization to be set
+								await new Promise((resolve) => setTimeout(resolve, 500));
+							}
+						}
+					} catch (orgError) {
+						console.error("Error setting active organization:", orgError);
+						// Continue with redirect even if org setting fails
+					}
+				}
 
 				// Use window.location.href for full page reload to ensure cookies are available
 				// Next.js router.push() doesn't guarantee middleware will see new cookies

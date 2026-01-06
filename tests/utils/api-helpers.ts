@@ -34,7 +34,10 @@ export function createMockRequest(
 	}
 
 	// Type assertion to match Next.js RequestInit (which doesn't allow signal: null)
-	return new NextRequest(url, requestInit as ConstructorParameters<typeof NextRequest>[1]);
+	return new NextRequest(
+		url,
+		requestInit as ConstructorParameters<typeof NextRequest>[1],
+	);
 }
 
 /**
