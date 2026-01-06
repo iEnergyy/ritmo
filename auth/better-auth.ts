@@ -34,17 +34,45 @@ export const auth = betterAuth({
 		},
 	},
 	// Allow subdomain-based tenants to access the auth API
-	trustedOrigins: [
-		"http://localhost:3000",
-		"http://*.localhost:3000", // Allow any subdomain on localhost with HTTP
-	],
+	// Use a function to dynamically validate origins for subdomain support
+	trustedOrigins: async (request) => {
+		const origins: string[] = [
+			"http://localhost:3000",
+			"https://kdence.xyz", // Production root domain
+		];
+
+		// Get the origin from the request if available
+		if (request) {
+			const origin = request.headers.get("origin");
+			if (origin) {
+				try {
+					const url = new URL(origin);
+					const hostname = url.hostname;
+
+					// Allow localhost subdomains
+					if (hostname.endsWith(".localhost")) {
+						origins.push(origin);
+					}
+
+					// Allow kdence.xyz subdomains
+					if (hostname.endsWith(".kdence.xyz") || hostname === "kdence.xyz") {
+						origins.push(origin);
+					}
+				} catch {
+					// Invalid origin, skip
+				}
+			}
+		}
+
+		return origins;
+	},
 	advanced: {
-		// Disable cross-subdomain cookies for localhost since browsers don't support .localhost domain
-		// Cookies will be set for the specific subdomain (e.g., nrgschool.localhost:3000)
-		// This means each subdomain has its own session cookies, which is fine for localhost
-		// For production with a real domain, you would enable this and set domain: "yourdomain.com"
+		// Enable cross-subdomain cookies for production domain
+		// This allows cookies to be shared across subdomains (e.g., nrgschool.kdence.xyz and kdence.xyz)
+		// For localhost, we disable this since browsers don't support .localhost domain
 		crossSubDomainCookies: {
-			enabled: false,
+			enabled: process.env.NODE_ENV === "production",
+			domain: process.env.NODE_ENV === "production" ? "kdence.xyz" : undefined,
 		},
 	},
 	plugins: [
