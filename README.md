@@ -161,6 +161,18 @@ Students can join or leave at any time
 
 Historical data is preserved
 
+Time schedules:
+
+Groups can have time schedules for their sessions:
+
+One-time sessions (single date/time)
+
+Recurring schedules (weekly or twice weekly)
+
+Duration per session (hours)
+
+Schedule changes update future sessions only (history preserved)
+
 📅 Class Sessions (Key Concept)
 
 A Class Session represents a real class that occurred on a specific date.
@@ -768,6 +780,11 @@ Goal: introduce time as a first-class concept
   - [ ] teachers
   - [ ] venues
 - [ ] Session history (immutable)
+- [ ] Group time schedules:
+  - [ ] Groups can have time schedules (one-time or recurring)
+  - [ ] Recurring schedules: weekly or twice weekly sessions
+  - [ ] Duration per session (hours)
+  - [ ] Schedule can be edited to update future sessions
 
 **UI Expectations:**
 - [ ] Class sessions calendar/list view (`/organizations/[id]/sessions`) with:
@@ -793,9 +810,18 @@ Goal: introduce time as a first-class concept
 - [ ] Group detail page integration:
   - [ ] Sessions list for the group
   - [ ] Quick session creation from group page
+- [ ] Group schedule management:
+  - [ ] Time schedule configuration (one-time or recurring)
+  - [ ] Recurring schedule options:
+    - [ ] Weekly sessions (same day/time each week)
+    - [ ] Twice weekly sessions (two days/times per week)
+  - [ ] Duration per session (hours)
+  - [ ] Schedule can be edited to update future sessions only
+  - [ ] Historical sessions remain unchanged
 
 Deliverable:
 - [ ] Everything important happens in time
+- [ ] Groups have flexible scheduling (one-time or recurring patterns)
 
 **Phase 5 — Attendance**
 
