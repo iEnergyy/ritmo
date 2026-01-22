@@ -14,6 +14,7 @@ import {
 	UserCog,
 	MapPin,
 	Users,
+	UsersRound,
 	ArrowRight,
 } from "lucide-react";
 
@@ -206,6 +207,12 @@ export default function OrganizationDashboardPage() {
 							<Button variant="outline" className="w-full justify-start">
 								<GraduationCap className="mr-2 h-4 w-4" />
 								Add Student
+							</Button>
+						</Link>
+						<Link href={`/organizations/${organizationId}/groups`}>
+							<Button variant="outline" className="w-full justify-start">
+								<UsersRound className="mr-2 h-4 w-4" />
+								Create Group
 							</Button>
 						</Link>
 						<Link href={`/organizations/${organizationId}/teachers`}>

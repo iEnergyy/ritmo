@@ -57,7 +57,7 @@ export async function PATCH(
 		await enforceTenantIsolation(organizationId, session.user.id);
 
 		const body = await request.json();
-		const { name, venueId, status } = body;
+		const { name, venueId, status, startedAt } = body;
 
 		// Verify group exists and belongs to organization
 		const existingGroup = await getGroupById(organizationId, groupId);
@@ -79,6 +79,7 @@ export async function PATCH(
 			name,
 			venueId,
 			status,
+			startedAt: startedAt !== undefined ? (startedAt ? new Date(startedAt) : null) : undefined,
 		});
 
 		return NextResponse.json({ group: updatedGroup });

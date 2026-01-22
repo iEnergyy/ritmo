@@ -65,7 +65,7 @@ export async function POST(
 		await enforceTenantIsolation(organizationId, session.user.id);
 
 		const body = await request.json();
-		const { name, venueId, status } = body;
+		const { name, venueId, status, startedAt } = body;
 
 		if (!name) {
 			return NextResponse.json({ error: "Name is required" }, { status: 400 });
@@ -84,6 +84,7 @@ export async function POST(
 			name,
 			venueId: venueId || null,
 			status,
+			startedAt: startedAt ? new Date(startedAt) : null,
 		});
 
 		return NextResponse.json({ group: newGroup }, { status: 201 });

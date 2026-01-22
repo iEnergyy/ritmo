@@ -214,7 +214,7 @@
 		"name": "Name",
 		"venue": "Venue",
 		"status": "Status",
-		"createdAt": "Created At",
+		"createdAt": "Started At",
 		"actions": "Actions",
 		"searchPlaceholder": "Search groups...",
 		"noGroups": "No groups yet. Create one to get started.",

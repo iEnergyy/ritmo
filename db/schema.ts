@@ -303,6 +303,7 @@ export const groups = pgTable("groups", {
 	name: text("name").notNull(),
 	status: groupStatusEnum("status").notNull(),
 
+	startedAt: timestamp("started_at"),
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

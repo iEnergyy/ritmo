@@ -214,7 +214,7 @@
 		"name": "Nombre",
 		"venue": "Local",
 		"status": "Estado",
-		"createdAt": "Fecha de Creación",
+		"createdAt": "Fecha de Inicio",
 		"actions": "Acciones",
 		"searchPlaceholder": "Buscar grupos...",
 		"noGroups": "No hay grupos. Crea uno para comenzar.",

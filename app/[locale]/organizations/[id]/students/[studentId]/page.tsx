@@ -24,7 +24,6 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import {
 	Field,
 	FieldGroup,
@@ -45,13 +44,20 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { useForm } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Controller } from "react-hook-form";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Plus, CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface Student {
 	id: string;
@@ -378,31 +384,113 @@ export default function StudentDetailPage() {
 											<Controller
 												name="startDate"
 												control={enrollmentForm.control}
-												render={({ field, fieldState }) => (
-													<Field data-invalid={fieldState.invalid}>
-														<FieldLabel>{tEnrollments("startDate")}</FieldLabel>
-														<Input type="date" {...field} />
-														{fieldState.invalid && (
-															<FieldError errors={[fieldState.error]} />
-														)}
-													</Field>
-												)}
+												render={({ field, fieldState }) => {
+													// Parse date string to local date (avoid timezone issues)
+													const dateValue = field.value
+														? (() => {
+																const [year, month, day] = field.value.split("-").map(Number);
+																return new Date(year, month - 1, day);
+															})()
+														: undefined;
+													return (
+														<Field data-invalid={fieldState.invalid}>
+															<FieldLabel>{tEnrollments("startDate")}</FieldLabel>
+															<Popover>
+																<PopoverTrigger asChild>
+																	<Button
+																		variant="outline"
+																		className={cn(
+																			"w-full justify-start text-left font-normal",
+																			!dateValue && "text-muted-foreground",
+																		)}
+																	>
+																		<CalendarIcon className="mr-2 h-4 w-4" />
+																		{dateValue ? (
+																			format(dateValue, "PPP")
+																		) : (
+																			<span>Pick a date</span>
+																		)}
+																	</Button>
+																</PopoverTrigger>
+																<PopoverContent className="w-auto p-0" align="start">
+																	<Calendar
+																		mode="single"
+																		selected={dateValue}
+																		onSelect={(date) => {
+																			if (date) {
+																				// Format as YYYY-MM-DD in local timezone
+																				const year = date.getFullYear();
+																				const month = String(date.getMonth() + 1).padStart(2, "0");
+																				const day = String(date.getDate()).padStart(2, "0");
+																				field.onChange(`${year}-${month}-${day}`);
+																			} else {
+																				field.onChange("");
+																			}
+																		}}
+																	/>
+																</PopoverContent>
+															</Popover>
+															{fieldState.invalid && (
+																<FieldError errors={[fieldState.error]} />
+															)}
+														</Field>
+													);
+												}}
 											/>
 											<Controller
 												name="endDate"
 												control={enrollmentForm.control}
-												render={({ field }) => (
-													<Field>
-														<FieldLabel>
-															{tEnrollments("endDateOptional")}
-														</FieldLabel>
-														<Input
-															type="date"
-															{...field}
-															value={field.value || ""}
-														/>
-													</Field>
-												)}
+												render={({ field }) => {
+													// Parse date string to local date (avoid timezone issues)
+													const dateValue = field.value
+														? (() => {
+																const [year, month, day] = field.value.split("-").map(Number);
+																return new Date(year, month - 1, day);
+															})()
+														: undefined;
+													return (
+														<Field>
+															<FieldLabel>
+																{tEnrollments("endDateOptional")}
+															</FieldLabel>
+															<Popover>
+																<PopoverTrigger asChild>
+																	<Button
+																		variant="outline"
+																		className={cn(
+																			"w-full justify-start text-left font-normal",
+																			!dateValue && "text-muted-foreground",
+																		)}
+																	>
+																		<CalendarIcon className="mr-2 h-4 w-4" />
+																		{dateValue ? (
+																			format(dateValue, "PPP")
+																		) : (
+																			<span>Pick a date</span>
+																		)}
+																	</Button>
+																</PopoverTrigger>
+																<PopoverContent className="w-auto p-0" align="start">
+																	<Calendar
+																		mode="single"
+																		selected={dateValue}
+																		onSelect={(date) => {
+																			if (date) {
+																				// Format as YYYY-MM-DD in local timezone
+																				const year = date.getFullYear();
+																				const month = String(date.getMonth() + 1).padStart(2, "0");
+																				const day = String(date.getDate()).padStart(2, "0");
+																				field.onChange(`${year}-${month}-${day}`);
+																			} else {
+																				field.onChange(null);
+																			}
+																		}}
+																	/>
+																</PopoverContent>
+															</Popover>
+														</Field>
+													);
+												}}
 											/>
 										</FieldGroup>
 										<DialogFooter>

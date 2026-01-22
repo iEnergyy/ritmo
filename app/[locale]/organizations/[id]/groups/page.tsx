@@ -64,13 +64,23 @@ import {
 	Play,
 	Pause,
 	X,
+	CalendarIcon,
 } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface Group {
 	id: string;
 	name: string;
 	venueId: string | null;
 	status: "active" | "paused" | "closed";
+	startedAt: Date | null;
 	createdAt: Date;
 	venue?: {
 		id: string;
@@ -89,6 +99,7 @@ const groupSchema = z.object({
 	name: z.string().min(1, "Name is required"),
 	venueId: z.string().optional().nullable(),
 	status: z.enum(["active", "paused", "closed"]),
+	startedAt: z.string().optional().nullable(),
 });
 
 type GroupFormData = z.infer<typeof groupSchema>;
@@ -120,6 +131,7 @@ export default function GroupsPage() {
 			name: "",
 			venueId: null,
 			status: "active",
+			startedAt: null,
 		},
 	});
 
@@ -129,6 +141,7 @@ export default function GroupsPage() {
 			name: "",
 			venueId: null,
 			status: "active",
+			startedAt: null,
 		},
 	});
 
@@ -193,6 +206,7 @@ export default function GroupsPage() {
 						name: data.name,
 						venueId: data.venueId || null,
 						status: data.status,
+						startedAt: data.startedAt || null,
 					}),
 				},
 			);
@@ -215,10 +229,21 @@ export default function GroupsPage() {
 
 	const handleEdit = (group: Group) => {
 		setSelectedGroup(group);
+		// Convert date to YYYY-MM-DD format avoiding timezone issues
+		let startedAtString: string | null = null;
+		if (group.startedAt) {
+			const date = new Date(group.startedAt);
+			// Use local date components to avoid timezone offset
+			const year = date.getFullYear();
+			const month = String(date.getMonth() + 1).padStart(2, "0");
+			const day = String(date.getDate()).padStart(2, "0");
+			startedAtString = `${year}-${month}-${day}`;
+		}
 		editForm.reset({
 			name: group.name,
 			venueId: group.venueId || null,
 			status: group.status,
+			startedAt: startedAtString,
 		});
 		setIsEditDialogOpen(true);
 	};
@@ -238,6 +263,7 @@ export default function GroupsPage() {
 						name: data.name,
 						venueId: data.venueId || null,
 						status: data.status,
+						startedAt: data.startedAt || null,
 					}),
 				},
 			);
@@ -484,6 +510,62 @@ export default function GroupsPage() {
 											</Field>
 										)}
 									/>
+									<Controller
+										name="startedAt"
+										control={createForm.control}
+										render={({ field, fieldState }) => {
+											// Parse date string to local date (avoid timezone issues)
+											const dateValue = field.value
+												? (() => {
+														const [year, month, day] = field.value.split("-").map(Number);
+														return new Date(year, month - 1, day);
+													})()
+												: undefined;
+											return (
+												<Field data-invalid={fieldState.invalid}>
+													<FieldLabel>{t("createdAt")}</FieldLabel>
+													<Popover>
+														<PopoverTrigger asChild>
+															<Button
+																variant="outline"
+																className={cn(
+																	"w-full justify-start text-left font-normal",
+																	!dateValue && "text-muted-foreground",
+																)}
+															>
+																<CalendarIcon className="mr-2 h-4 w-4" />
+																{dateValue ? (
+																	format(dateValue, "PPP")
+																) : (
+																	<span>Pick a date</span>
+																)}
+															</Button>
+														</PopoverTrigger>
+														<PopoverContent className="w-auto p-0" align="start">
+															<Calendar
+																mode="single"
+																selected={dateValue}
+																onSelect={(date) => {
+																	if (date) {
+																		// Format as YYYY-MM-DD in local timezone
+																		const year = date.getFullYear();
+																		const month = String(date.getMonth() + 1).padStart(2, "0");
+																		const day = String(date.getDate()).padStart(2, "0");
+																		field.onChange(`${year}-${month}-${day}`);
+																	} else {
+																		field.onChange(null);
+																	}
+																}}
+															/>
+														</PopoverContent>
+													</Popover>
+													{fieldState.invalid && (
+														<FieldError errors={[fieldState.error]} />
+													)}
+												</Field>
+											);
+										}}
+									/>
 								</FieldGroup>
 								<DialogFooter>
 									<Button
@@ -571,7 +653,9 @@ export default function GroupsPage() {
 											</Badge>
 										</TableCell>
 										<TableCell>
-											{new Date(group.createdAt).toLocaleDateString()}
+											{group.startedAt
+												? new Date(group.startedAt).toLocaleDateString()
+												: "-"}
 										</TableCell>
 										<TableCell className="text-right">
 											<div className="flex justify-end gap-2">
@@ -724,6 +808,62 @@ export default function GroupsPage() {
 											</Select>
 										</Field>
 									)}
+								/>
+								<Controller
+									name="startedAt"
+									control={editForm.control}
+									render={({ field, fieldState }) => {
+										// Parse date string to local date (avoid timezone issues)
+										const dateValue = field.value
+											? (() => {
+													const [year, month, day] = field.value.split("-").map(Number);
+													return new Date(year, month - 1, day);
+												})()
+											: undefined;
+										return (
+											<Field data-invalid={fieldState.invalid}>
+												<FieldLabel>{t("createdAt")}</FieldLabel>
+												<Popover>
+													<PopoverTrigger asChild>
+														<Button
+															variant="outline"
+															className={cn(
+																"w-full justify-start text-left font-normal",
+																!dateValue && "text-muted-foreground",
+															)}
+														>
+															<CalendarIcon className="mr-2 h-4 w-4" />
+															{dateValue ? (
+																format(dateValue, "PPP")
+															) : (
+																<span>Pick a date</span>
+															)}
+														</Button>
+													</PopoverTrigger>
+													<PopoverContent className="w-auto p-0" align="start">
+														<Calendar
+															mode="single"
+															selected={dateValue}
+															onSelect={(date) => {
+																if (date) {
+																	// Format as YYYY-MM-DD in local timezone
+																	const year = date.getFullYear();
+																	const month = String(date.getMonth() + 1).padStart(2, "0");
+																	const day = String(date.getDate()).padStart(2, "0");
+																	field.onChange(`${year}-${month}-${day}`);
+																} else {
+																	field.onChange(null);
+																}
+															}}
+														/>
+													</PopoverContent>
+												</Popover>
+												{fieldState.invalid && (
+													<FieldError errors={[fieldState.error]} />
+												)}
+											</Field>
+										);
+									}}
 								/>
 							</FieldGroup>
 							<DialogFooter>
