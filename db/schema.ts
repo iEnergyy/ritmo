@@ -300,6 +300,10 @@ export const groups = pgTable("groups", {
 
 	venueId: uuid("venue_id").references(() => venues.id),
 
+	teacherId: uuid("teacher_id")
+		.notNull()
+		.references(() => teachers.id),
+
 	name: text("name").notNull(),
 	status: groupStatusEnum("status").notNull(),
 

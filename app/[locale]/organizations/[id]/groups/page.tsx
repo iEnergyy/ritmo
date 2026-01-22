@@ -78,10 +78,15 @@ import { cn } from "@/lib/utils";
 interface Group {
 	id: string;
 	name: string;
+	teacherId: string;
 	venueId: string | null;
 	status: "active" | "paused" | "closed";
 	startedAt: Date | null;
 	createdAt: Date;
+	teacher?: {
+		id: string;
+		fullName: string;
+	};
 	venue?: {
 		id: string;
 		name: string;
@@ -95,8 +100,14 @@ interface Venue {
 	address: string | null;
 }
 
+interface Teacher {
+	id: string;
+	fullName: string;
+}
+
 const groupSchema = z.object({
 	name: z.string().min(1, "Name is required"),
+	teacherId: z.string().min(1, "Teacher is required"),
 	venueId: z.string().optional().nullable(),
 	status: z.enum(["active", "paused", "closed"]),
 	startedAt: z.string().optional().nullable(),
@@ -113,6 +124,7 @@ export default function GroupsPage() {
 
 	const [groups, setGroups] = useState<Group[]>([]);
 	const [venues, setVenues] = useState<Venue[]>([]);
+	const [teachers, setTeachers] = useState<Teacher[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -129,6 +141,7 @@ export default function GroupsPage() {
 		resolver: zodResolver(groupSchema),
 		defaultValues: {
 			name: "",
+			teacherId: "",
 			venueId: null,
 			status: "active",
 			startedAt: null,
@@ -139,6 +152,7 @@ export default function GroupsPage() {
 		resolver: zodResolver(groupSchema),
 		defaultValues: {
 			name: "",
+			teacherId: "",
 			venueId: null,
 			status: "active",
 			startedAt: null,
@@ -149,6 +163,7 @@ export default function GroupsPage() {
 		if (session?.user && !sessionLoading) {
 			loadGroups();
 			loadVenues();
+			loadTeachers();
 		}
 	}, [session, sessionLoading, organizationId, searchQuery, statusFilter]);
 
@@ -163,6 +178,20 @@ export default function GroupsPage() {
 			}
 		} catch (error) {
 			console.error("Failed to load venues:", error);
+		}
+	};
+
+	const loadTeachers = async () => {
+		try {
+			const response = await fetch(
+				`/api/organizations/${organizationId}/teachers`,
+			);
+			if (response.ok) {
+				const data = await response.json();
+				setTeachers(data.teachers || []);
+			}
+		} catch (error) {
+			console.error("Failed to load teachers:", error);
 		}
 	};
 
@@ -204,6 +233,7 @@ export default function GroupsPage() {
 					},
 					body: JSON.stringify({
 						name: data.name,
+						teacherId: data.teacherId,
 						venueId: data.venueId || null,
 						status: data.status,
 						startedAt: data.startedAt || null,
@@ -241,6 +271,7 @@ export default function GroupsPage() {
 		}
 		editForm.reset({
 			name: group.name,
+			teacherId: group.teacherId,
 			venueId: group.venueId || null,
 			status: group.status,
 			startedAt: startedAtString,
@@ -261,6 +292,7 @@ export default function GroupsPage() {
 					},
 					body: JSON.stringify({
 						name: data.name,
+						teacherId: data.teacherId,
 						venueId: data.venueId || null,
 						status: data.status,
 						startedAt: data.startedAt || null,
@@ -454,6 +486,33 @@ export default function GroupsPage() {
 										)}
 									/>
 									<Controller
+										name="teacherId"
+										control={createForm.control}
+										render={({ field, fieldState }) => (
+											<Field data-invalid={fieldState.invalid}>
+												<FieldLabel>Teacher</FieldLabel>
+												<Select
+													value={field.value}
+													onValueChange={field.onChange}
+												>
+													<SelectTrigger>
+														<SelectValue placeholder="Select teacher" />
+													</SelectTrigger>
+													<SelectContent>
+														{teachers.map((teacher) => (
+															<SelectItem key={teacher.id} value={teacher.id}>
+																{teacher.fullName}
+															</SelectItem>
+														))}
+													</SelectContent>
+												</Select>
+												{fieldState.invalid && (
+													<FieldError errors={[fieldState.error]} />
+												)}
+											</Field>
+										)}
+									/>
+									<Controller
 										name="venueId"
 										control={createForm.control}
 										render={({ field }) => (
@@ -628,6 +687,7 @@ export default function GroupsPage() {
 							<TableHeader>
 								<TableRow>
 									<TableHead>{t("name")}</TableHead>
+									<TableHead>Teacher</TableHead>
 									<TableHead>{t("venue")}</TableHead>
 									<TableHead>{t("status")}</TableHead>
 									<TableHead>{t("createdAt")}</TableHead>
@@ -644,6 +704,9 @@ export default function GroupsPage() {
 											>
 												{group.name}
 											</Link>
+										</TableCell>
+										<TableCell>
+											{group.teacher?.fullName || "-"}
 										</TableCell>
 										<TableCell>{group.venue?.name || t("noVenue")}</TableCell>
 										<TableCell>
@@ -746,6 +809,33 @@ export default function GroupsPage() {
 										<Field data-invalid={fieldState.invalid}>
 											<FieldLabel>{t("name")}</FieldLabel>
 											<Input {...field} />
+											{fieldState.invalid && (
+												<FieldError errors={[fieldState.error]} />
+											)}
+										</Field>
+									)}
+								/>
+								<Controller
+									name="teacherId"
+									control={editForm.control}
+									render={({ field, fieldState }) => (
+										<Field data-invalid={fieldState.invalid}>
+											<FieldLabel>Teacher</FieldLabel>
+											<Select
+												value={field.value}
+												onValueChange={field.onChange}
+											>
+												<SelectTrigger>
+													<SelectValue placeholder="Select teacher" />
+												</SelectTrigger>
+												<SelectContent>
+													{teachers.map((teacher) => (
+														<SelectItem key={teacher.id} value={teacher.id}>
+															{teacher.fullName}
+														</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
 											{fieldState.invalid && (
 												<FieldError errors={[fieldState.error]} />
 											)}

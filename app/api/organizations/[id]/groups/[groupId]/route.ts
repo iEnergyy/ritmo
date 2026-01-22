@@ -5,6 +5,7 @@ import {
 } from "@/lib/api-helpers";
 import { getGroupById, updateGroup, deleteGroup } from "@/db/queries/groups";
 import { getActiveEnrollmentsByGroup } from "@/db/queries/student-groups";
+import { getTeacherByIdSimple } from "@/db/queries/teachers";
 
 /**
  * GET /api/organizations/[id]/groups/[groupId]
@@ -57,7 +58,7 @@ export async function PATCH(
 		await enforceTenantIsolation(organizationId, session.user.id);
 
 		const body = await request.json();
-		const { name, venueId, status, startedAt } = body;
+		const { name, teacherId, venueId, status, startedAt } = body;
 
 		// Verify group exists and belongs to organization
 		const existingGroup = await getGroupById(organizationId, groupId);
@@ -74,9 +75,21 @@ export async function PATCH(
 			);
 		}
 
+		// Validate teacher belongs to organization (if provided)
+		if (teacherId) {
+			const teacher = await getTeacherByIdSimple(organizationId, teacherId);
+			if (!teacher) {
+				return NextResponse.json(
+					{ error: "Teacher not found or does not belong to organization" },
+					{ status: 404 },
+				);
+			}
+		}
+
 		// Update group
 		const updatedGroup = await updateGroup(groupId, existingGroup, {
 			name,
+			teacherId,
 			venueId,
 			status,
 			startedAt: startedAt !== undefined ? (startedAt ? new Date(startedAt) : null) : undefined,

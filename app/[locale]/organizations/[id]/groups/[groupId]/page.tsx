@@ -40,6 +40,7 @@ import {
 	FieldLabel,
 	FieldError,
 } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import {
 	Select,
 	SelectContent,
@@ -73,10 +74,15 @@ import { cn } from "@/lib/utils";
 interface Group {
 	id: string;
 	name: string;
+	teacherId: string;
 	venueId: string | null;
 	status: "active" | "paused" | "closed";
 	startedAt: Date | null;
 	createdAt: Date;
+	teacher?: {
+		id: string;
+		fullName: string;
+	};
 	venue?: {
 		id: string;
 		name: string;
@@ -114,6 +120,17 @@ const enrollmentSchema = z.object({
 
 type EnrollmentFormData = z.infer<typeof enrollmentSchema>;
 
+const sessionSchema = z.object({
+	date: z.string().min(1, "Date is required"),
+	startTime: z.string().optional().nullable(),
+	endTime: z.string().optional().nullable(),
+	teacherId: z.string().min(1, "Teacher is required"),
+	venueId: z.string().optional().nullable(),
+	status: z.enum(["scheduled", "held", "cancelled"]),
+});
+
+type SessionFormData = z.infer<typeof sessionSchema>;
+
 export default function GroupDetailPage() {
 	const { data: session, isPending: sessionLoading } = useSession();
 	const params = useParams();
@@ -121,18 +138,24 @@ export default function GroupDetailPage() {
 	const t = useTranslations("GroupDetail");
 	const tEnrollments = useTranslations("Enrollments");
 	const tGroups = useTranslations("Groups");
+	const tSessions = useTranslations("Sessions");
 	const organizationId = params.id as string;
 	const groupId = params.groupId as string;
 
 	const [group, setGroup] = useState<Group | null>(null);
 	const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
 	const [students, setStudents] = useState<Student[]>([]);
+	const [sessions, setSessions] = useState<any[]>([]);
+	const [teachers, setTeachers] = useState<any[]>([]);
+	const [venues, setVenues] = useState<any[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [showActiveOnly, setShowActiveOnly] = useState(true);
 	const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 	const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
 	const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
+	const [isCreateSessionDialogOpen, setIsCreateSessionDialogOpen] =
+		useState(false);
 	const [selectedEnrollment, setSelectedEnrollment] =
 		useState<Enrollment | null>(null);
 	const [newStatus, setNewStatus] = useState<
@@ -157,11 +180,40 @@ export default function GroupDetailPage() {
 		},
 	});
 
+	const sessionForm = useForm<SessionFormData>({
+		resolver: zodResolver(sessionSchema),
+		defaultValues: {
+			date: new Date().toISOString().split("T")[0],
+			startTime: null,
+			endTime: null,
+			teacherId: group?.teacherId || "",
+			venueId: group?.venueId || null,
+			status: "scheduled",
+		},
+	});
+
+	// Update form when group loads or dialog opens
+	useEffect(() => {
+		if (group && isCreateSessionDialogOpen) {
+			sessionForm.reset({
+				date: new Date().toISOString().split("T")[0],
+				startTime: null,
+				endTime: null,
+				teacherId: group.teacherId,
+				venueId: group.venueId || null,
+				status: "scheduled",
+			});
+		}
+	}, [group, isCreateSessionDialogOpen]);
+
 	useEffect(() => {
 		if (session?.user && !sessionLoading) {
 			loadGroup();
 			loadEnrollments();
 			loadStudents();
+			loadSessions();
+			loadTeachers();
+			loadVenues();
 		}
 	}, [session, sessionLoading, organizationId, groupId]);
 
@@ -211,6 +263,48 @@ export default function GroupDetailPage() {
 			}
 		} catch (error) {
 			console.error("Failed to load students:", error);
+		}
+	};
+
+	const loadSessions = async () => {
+		try {
+			const response = await fetch(
+				`/api/organizations/${organizationId}/groups/${groupId}/sessions`,
+			);
+			if (response.ok) {
+				const data = await response.json();
+				setSessions(data.sessions || []);
+			}
+		} catch (error) {
+			console.error("Failed to load sessions:", error);
+		}
+	};
+
+	const loadTeachers = async () => {
+		try {
+			const response = await fetch(
+				`/api/organizations/${organizationId}/teachers`,
+			);
+			if (response.ok) {
+				const data = await response.json();
+				setTeachers(data.teachers || []);
+			}
+		} catch (error) {
+			console.error("Failed to load teachers:", error);
+		}
+	};
+
+	const loadVenues = async () => {
+		try {
+			const response = await fetch(
+				`/api/organizations/${organizationId}/venues`,
+			);
+			if (response.ok) {
+				const data = await response.json();
+				setVenues(data.venues || []);
+			}
+		} catch (error) {
+			console.error("Failed to load venues:", error);
 		}
 	};
 
@@ -389,6 +483,38 @@ export default function GroupDetailPage() {
 		? enrollments.filter(isEnrollmentActive)
 		: enrollments;
 
+	const handleCreateSession = async (data: SessionFormData) => {
+		try {
+			const response = await fetch(
+				`/api/organizations/${organizationId}/groups/${groupId}/sessions`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						...data,
+						groupId,
+					}),
+				},
+			);
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				toast.error(errorData.error || "Failed to create session");
+				return;
+			}
+
+			toast.success("Session created successfully");
+			setIsCreateSessionDialogOpen(false);
+			sessionForm.reset();
+			await loadSessions();
+		} catch (error) {
+			console.error("Create session error:", error);
+			toast.error("An error occurred while creating the session");
+		}
+	};
+
 	const formatDateRange = (startDate: string, endDate: string | null) => {
 		const start = new Date(startDate).toLocaleDateString();
 		if (!endDate) {
@@ -469,6 +595,10 @@ export default function GroupDetailPage() {
 							<strong>{tGroups("name")}:</strong> {group.name}
 						</div>
 						<div>
+							<strong>Teacher:</strong>{" "}
+							{group.teacher?.fullName || "-"}
+						</div>
+						<div>
 							<strong>{tGroups("venue")}:</strong>{" "}
 							{group.venue?.name || tGroups("noVenue")}
 						</div>
@@ -522,6 +652,268 @@ export default function GroupDetailPage() {
 								</Button>
 							)}
 						</div>
+					</CardContent>
+				</Card>
+
+				{/* Sessions */}
+				<Card>
+					<CardHeader>
+						<div className="flex justify-between items-center">
+							<div>
+								<CardTitle>Sessions</CardTitle>
+								<CardDescription>
+									Class sessions for this group
+								</CardDescription>
+							</div>
+							<div className="flex gap-2">
+								<Button
+									variant="outline"
+									size="sm"
+									onClick={() =>
+										router.push(
+											`/organizations/${organizationId}/sessions?groupId=${groupId}`,
+										)
+									}
+								>
+									View All
+								</Button>
+								<Dialog
+									open={isCreateSessionDialogOpen}
+									onOpenChange={setIsCreateSessionDialogOpen}
+								>
+									<DialogTrigger asChild>
+										<Button>
+											<Plus className="mr-2 h-4 w-4" />
+											Create Session
+										</Button>
+									</DialogTrigger>
+									<DialogContent className="max-w-2xl">
+										<DialogHeader>
+											<DialogTitle>{tSessions("createTitle")}</DialogTitle>
+											<DialogDescription>
+												{tSessions("createDescription")}
+											</DialogDescription>
+										</DialogHeader>
+										<form
+											onSubmit={sessionForm.handleSubmit(handleCreateSession)}
+										>
+											<FieldGroup>
+												<Controller
+													name="date"
+													control={sessionForm.control}
+													render={({ field, fieldState }) => (
+														<Field data-invalid={fieldState.invalid}>
+															<FieldLabel>{tSessions("date")}</FieldLabel>
+															<Input type="date" {...field} />
+															{fieldState.invalid && (
+																<FieldError errors={[fieldState.error]} />
+															)}
+														</Field>
+													)}
+												/>
+												<div className="grid grid-cols-2 gap-4">
+													<Controller
+														name="startTime"
+														control={sessionForm.control}
+														render={({ field }) => (
+															<Field>
+																<FieldLabel>{tSessions("startTime")}</FieldLabel>
+																<Input
+																	type="time"
+																	{...field}
+																	value={field.value || ""}
+																/>
+															</Field>
+														)}
+													/>
+													<Controller
+														name="endTime"
+														control={sessionForm.control}
+														render={({ field }) => (
+															<Field>
+																<FieldLabel>{tSessions("endTime")}</FieldLabel>
+																<Input
+																	type="time"
+																	{...field}
+																	value={field.value || ""}
+																/>
+															</Field>
+														)}
+													/>
+												</div>
+												<Controller
+													name="teacherId"
+													control={sessionForm.control}
+													render={({ field, fieldState }) => (
+														<Field data-invalid={fieldState.invalid}>
+															<FieldLabel>{tSessions("teacher")}</FieldLabel>
+															<Select
+																value={field.value}
+																onValueChange={field.onChange}
+															>
+																<SelectTrigger>
+																	<SelectValue
+																		placeholder={tSessions("selectTeacher")}
+																	/>
+																</SelectTrigger>
+																<SelectContent>
+																	{teachers.map((teacher) => (
+																		<SelectItem
+																			key={teacher.id}
+																			value={teacher.id}
+																		>
+																			{teacher.fullName}
+																		</SelectItem>
+																	))}
+																</SelectContent>
+															</Select>
+															{fieldState.invalid && (
+																<FieldError errors={[fieldState.error]} />
+															)}
+														</Field>
+													)}
+												/>
+												<Controller
+													name="venueId"
+													control={sessionForm.control}
+													render={({ field }) => (
+														<Field>
+															<FieldLabel>{tSessions("venue")}</FieldLabel>
+															<Select
+																value={field.value || "__none__"}
+																onValueChange={(value) =>
+																	field.onChange(
+																		value === "__none__" ? null : value,
+																	)
+																}
+															>
+																<SelectTrigger>
+																	<SelectValue
+																		placeholder={tSessions("selectVenue")}
+																	/>
+																</SelectTrigger>
+																<SelectContent>
+																	<SelectItem value="__none__">
+																		{tSessions("noVenue")}
+																	</SelectItem>
+																	{venues.map((venue) => (
+																		<SelectItem key={venue.id} value={venue.id}>
+																			{venue.name}
+																		</SelectItem>
+																	))}
+																</SelectContent>
+															</Select>
+														</Field>
+													)}
+												/>
+												<Controller
+													name="status"
+													control={sessionForm.control}
+													render={({ field }) => (
+														<Field>
+															<FieldLabel>{tSessions("status")}</FieldLabel>
+															<Select
+																value={field.value}
+																onValueChange={field.onChange}
+															>
+																<SelectTrigger>
+																	<SelectValue />
+																</SelectTrigger>
+																<SelectContent>
+																	<SelectItem value="scheduled">
+																		{tSessions("statusOptions.scheduled")}
+																	</SelectItem>
+																	<SelectItem value="held">
+																		{tSessions("statusOptions.held")}
+																	</SelectItem>
+																	<SelectItem value="cancelled">
+																		{tSessions("statusOptions.cancelled")}
+																	</SelectItem>
+																</SelectContent>
+															</Select>
+														</Field>
+													)}
+												/>
+											</FieldGroup>
+											<DialogFooter>
+												<Button
+													type="button"
+													variant="outline"
+													onClick={() => setIsCreateSessionDialogOpen(false)}
+												>
+													{tSessions("cancelButton")}
+												</Button>
+												<Button type="submit">{tSessions("create")}</Button>
+											</DialogFooter>
+										</form>
+									</DialogContent>
+								</Dialog>
+							</div>
+						</div>
+					</CardHeader>
+					<CardContent>
+						{sessions.length === 0 ? (
+							<p className="text-sm text-gray-500">
+								No sessions for this group yet.
+							</p>
+						) : (
+							<div className="space-y-2">
+								{sessions.slice(0, 5).map((session) => (
+									<div
+										key={session.id}
+										className="flex items-center justify-between p-3 border rounded-lg"
+									>
+										<div>
+											<div className="font-medium">
+												{format(new Date(session.date), "PPP")}
+											</div>
+											<div className="text-sm text-gray-500">
+												{session.teacher.fullName}
+												{session.startTime &&
+													` • ${session.startTime}${session.endTime ? ` - ${session.endTime}` : ""}`}
+											</div>
+										</div>
+										<div className="flex items-center gap-2">
+											<Badge
+												variant={
+													session.status === "held"
+														? "default"
+														: session.status === "cancelled"
+															? "secondary"
+															: "outline"
+												}
+											>
+												{tSessions(`statusOptions.${session.status}`)}
+											</Badge>
+											<Button
+												variant="ghost"
+												size="sm"
+												onClick={() =>
+													router.push(
+														`/organizations/${organizationId}/sessions/${session.id}`,
+													)
+												}
+											>
+												View
+											</Button>
+										</div>
+									</div>
+								))}
+								{sessions.length > 5 && (
+									<Button
+										variant="outline"
+										className="w-full"
+										onClick={() =>
+											router.push(
+												`/organizations/${organizationId}/sessions?groupId=${groupId}`,
+											)
+										}
+									>
+										View All {sessions.length} Sessions
+									</Button>
+								)}
+							</div>
+						)}
 					</CardContent>
 				</Card>
 

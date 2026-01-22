@@ -6,3 +6,6 @@ export * from "./members";
 export * from "./users";
 export * from "./invitations";
 export * from "./organizations";
+export * from "./groups";
+export * from "./student-groups";
+export * from "./class-sessions";

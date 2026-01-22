@@ -4,6 +4,7 @@ import {
 	enforceTenantIsolation,
 } from "@/lib/api-helpers";
 import { getGroupsByOrganization, createGroup } from "@/db/queries/groups";
+import { getTeacherByIdSimple } from "@/db/queries/teachers";
 
 /**
  * GET /api/organizations/[id]/groups
@@ -65,10 +66,17 @@ export async function POST(
 		await enforceTenantIsolation(organizationId, session.user.id);
 
 		const body = await request.json();
-		const { name, venueId, status, startedAt } = body;
+		const { name, teacherId, venueId, status, startedAt } = body;
 
 		if (!name) {
 			return NextResponse.json({ error: "Name is required" }, { status: 400 });
+		}
+
+		if (!teacherId) {
+			return NextResponse.json(
+				{ error: "Teacher is required" },
+				{ status: 400 },
+			);
 		}
 
 		if (!status || !["active", "paused", "closed"].includes(status)) {
@@ -78,10 +86,20 @@ export async function POST(
 			);
 		}
 
+		// Validate teacher belongs to organization
+		const teacher = await getTeacherByIdSimple(organizationId, teacherId);
+		if (!teacher) {
+			return NextResponse.json(
+				{ error: "Teacher not found or does not belong to organization" },
+				{ status: 404 },
+			);
+		}
+
 		// Create group
 		const newGroup = await createGroup({
 			organizationId,
 			name,
+			teacherId,
 			venueId: venueId || null,
 			status,
 			startedAt: startedAt ? new Date(startedAt) : null,
