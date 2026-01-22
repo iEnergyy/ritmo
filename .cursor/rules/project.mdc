@@ -1,0 +1,216 @@
+---
+alwaysApply: true
+---
+# Ritmo (Cadence) - Cursor AI Rules
+
+## Project Context
+
+Ritmo (also known as Cadence) is a multi-tenant CRM, administration, and intelligence platform for dance schools and independent teachers. It helps organizations manage students, groups, classes, attendance, payments (via bank transfer), and teacher payouts while unlocking powerful operational insights through data and AI.
+
+**Tech Stack:**
+- Next.js 16 (App Router)
+- React 19
+- TypeScript (strict mode)
+- BetterAuth (with Organization Plugin)
+- Drizzle ORM
+- PostgreSQL
+- next-intl (Internationalization)
+- Biome (formatting & linting)
+- Vitest (testing)
+- shadcn/ui + Tailwind CSS
+
+**Architecture:**
+- Multi-tenant with strict tenant isolation
+- One database, strict tenant isolation enforced at query level
+- Organizations are tenants
+- Users can belong to multiple organizations with different roles per organization
+
+## Code Style Guidelines
+
+- **Indentation:** Use tabs (not spaces) - configured in biome.json
+- **Quotes:** Use double quotes for strings - configured in biome.json
+- **Formatting:** Always follow Biome formatting rules. Run `pnpm format` before committing
+- **TypeScript:** Use strict mode. Always maintain type safety
+- **Imports:** Use path alias `@/*` for imports from project root (e.g., `@/components/ui/button`)
+- **File naming:** Use kebab-case for files and folders
+- **Component naming:** Use PascalCase for React components
+
+## Architecture Patterns
+
+### Multi-Tenancy & Tenant Isolation
+
+- **CRITICAL:** Always enforce tenant isolation in ALL database queries
+- Never query data without filtering by `organization_id`
+- Use tenant context helpers from `lib/tenant-context.ts` and `lib/tenant-resolver.ts`
+- Never hardcode organization IDs
+- Always validate tenant access before returning data
+- Use tenant errors from `lib/tenant-errors.ts` for proper error handling
+
+### Authentication
+
+- Use BetterAuth for all authentication
+- Leverage BetterAuth's Organization Plugin for multi-tenant auth
+- Users authenticate via BetterAuth and may have roles: `admin`, `teacher`, `staff`
+- Users can belong to multiple organizations with different roles per organization
+- Teachers can be linked to a user account (optional via `teachers.user_id`)
+
+### Next.js App Router
+
+- Follow Next.js App Router conventions strictly
+- Prefer Server Components when possible
+- Use Server Actions for mutations when appropriate
+- API routes in `app/api/` follow RESTful conventions
+- Use proper error handling and status codes
+
+### Internationalization
+
+- Use next-intl for all internationalization
+- Default locale: Spanish (es)
+- Supported locales: Spanish (es), English (en)
+- All UI text must be translatable via JSON message files
+- Use `messages/en.json` and `messages/es.json` for translations
+- Use `useTranslations()` hook in client components
+- Use `getTranslations()` in server components
+- Never hardcode user-facing strings
+
+### Organization Types
+
+- Support both `school` and `independent_teacher` organization types
+- Same schema, different behavior via configuration
+- A dance school = one organization
+- A solo teacher = one organization
+
+## File Organization
+
+- **API Routes:** `app/api/` - RESTful API endpoints
+- **Pages:** `app/[locale]/` - Internationalized pages
+- **Database Queries:** `db/queries/` - All database query functions
+- **Database Schema:** `db/schema.ts` - Drizzle schema definitions
+- **Components:** `components/` - Reusable React components
+- **UI Components:** `components/ui/` - shadcn/ui components
+- **Hooks:** `hooks/` - Custom React hooks
+- **Lib/Utils:** `lib/` - Utility functions and helpers
+- **Auth:** `auth/better-auth.ts` - BetterAuth configuration
+- **Tests:** `tests/` - Test files mirror source structure
+  - `tests/unit/` - Unit tests
+  - `tests/integration/` - Integration tests
+  - `tests/factories/` - Test data factories
+- **Scripts:** `scripts/` - Database migration and setup scripts
+- **Messages:** `messages/` - i18n translation files
+
+## Database Guidelines
+
+- **ORM:** Use Drizzle ORM for ALL database operations
+- **Migrations:** Always use migrations for schema changes (via drizzle-kit)
+- **Tenant Context:** Always include tenant context in queries - never query without `organization_id` filter
+- **IDs:** 
+  - BetterAuth tables use text-based IDs
+  - Domain entities (students, teachers, venues, groups) use UUIDs for primary keys
+  - Domain entities reference BetterAuth's `organization` table using text-based `organization_id` columns
+  - `teachers.user_id` is text to match `user.id`
+- **Queries:** Use query functions from `db/queries/` - don't write raw queries in components or API routes
+- **Schema:** Keep schema definitions in `db/schema.ts`
+- **Never:** Hardcode organization IDs, skip tenant filtering, or bypass query helpers
+
+## Testing Requirements
+
+- **Framework:** Use Vitest for all testing
+- **Unit Tests:** Write unit tests for utilities, helpers, and database queries
+- **Integration Tests:** Write integration tests for API routes
+- **Testing Library:** Use @testing-library/react and @testing-library/jest-dom
+- **Test Factories:** Use factories from `tests/factories/` for test data
+- **Test Structure:** Mirror source structure in `tests/` directory
+- **Coverage:** Maintain good test coverage, especially for critical paths
+- **Run Tests:** Use `pnpm test` for unit tests, `pnpm test:integration` for integration tests
+
+## API Route Guidelines
+
+- Follow RESTful conventions
+- Use proper HTTP methods (GET, POST, PUT, DELETE, PATCH)
+- Return appropriate status codes
+- Always validate tenant access
+- Use proper error handling with tenant errors
+- Validate request data
+- Use query helpers from `db/queries/` - don't write queries directly in routes
+
+## Component Guidelines
+
+- Prefer Server Components when possible
+- Use Client Components only when needed (interactivity, hooks, browser APIs)
+- Use shadcn/ui components from `components/ui/`
+- Make components translatable using next-intl
+- Keep components focused and reusable
+- Use proper TypeScript types for props
+
+## Domain Model Understanding
+
+### Core Entities
+
+- **Organizations:** Core tenant (school or independent_teacher)
+- **Users:** Authenticated users via BetterAuth, can belong to multiple organizations
+- **Members:** Link between users and organizations with roles
+- **Students:** Can exist without logging in, belong to organizations
+- **Teachers:** Can be linked to user accounts, belong to organizations
+- **Venues:** Physical locations where classes are held
+- **Groups:** Classes or groups that students enroll in
+- **Enrollments:** Link between students and groups
+
+### Key Principles
+
+- Attendance, payments, and payouts are derived from what actually happened, not what was planned
+- The system models real-world events, not abstractions
+- This enables AI-driven insights and intelligence features
+
+## Best Practices
+
+- **Type Safety:** Maintain strict TypeScript type safety throughout
+- **Error Handling:** Use proper error handling with tenant errors
+- **Security:** Always validate tenant access, never trust client input
+- **Performance:** Optimize database queries, use proper indexes
+- **Code Quality:** Follow Biome linting rules, format code before committing
+- **Documentation:** Add comments for complex logic or business rules
+- **Testing:** Write tests for new features, especially critical paths
+- **Internationalization:** Never hardcode user-facing strings
+- **Tenant Isolation:** This is non-negotiable - always enforce tenant isolation
+
+## Common Patterns
+
+### Adding a New API Route
+
+1. Create route file in `app/api/` following RESTful structure
+2. Validate tenant access using tenant helpers
+3. Use query functions from `db/queries/`
+4. Return proper status codes and error handling
+5. Write integration tests
+
+### Adding a New Database Query
+
+1. Add query function to appropriate file in `db/queries/`
+2. Always include `organization_id` filter
+3. Use Drizzle ORM, never raw SQL
+4. Export from `db/queries/index.ts`
+5. Write unit tests
+
+### Adding a New Component
+
+1. Create component in `components/` or `components/ui/`
+2. Use Server Component when possible
+3. Make translatable using next-intl
+4. Use proper TypeScript types
+5. Follow shadcn/ui patterns if it's a UI component
+
+### Adding Translations
+
+1. Add keys to both `messages/en.json` and `messages/es.json`
+2. Use descriptive, namespaced keys
+3. Keep translations in sync between locales
+4. Use `useTranslations()` or `getTranslations()` in components
+
+## Important Reminders
+
+- **Tenant Isolation is Critical:** Never query without organization_id filter
+- **Type Safety:** Always use TypeScript types, avoid `any`
+- **Internationalization:** All UI text must be translatable
+- **Testing:** Write tests for new features
+- **Code Style:** Follow Biome formatting rules
+- **Security:** Always validate tenant access and user permissions
