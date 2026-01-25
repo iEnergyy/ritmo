@@ -388,13 +388,17 @@ export default function StudentDetailPage() {
 													// Parse date string to local date (avoid timezone issues)
 													const dateValue = field.value
 														? (() => {
-																const [year, month, day] = field.value.split("-").map(Number);
+																const [year, month, day] = field.value
+																	.split("-")
+																	.map(Number);
 																return new Date(year, month - 1, day);
 															})()
 														: undefined;
 													return (
 														<Field data-invalid={fieldState.invalid}>
-															<FieldLabel>{tEnrollments("startDate")}</FieldLabel>
+															<FieldLabel>
+																{tEnrollments("startDate")}
+															</FieldLabel>
 															<Popover>
 																<PopoverTrigger asChild>
 																	<Button
@@ -412,7 +416,10 @@ export default function StudentDetailPage() {
 																		)}
 																	</Button>
 																</PopoverTrigger>
-																<PopoverContent className="w-auto p-0" align="start">
+																<PopoverContent
+																	className="w-auto p-0"
+																	align="start"
+																>
 																	<Calendar
 																		mode="single"
 																		selected={dateValue}
@@ -420,9 +427,15 @@ export default function StudentDetailPage() {
 																			if (date) {
 																				// Format as YYYY-MM-DD in local timezone
 																				const year = date.getFullYear();
-																				const month = String(date.getMonth() + 1).padStart(2, "0");
-																				const day = String(date.getDate()).padStart(2, "0");
-																				field.onChange(`${year}-${month}-${day}`);
+																				const month = String(
+																					date.getMonth() + 1,
+																				).padStart(2, "0");
+																				const day = String(
+																					date.getDate(),
+																				).padStart(2, "0");
+																				field.onChange(
+																					`${year}-${month}-${day}`,
+																				);
 																			} else {
 																				field.onChange("");
 																			}
@@ -444,7 +457,9 @@ export default function StudentDetailPage() {
 													// Parse date string to local date (avoid timezone issues)
 													const dateValue = field.value
 														? (() => {
-																const [year, month, day] = field.value.split("-").map(Number);
+																const [year, month, day] = field.value
+																	.split("-")
+																	.map(Number);
 																return new Date(year, month - 1, day);
 															})()
 														: undefined;
@@ -470,7 +485,10 @@ export default function StudentDetailPage() {
 																		)}
 																	</Button>
 																</PopoverTrigger>
-																<PopoverContent className="w-auto p-0" align="start">
+																<PopoverContent
+																	className="w-auto p-0"
+																	align="start"
+																>
 																	<Calendar
 																		mode="single"
 																		selected={dateValue}
@@ -478,9 +496,15 @@ export default function StudentDetailPage() {
 																			if (date) {
 																				// Format as YYYY-MM-DD in local timezone
 																				const year = date.getFullYear();
-																				const month = String(date.getMonth() + 1).padStart(2, "0");
-																				const day = String(date.getDate()).padStart(2, "0");
-																				field.onChange(`${year}-${month}-${day}`);
+																				const month = String(
+																					date.getMonth() + 1,
+																				).padStart(2, "0");
+																				const day = String(
+																					date.getDate(),
+																				).padStart(2, "0");
+																				field.onChange(
+																					`${year}-${month}-${day}`,
+																				);
 																			} else {
 																				field.onChange(null);
 																			}

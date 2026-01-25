@@ -258,7 +258,8 @@ export function AppLayout({ children, organizationId }: AppLayoutProps) {
 								<SidebarMenu>
 									{navigation.map((item) => {
 										const isActive =
-											pathname === item.href || pathname.startsWith(item.href + "/");
+											pathname === item.href ||
+											pathname.startsWith(item.href + "/");
 										return (
 											<SidebarMenuItem key={item.name}>
 												<SidebarMenuButton

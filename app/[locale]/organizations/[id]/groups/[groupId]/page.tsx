@@ -61,7 +61,18 @@ import { useForm } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Controller } from "react-hook-form";
-import { ArrowLeft, Plus, Pencil, Trash2, Play, Pause, X, CalendarIcon, CalendarDays, Clock } from "lucide-react";
+import {
+	ArrowLeft,
+	Plus,
+	Pencil,
+	Trash2,
+	Play,
+	Pause,
+	X,
+	CalendarIcon,
+	CalendarDays,
+	Clock,
+} from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import {
 	Popover,
@@ -237,7 +248,13 @@ export default function GroupDetailPage() {
 		useState(false);
 	const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
 	const [schedules, setSchedules] = useState<
-		Array<{ recurrence: string; durationHours: string; effectiveFrom: string; effectiveTo: string | null; slots: Array<{ dayOfWeek: number; startTime: string }> }>
+		Array<{
+			recurrence: string;
+			durationHours: string;
+			effectiveFrom: string;
+			effectiveTo: string | null;
+			slots: Array<{ dayOfWeek: number; startTime: string }>;
+		}>
 	>([]);
 	const [scheduleRecurrence, setScheduleRecurrence] = useState<
 		"one_time" | "weekly" | "twice_weekly"
@@ -454,7 +471,10 @@ export default function GroupDetailPage() {
 			setScheduleEffectiveFrom(s.effectiveFrom);
 			setScheduleSlots(
 				s.slots.length
-					? s.slots.map((x) => ({ dayOfWeek: x.dayOfWeek, startTime: x.startTime }))
+					? s.slots.map((x) => ({
+							dayOfWeek: x.dayOfWeek,
+							startTime: x.startTime,
+						}))
 					: [{ dayOfWeek: 1, startTime: "10:00" }],
 			);
 			setScheduleApplyToFutureOnly(true);
@@ -478,7 +498,11 @@ export default function GroupDetailPage() {
 		const slots = Array.from(
 			{ length: slotCount },
 			(_, i) => scheduleSlots[i] ?? { dayOfWeek: 1, startTime: "10:00" },
-		).map((s, i) => ({ dayOfWeek: s.dayOfWeek, startTime: s.startTime, sortOrder: i }));
+		).map((s, i) => ({
+			dayOfWeek: s.dayOfWeek,
+			startTime: s.startTime,
+			sortOrder: i,
+		}));
 		setScheduleSaving(true);
 		try {
 			const res = await fetch(
@@ -798,8 +822,7 @@ export default function GroupDetailPage() {
 							<strong>{tGroups("name")}:</strong> {group.name}
 						</div>
 						<div>
-							<strong>Teacher:</strong>{" "}
-							{group.teacher?.fullName || "-"}
+							<strong>Teacher:</strong> {group.teacher?.fullName || "-"}
 						</div>
 						<div>
 							<strong>{tGroups("venue")}:</strong>{" "}
@@ -874,7 +897,9 @@ export default function GroupDetailPage() {
 								onClick={() => openScheduleDialog(schedules.length > 0)}
 							>
 								<CalendarDays className="mr-2 h-4 w-4" />
-								{schedules.length ? tGroupSchedule("editSchedule") : tGroupSchedule("addSchedule")}
+								{schedules.length
+									? tGroupSchedule("editSchedule")
+									: tGroupSchedule("addSchedule")}
 							</Button>
 						</div>
 					</CardHeader>
@@ -928,9 +953,7 @@ export default function GroupDetailPage() {
 						<div className="flex justify-between items-center">
 							<div>
 								<CardTitle>Sessions</CardTitle>
-								<CardDescription>
-									Class sessions for this group
-								</CardDescription>
+								<CardDescription>Class sessions for this group</CardDescription>
 							</div>
 							<div className="flex gap-2">
 								<Button
@@ -990,7 +1013,10 @@ export default function GroupDetailPage() {
 																			: tSessions("pickDate")}
 																	</Button>
 																</PopoverTrigger>
-																<PopoverContent className="w-auto p-0" align="start">
+																<PopoverContent
+																	className="w-auto p-0"
+																	align="start"
+																>
 																	<Calendar
 																		mode="single"
 																		selected={
@@ -1043,7 +1069,9 @@ export default function GroupDetailPage() {
 															);
 															return (
 																<Field>
-																	<FieldLabel>{tSessions("startTime")}</FieldLabel>
+																	<FieldLabel>
+																		{tSessions("startTime")}
+																	</FieldLabel>
 																	<div className="relative">
 																		<Clock className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
 																		<Input
@@ -1357,7 +1385,9 @@ export default function GroupDetailPage() {
 														// Parse date string to local date (avoid timezone issues)
 														const dateValue = field.value
 															? (() => {
-																	const [year, month, day] = field.value.split("-").map(Number);
+																	const [year, month, day] = field.value
+																		.split("-")
+																		.map(Number);
 																	return new Date(year, month - 1, day);
 																})()
 															: undefined;
@@ -1383,7 +1413,10 @@ export default function GroupDetailPage() {
 																			)}
 																		</Button>
 																	</PopoverTrigger>
-																	<PopoverContent className="w-auto p-0" align="start">
+																	<PopoverContent
+																		className="w-auto p-0"
+																		align="start"
+																	>
 																		<Calendar
 																			mode="single"
 																			selected={dateValue}
@@ -1391,9 +1424,15 @@ export default function GroupDetailPage() {
 																				if (date) {
 																					// Format as YYYY-MM-DD in local timezone
 																					const year = date.getFullYear();
-																					const month = String(date.getMonth() + 1).padStart(2, "0");
-																					const day = String(date.getDate()).padStart(2, "0");
-																					field.onChange(`${year}-${month}-${day}`);
+																					const month = String(
+																						date.getMonth() + 1,
+																					).padStart(2, "0");
+																					const day = String(
+																						date.getDate(),
+																					).padStart(2, "0");
+																					field.onChange(
+																						`${year}-${month}-${day}`,
+																					);
 																				} else {
 																					field.onChange("");
 																				}
@@ -1415,7 +1454,9 @@ export default function GroupDetailPage() {
 														// Parse date string to local date (avoid timezone issues)
 														const dateValue = field.value
 															? (() => {
-																	const [year, month, day] = field.value.split("-").map(Number);
+																	const [year, month, day] = field.value
+																		.split("-")
+																		.map(Number);
 																	return new Date(year, month - 1, day);
 																})()
 															: undefined;
@@ -1441,7 +1482,10 @@ export default function GroupDetailPage() {
 																			)}
 																		</Button>
 																	</PopoverTrigger>
-																	<PopoverContent className="w-auto p-0" align="start">
+																	<PopoverContent
+																		className="w-auto p-0"
+																		align="start"
+																	>
 																		<Calendar
 																			mode="single"
 																			selected={dateValue}
@@ -1449,9 +1493,15 @@ export default function GroupDetailPage() {
 																				if (date) {
 																					// Format as YYYY-MM-DD in local timezone
 																					const year = date.getFullYear();
-																					const month = String(date.getMonth() + 1).padStart(2, "0");
-																					const day = String(date.getDate()).padStart(2, "0");
-																					field.onChange(`${year}-${month}-${day}`);
+																					const month = String(
+																						date.getMonth() + 1,
+																					).padStart(2, "0");
+																					const day = String(
+																						date.getDate(),
+																					).padStart(2, "0");
+																					field.onChange(
+																						`${year}-${month}-${day}`,
+																					);
 																				} else {
 																					field.onChange(null);
 																				}
@@ -1561,7 +1611,9 @@ export default function GroupDetailPage() {
 										// Parse date string to local date (avoid timezone issues)
 										const dateValue = field.value
 											? (() => {
-													const [year, month, day] = field.value.split("-").map(Number);
+													const [year, month, day] = field.value
+														.split("-")
+														.map(Number);
 													return new Date(year, month - 1, day);
 												})()
 											: undefined;
@@ -1593,8 +1645,13 @@ export default function GroupDetailPage() {
 																if (date) {
 																	// Format as YYYY-MM-DD in local timezone
 																	const year = date.getFullYear();
-																	const month = String(date.getMonth() + 1).padStart(2, "0");
-																	const day = String(date.getDate()).padStart(2, "0");
+																	const month = String(
+																		date.getMonth() + 1,
+																	).padStart(2, "0");
+																	const day = String(date.getDate()).padStart(
+																		2,
+																		"0",
+																	);
 																	field.onChange(`${year}-${month}-${day}`);
 																} else {
 																	field.onChange("");
@@ -1617,13 +1674,17 @@ export default function GroupDetailPage() {
 										// Parse date string to local date (avoid timezone issues)
 										const dateValue = field.value
 											? (() => {
-													const [year, month, day] = field.value.split("-").map(Number);
+													const [year, month, day] = field.value
+														.split("-")
+														.map(Number);
 													return new Date(year, month - 1, day);
 												})()
 											: undefined;
 										return (
 											<Field>
-												<FieldLabel>{tEnrollments("endDateOptional")}</FieldLabel>
+												<FieldLabel>
+													{tEnrollments("endDateOptional")}
+												</FieldLabel>
 												<Popover>
 													<PopoverTrigger asChild>
 														<Button
@@ -1649,8 +1710,13 @@ export default function GroupDetailPage() {
 																if (date) {
 																	// Format as YYYY-MM-DD in local timezone
 																	const year = date.getFullYear();
-																	const month = String(date.getMonth() + 1).padStart(2, "0");
-																	const day = String(date.getDate()).padStart(2, "0");
+																	const month = String(
+																		date.getMonth() + 1,
+																	).padStart(2, "0");
+																	const day = String(date.getDate()).padStart(
+																		2,
+																		"0",
+																	);
 																	field.onChange(`${year}-${month}-${day}`);
 																} else {
 																	field.onChange(null);
@@ -1732,7 +1798,10 @@ export default function GroupDetailPage() {
 				</AlertDialog>
 
 				{/* Group Schedule Dialog */}
-				<Dialog open={isScheduleDialogOpen} onOpenChange={setIsScheduleDialogOpen}>
+				<Dialog
+					open={isScheduleDialogOpen}
+					onOpenChange={setIsScheduleDialogOpen}
+				>
 					<DialogContent className="max-w-md">
 						<DialogHeader>
 							<DialogTitle>{tGroupSchedule("title")}</DialogTitle>
@@ -1747,13 +1816,17 @@ export default function GroupDetailPage() {
 								</label>
 								<Select
 									value={scheduleRecurrence}
-									onValueChange={(v: "one_time" | "weekly" | "twice_weekly") => {
+									onValueChange={(
+										v: "one_time" | "weekly" | "twice_weekly",
+									) => {
 										setScheduleRecurrence(v);
 										if (v === "twice_weekly" && scheduleSlots.length < 2) {
-											setScheduleSlots((prev) => [
-												...prev,
-												{ dayOfWeek: 3, startTime: "10:00" },
-											].slice(0, 2));
+											setScheduleSlots((prev) =>
+												[...prev, { dayOfWeek: 3, startTime: "10:00" }].slice(
+													0,
+													2,
+												),
+											);
 										} else if (v !== "twice_weekly") {
 											setScheduleSlots((prev) => prev.slice(0, 1));
 										}
@@ -1763,9 +1836,15 @@ export default function GroupDetailPage() {
 										<SelectValue />
 									</SelectTrigger>
 									<SelectContent>
-										<SelectItem value="one_time">{tGroupSchedule("oneTime")}</SelectItem>
-										<SelectItem value="weekly">{tGroupSchedule("weekly")}</SelectItem>
-										<SelectItem value="twice_weekly">{tGroupSchedule("twiceWeekly")}</SelectItem>
+										<SelectItem value="one_time">
+											{tGroupSchedule("oneTime")}
+										</SelectItem>
+										<SelectItem value="weekly">
+											{tGroupSchedule("weekly")}
+										</SelectItem>
+										<SelectItem value="twice_weekly">
+											{tGroupSchedule("twiceWeekly")}
+										</SelectItem>
 									</SelectContent>
 								</Select>
 							</div>
@@ -1813,7 +1892,9 @@ export default function GroupDetailPage() {
 													: undefined
 											}
 											onSelect={(d) =>
-												setScheduleEffectiveFrom(d ? format(d, "yyyy-MM-dd") : "")
+												setScheduleEffectiveFrom(
+													d ? format(d, "yyyy-MM-dd") : "",
+												)
 											}
 											initialFocus
 										/>
@@ -1824,7 +1905,9 @@ export default function GroupDetailPage() {
 								<Checkbox
 									id="apply-future"
 									checked={scheduleApplyToFutureOnly}
-									onCheckedChange={(v) => setScheduleApplyToFutureOnly(v === true)}
+									onCheckedChange={(v) =>
+										setScheduleApplyToFutureOnly(v === true)
+									}
 									className="mt-1"
 									aria-describedby="apply-future-description"
 								/>
@@ -1835,7 +1918,10 @@ export default function GroupDetailPage() {
 									>
 										{tGroupSchedule("applyToFutureOnly")}
 									</Label>
-									<p id="apply-future-description" className="text-xs text-muted-foreground">
+									<p
+										id="apply-future-description"
+										className="text-xs text-muted-foreground"
+									>
 										{tGroupSchedule("applyToFutureOnlyDescription")}
 									</p>
 								</div>
@@ -1846,15 +1932,20 @@ export default function GroupDetailPage() {
 								</label>
 								{Array.from(
 									{ length: scheduleRecurrence === "twice_weekly" ? 2 : 1 },
-									(_, i) => scheduleSlots[i] ?? { dayOfWeek: 1, startTime: "10:00" },
+									(_, i) =>
+										scheduleSlots[i] ?? { dayOfWeek: 1, startTime: "10:00" },
 								).map((slot, i) => (
-									<div key={`schedule-slot-${i}-${slot.dayOfWeek}-${slot.startTime}`} className="flex gap-2 items-center">
+									<div
+										key={`schedule-slot-${i}-${slot.dayOfWeek}-${slot.startTime}`}
+										className="flex gap-2 items-center"
+									>
 										<Select
 											value={String(slot.dayOfWeek)}
 											onValueChange={(v) =>
 												setScheduleSlots((prev) => {
 													const next = [...prev];
-													while (next.length <= i) next.push({ dayOfWeek: 1, startTime: "10:00" });
+													while (next.length <= i)
+														next.push({ dayOfWeek: 1, startTime: "10:00" });
 													next[i] = { ...next[i], dayOfWeek: Number(v) };
 													return next;
 												})
@@ -1879,7 +1970,8 @@ export default function GroupDetailPage() {
 												onChange={(e) =>
 													setScheduleSlots((prev) => {
 														const next = [...prev];
-														while (next.length <= i) next.push({ dayOfWeek: 1, startTime: "10:00" });
+														while (next.length <= i)
+															next.push({ dayOfWeek: 1, startTime: "10:00" });
 														next[i] = { ...next[i], startTime: e.target.value };
 														return next;
 													})

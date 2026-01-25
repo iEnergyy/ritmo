@@ -266,9 +266,7 @@ export default function SessionDetailPage() {
 						{t("backToSessions")}
 					</Button>
 					<div>
-						<h1 className="text-3xl font-bold text-gray-900">
-							{t("title")}
-						</h1>
+						<h1 className="text-3xl font-bold text-gray-900">{t("title")}</h1>
 						<p className="mt-2 text-sm text-gray-600">
 							Session details and management
 						</p>
@@ -423,9 +421,7 @@ export default function SessionDetailPage() {
 				<Card>
 					<CardHeader>
 						<CardTitle>{t("attendanceRecords")}</CardTitle>
-						<CardDescription>
-							{t("attendancePlaceholder")}
-						</CardDescription>
+						<CardDescription>{t("attendancePlaceholder")}</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<p className="text-sm text-gray-500">{t("noAttendanceRecords")}</p>
@@ -461,9 +457,7 @@ export default function SessionDetailPage() {
 				>
 					<AlertDialogContent>
 						<AlertDialogHeader>
-							<AlertDialogTitle>
-								{tSessions("deleteTitle")}
-							</AlertDialogTitle>
+							<AlertDialogTitle>{tSessions("deleteTitle")}</AlertDialogTitle>
 							<AlertDialogDescription>
 								{tSessions("deleteDescription")}
 							</AlertDialogDescription>

@@ -576,7 +576,9 @@ export default function GroupsPage() {
 											// Parse date string to local date (avoid timezone issues)
 											const dateValue = field.value
 												? (() => {
-														const [year, month, day] = field.value.split("-").map(Number);
+														const [year, month, day] = field.value
+															.split("-")
+															.map(Number);
 														return new Date(year, month - 1, day);
 													})()
 												: undefined;
@@ -600,7 +602,10 @@ export default function GroupsPage() {
 																)}
 															</Button>
 														</PopoverTrigger>
-														<PopoverContent className="w-auto p-0" align="start">
+														<PopoverContent
+															className="w-auto p-0"
+															align="start"
+														>
 															<Calendar
 																mode="single"
 																selected={dateValue}
@@ -608,8 +613,13 @@ export default function GroupsPage() {
 																	if (date) {
 																		// Format as YYYY-MM-DD in local timezone
 																		const year = date.getFullYear();
-																		const month = String(date.getMonth() + 1).padStart(2, "0");
-																		const day = String(date.getDate()).padStart(2, "0");
+																		const month = String(
+																			date.getMonth() + 1,
+																		).padStart(2, "0");
+																		const day = String(date.getDate()).padStart(
+																			2,
+																			"0",
+																		);
 																		field.onChange(`${year}-${month}-${day}`);
 																	} else {
 																		field.onChange(null);
@@ -705,9 +715,7 @@ export default function GroupsPage() {
 												{group.name}
 											</Link>
 										</TableCell>
-										<TableCell>
-											{group.teacher?.fullName || "-"}
-										</TableCell>
+										<TableCell>{group.teacher?.fullName || "-"}</TableCell>
 										<TableCell>{group.venue?.name || t("noVenue")}</TableCell>
 										<TableCell>
 											<Badge variant={getStatusBadgeVariant(group.status)}>
@@ -906,7 +914,9 @@ export default function GroupsPage() {
 										// Parse date string to local date (avoid timezone issues)
 										const dateValue = field.value
 											? (() => {
-													const [year, month, day] = field.value.split("-").map(Number);
+													const [year, month, day] = field.value
+														.split("-")
+														.map(Number);
 													return new Date(year, month - 1, day);
 												})()
 											: undefined;
@@ -938,8 +948,13 @@ export default function GroupsPage() {
 																if (date) {
 																	// Format as YYYY-MM-DD in local timezone
 																	const year = date.getFullYear();
-																	const month = String(date.getMonth() + 1).padStart(2, "0");
-																	const day = String(date.getDate()).padStart(2, "0");
+																	const month = String(
+																		date.getMonth() + 1,
+																	).padStart(2, "0");
+																	const day = String(date.getDate()).padStart(
+																		2,
+																		"0",
+																	);
 																	field.onChange(`${year}-${month}-${day}`);
 																} else {
 																	field.onChange(null);

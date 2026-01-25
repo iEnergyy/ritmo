@@ -521,9 +521,7 @@ export default function SessionsPage() {
 			<div className="space-y-6">
 				<div className="flex justify-between items-center">
 					<div>
-						<h1 className="text-3xl font-bold text-gray-900">
-							{t("title")}
-						</h1>
+						<h1 className="text-3xl font-bold text-gray-900">{t("title")}</h1>
 						<p className="mt-2 text-sm text-gray-600">
 							Manage class sessions in your organization
 						</p>
@@ -588,7 +586,9 @@ export default function SessionsPage() {
 																		: undefined
 																}
 																onSelect={(d) =>
-																	field.onChange(d ? format(d, "yyyy-MM-dd") : "")
+																	field.onChange(
+																		d ? format(d, "yyyy-MM-dd") : "",
+																	)
 																}
 																initialFocus
 															/>
@@ -674,7 +674,9 @@ export default function SessionsPage() {
 													<Select
 														value={field.value || "__none__"}
 														onValueChange={(value) =>
-															field.onChange(value === "__none__" ? null : value)
+															field.onChange(
+																value === "__none__" ? null : value,
+															)
 														}
 													>
 														<SelectTrigger>
@@ -703,7 +705,9 @@ export default function SessionsPage() {
 													<Select
 														value={field.value || "__none__"}
 														onValueChange={(value) =>
-															field.onChange(value === "__none__" ? null : value)
+															field.onChange(
+																value === "__none__" ? null : value,
+															)
 														}
 													>
 														<SelectTrigger>
@@ -1260,9 +1264,7 @@ export default function SessionsPage() {
 							<AlertDialogTitle>{t("statusChangeTitle")}</AlertDialogTitle>
 							<AlertDialogDescription>
 								{t("statusChangeDescription", {
-									status: newStatus
-										? t(`statusOptions.${newStatus}`)
-										: "",
+									status: newStatus ? t(`statusOptions.${newStatus}`) : "",
 								})}
 							</AlertDialogDescription>
 						</AlertDialogHeader>

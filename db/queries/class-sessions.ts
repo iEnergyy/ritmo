@@ -56,7 +56,8 @@ export async function getSessionsByOrganization(
 		conditions.push(eq(classSessions.status, filters.status));
 	}
 
-	const whereClause = conditions.length > 1 ? and(...conditions) : conditions[0];
+	const whereClause =
+		conditions.length > 1 ? and(...conditions) : conditions[0];
 
 	const results = await db
 		.select({
@@ -246,7 +247,9 @@ export async function updateSession(
 					: data.venueId || null,
 			teacherId: data.teacherId ?? existingSession.teacherId,
 			date:
-				data.date === undefined ? existingSession.date : toDateString(data.date),
+				data.date === undefined
+					? existingSession.date
+					: toDateString(data.date),
 			startTime:
 				data.startTime === undefined
 					? existingSession.startTime

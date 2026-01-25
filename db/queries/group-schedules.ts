@@ -48,7 +48,10 @@ export async function getGroupSchedule(
 				)!,
 			),
 		)
-		.orderBy(asc(groupSchedules.effectiveFrom), asc(groupScheduleSlots.sortOrder));
+		.orderBy(
+			asc(groupSchedules.effectiveFrom),
+			asc(groupScheduleSlots.sortOrder),
+		);
 
 	const byScheduleId = new Map<string, GroupScheduleWithSlots>();
 	for (const row of rows) {
@@ -74,7 +77,7 @@ export async function getScheduleSlots(
 ): Promise<GroupScheduleWithSlots[]> {
 	const from = fromDate
 		? new Date(fromDate).toISOString().slice(0, 10)
-		 : undefined;
+		: undefined;
 	const to = toDate ? new Date(toDate).toISOString().slice(0, 10) : undefined;
 
 	const conditions = [
@@ -104,7 +107,10 @@ export async function getScheduleSlots(
 			eq(groupSchedules.id, groupScheduleSlots.groupScheduleId),
 		)
 		.where(and(...conditions))
-		.orderBy(asc(groupSchedules.effectiveFrom), asc(groupScheduleSlots.sortOrder));
+		.orderBy(
+			asc(groupSchedules.effectiveFrom),
+			asc(groupScheduleSlots.sortOrder),
+		);
 
 	const byScheduleId = new Map<string, GroupScheduleWithSlots>();
 	for (const row of rows) {

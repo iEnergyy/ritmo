@@ -45,7 +45,12 @@ export async function GET(
 
 		let schedules;
 		if (fromStr && toStr) {
-			schedules = await getScheduleSlots(groupId, organizationId, new Date(fromStr), new Date(toStr));
+			schedules = await getScheduleSlots(
+				groupId,
+				organizationId,
+				new Date(fromStr),
+				new Date(toStr),
+			);
 		} else {
 			schedules = await getGroupSchedule(groupId, organizationId);
 		}
@@ -105,7 +110,10 @@ export async function PATCH(
 
 		if (durationHours == null || Number(durationHours) <= 0) {
 			return NextResponse.json(
-				{ error: "Duration per session (hours) is required and must be positive" },
+				{
+					error:
+						"Duration per session (hours) is required and must be positive",
+				},
 				{ status: 400 },
 			);
 		}
@@ -124,14 +132,21 @@ export async function PATCH(
 				{ status: 400 },
 			);
 		}
-		if ((recurrence === "weekly" || recurrence === "one_time") && slotCount !== 1) {
+		if (
+			(recurrence === "weekly" || recurrence === "one_time") &&
+			slotCount !== 1
+		) {
 			return NextResponse.json(
 				{ error: "Weekly and one-time schedules must have exactly one slot" },
 				{ status: 400 },
 			);
 		}
 
-		const normalisedSlots: Array<{ dayOfWeek: number; startTime: string; sortOrder?: number }> = [];
+		const normalisedSlots: Array<{
+			dayOfWeek: number;
+			startTime: string;
+			sortOrder?: number;
+		}> = [];
 		for (let i = 0; i < (slots || []).length; i++) {
 			const s = slots[i];
 			const dow = Number(s?.dayOfWeek);
@@ -164,7 +179,11 @@ export async function PATCH(
 			slots: normalisedSlots,
 		};
 
-		const schedule = await upsertGroupSchedule(groupId, organizationId, payload);
+		const schedule = await upsertGroupSchedule(
+			groupId,
+			organizationId,
+			payload,
+		);
 
 		let generated = { created: 0 };
 		if (generateSessions && generateFrom && generateTo) {

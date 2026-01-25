@@ -1,34 +1,34 @@
 {
-  "version": "7",
-  "dialect": "postgresql",
-  "entries": [
-    {
-      "idx": 0,
-      "version": "7",
-      "when": 1766960830691,
-      "tag": "0000_lively_bug",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1769055793458,
-      "tag": "0001_moaning_silver_fox",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1769056000000,
-      "tag": "0002_add_teacher_to_groups",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1769056100000,
-      "tag": "0003_group_schedules",
-      "breakpoints": true
-    }
-  ]
+	"version": "7",
+	"dialect": "postgresql",
+	"entries": [
+		{
+			"idx": 0,
+			"version": "7",
+			"when": 1766960830691,
+			"tag": "0000_lively_bug",
+			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "7",
+			"when": 1769055793458,
+			"tag": "0001_moaning_silver_fox",
+			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "7",
+			"when": 1769056000000,
+			"tag": "0002_add_teacher_to_groups",
+			"breakpoints": true
+		},
+		{
+			"idx": 3,
+			"version": "7",
+			"when": 1769056100000,
+			"tag": "0003_group_schedules",
+			"breakpoints": true
+		}
+	]
 }

@@ -46,7 +46,9 @@ async function baseline() {
 			WHERE "created_at" = ${entry.when}
 			LIMIT 1
 		`);
-		const rows = Array.isArray(existing) ? existing : (existing as { rows?: unknown[] }).rows ?? [];
+		const rows = Array.isArray(existing)
+			? existing
+			: ((existing as { rows?: unknown[] }).rows ?? []);
 		if (rows.length > 0) {
 			console.log(`Already applied: ${entry.tag}, skipping.`);
 			continue;
@@ -61,7 +63,9 @@ async function baseline() {
 
 baseline()
 	.then(() => {
-		console.log("Baseline done. Run pnpm db:migrate to apply pending migrations.");
+		console.log(
+			"Baseline done. Run pnpm db:migrate to apply pending migrations.",
+		);
 		process.exit(0);
 	})
 	.catch((err) => {

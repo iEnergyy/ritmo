@@ -332,17 +332,21 @@ export const groupSchedules = pgTable(
 			.notNull()
 			.references(() => organization.id, { onDelete: "cascade" }),
 		recurrence: scheduleRecurrenceEnum("recurrence").notNull(),
-		durationHours: numeric("duration_hours", { precision: 4, scale: 2 }).notNull(),
+		durationHours: numeric("duration_hours", {
+			precision: 4,
+			scale: 2,
+		}).notNull(),
 		effectiveFrom: date("effective_from").notNull(),
 		effectiveTo: date("effective_to"),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 	},
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	(table: any) => [
-		index("group_schedules_groupId_idx").on(table.groupId),
-		index("group_schedules_organizationId_idx").on(table.organizationId),
-		index("group_schedules_effectiveFrom_idx").on(table.effectiveFrom),
-	] as const,
+	(table: any) =>
+		[
+			index("group_schedules_groupId_idx").on(table.groupId),
+			index("group_schedules_organizationId_idx").on(table.organizationId),
+			index("group_schedules_effectiveFrom_idx").on(table.effectiveFrom),
+		] as const,
 );
 
 export const groupScheduleSlots = pgTable("group_schedule_slots", {
