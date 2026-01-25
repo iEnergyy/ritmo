@@ -31,19 +31,19 @@ todos:
     status: completed
   - id: schema-group-schedules
     content: Add schema/migration for group time schedules (one-time or recurring, weekly/twice-weekly, duration per session in hours, effectiveFrom for edit-to-update-future-only)
-    status: pending
+    status: completed
   - id: db-queries-group-schedules
     content: Add db/queries/group-schedules.ts with getGroupSchedule, upsertGroupSchedule, getScheduleSlots, and applyScheduleToFutureSessions (or generate sessions from schedule from date X)
-    status: pending
+    status: completed
   - id: api-group-schedule
     content: Create app/api/organizations/[id]/groups/[groupId]/schedule/route.ts with GET and PATCH; PATCH applies to future sessions only, historical sessions unchanged
-    status: pending
+    status: completed
   - id: translations-schedules
     content: Add Group schedule translation keys (one-time/recurring, weekly/twice weekly, duration, apply to future) to messages/es.json and messages/en.json
-    status: pending
+    status: completed
   - id: ui-group-schedule-management
     content: Add Group schedule management UI on group detail page—time schedule config (one-time/recurring), weekly/twice weekly options, duration per session (hours), edit to update future sessions only
-    status: pending
+    status: completed
 isProject: false
 ---
 

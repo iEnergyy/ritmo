@@ -44,6 +44,7 @@ import {
 	ChevronDown,
 	CheckIcon,
 	UsersRound,
+	CalendarDays,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -156,6 +157,11 @@ export function AppLayout({ children, organizationId }: AppLayoutProps) {
 					icon: UsersRound,
 				},
 				{
+					name: "Sessions",
+					href: `/organizations/${organizationId}/sessions`,
+					icon: CalendarDays,
+				},
+				{
 					name: "Teachers",
 					href: `/organizations/${organizationId}/teachers`,
 					icon: UserCog,
@@ -251,7 +257,8 @@ export function AppLayout({ children, organizationId }: AppLayoutProps) {
 							<SidebarGroupContent>
 								<SidebarMenu>
 									{navigation.map((item) => {
-										const isActive = pathname === item.href;
+										const isActive =
+											pathname === item.href || pathname.startsWith(item.href + "/");
 										return (
 											<SidebarMenuItem key={item.name}>
 												<SidebarMenuButton
