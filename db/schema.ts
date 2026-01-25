@@ -33,6 +33,12 @@ export const groupStatusEnum = pgEnum("group_status", [
 	"closed",
 ]);
 
+export const scheduleRecurrenceEnum = pgEnum("schedule_recurrence", [
+	"one_time",
+	"weekly",
+	"twice_weekly",
+]);
+
 export const classSessionStatusEnum = pgEnum("class_session_status", [
 	"scheduled",
 	"held",
@@ -309,6 +315,48 @@ export const groups = pgTable("groups", {
 
 	startedAt: timestamp("started_at"),
 	createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+/* ----------------------------------
+ GROUP TIME SCHEDULES (apply to future only)
+---------------------------------- */
+
+export const groupSchedules = pgTable(
+	"group_schedules",
+	{
+		id: uuid("id").primaryKey().defaultRandom(),
+		groupId: uuid("group_id")
+			.notNull()
+			.references(() => groups.id, { onDelete: "cascade" }),
+		organizationId: text("organization_id")
+			.notNull()
+			.references(() => organization.id, { onDelete: "cascade" }),
+		recurrence: scheduleRecurrenceEnum("recurrence").notNull(),
+		durationHours: numeric("duration_hours", {
+			precision: 4,
+			scale: 2,
+		}).notNull(),
+		effectiveFrom: date("effective_from").notNull(),
+		effectiveTo: date("effective_to"),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+	},
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	(table: any) =>
+		[
+			index("group_schedules_groupId_idx").on(table.groupId),
+			index("group_schedules_organizationId_idx").on(table.organizationId),
+			index("group_schedules_effectiveFrom_idx").on(table.effectiveFrom),
+		] as const,
+);
+
+export const groupScheduleSlots = pgTable("group_schedule_slots", {
+	id: uuid("id").primaryKey().defaultRandom(),
+	groupScheduleId: uuid("group_schedule_id")
+		.notNull()
+		.references(() => groupSchedules.id, { onDelete: "cascade" }),
+	dayOfWeek: integer("day_of_week").notNull(), // 1 = Monday, 7 = Sunday (ISO)
+	startTime: time("start_time").notNull(),
+	sortOrder: integer("sort_order").default(0).notNull(),
 });
 
 /* ----------------------------------

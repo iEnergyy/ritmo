@@ -31,10 +31,7 @@ export async function GET(
 		const classSession = await getSessionById(organizationId, sessionId);
 
 		if (!classSession) {
-			return NextResponse.json(
-				{ error: "Session not found" },
-				{ status: 404 },
-			);
+			return NextResponse.json({ error: "Session not found" }, { status: 404 });
 		}
 
 		return NextResponse.json({ session: classSession });
@@ -72,10 +69,7 @@ export async function PATCH(
 		const existingSession = await getSessionById(organizationId, sessionId);
 
 		if (!existingSession) {
-			return NextResponse.json(
-				{ error: "Session not found" },
-				{ status: 404 },
-			);
+			return NextResponse.json({ error: "Session not found" }, { status: 404 });
 		}
 
 		// Validate teacher belongs to organization (if provided)
@@ -125,12 +119,12 @@ export async function PATCH(
 
 		// Update session
 		const updatedSession = await updateSession(sessionId, existingSession, {
-			groupId: groupId !== undefined ? (groupId || null) : undefined,
-			venueId: venueId !== undefined ? (venueId || null) : undefined,
+			groupId: groupId !== undefined ? groupId || null : undefined,
+			venueId: venueId !== undefined ? venueId || null : undefined,
 			teacherId,
 			date: date ? new Date(date) : undefined,
-			startTime: startTime !== undefined ? (startTime || null) : undefined,
-			endTime: endTime !== undefined ? (endTime || null) : undefined,
+			startTime: startTime !== undefined ? startTime || null : undefined,
+			endTime: endTime !== undefined ? endTime || null : undefined,
 		});
 
 		return NextResponse.json({ session: updatedSession });
@@ -165,10 +159,7 @@ export async function DELETE(
 		const existingSession = await getSessionById(organizationId, sessionId);
 
 		if (!existingSession) {
-			return NextResponse.json(
-				{ error: "Session not found" },
-				{ status: 404 },
-			);
+			return NextResponse.json({ error: "Session not found" }, { status: 404 });
 		}
 
 		// TODO: Check for linked attendance records (Phase 5)

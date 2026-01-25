@@ -13,7 +13,9 @@
 		"test:integration": "vitest run tests/integration",
 		"test:watch": "vitest",
 		"test:coverage": "vitest run --coverage",
-		"test:ui": "vitest --ui"
+		"test:ui": "vitest --ui",
+		"db:migrate": "drizzle-kit migrate",
+		"db:baseline": "tsx scripts/baseline-drizzle-migrations.ts"
 	},
 	"dependencies": {
 		"@base-ui/react": "^1.0.0",

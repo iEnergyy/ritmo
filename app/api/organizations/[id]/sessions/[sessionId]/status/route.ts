@@ -3,7 +3,10 @@ import {
 	getAuthenticatedSession,
 	enforceTenantIsolation,
 } from "@/lib/api-helpers";
-import { getSessionById, updateSessionStatus } from "@/db/queries/class-sessions";
+import {
+	getSessionById,
+	updateSessionStatus,
+} from "@/db/queries/class-sessions";
 
 /**
  * PATCH /api/organizations/[id]/sessions/[sessionId]/status
@@ -35,10 +38,7 @@ export async function PATCH(
 		const existingSession = await getSessionById(organizationId, sessionId);
 
 		if (!existingSession) {
-			return NextResponse.json(
-				{ error: "Session not found" },
-				{ status: 404 },
-			);
+			return NextResponse.json({ error: "Session not found" }, { status: 404 });
 		}
 
 		// Update status

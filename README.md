@@ -773,55 +773,55 @@ Deliverable:
 
 Goal: introduce time as a first-class concept
 
-- [ ] Manual class session creation
-- [ ] Session status (scheduled / held / cancelled)
-- [ ] Link sessions to:
-  - [ ] groups
-  - [ ] teachers
-  - [ ] venues
-- [ ] Session history (immutable)
-- [ ] Group time schedules:
-  - [ ] Groups can have time schedules (one-time or recurring)
-  - [ ] Recurring schedules: weekly or twice weekly sessions
-  - [ ] Duration per session (hours)
-  - [ ] Schedule can be edited to update future sessions
+- [x] Manual class session creation
+- [x] Session status (scheduled / held / cancelled)
+- [x] Link sessions to:
+  - [x] groups
+  - [x] teachers
+  - [x] venues
+- [x] Session history (immutable)
+- [x] Group time schedules:
+  - [x] Groups can have time schedules (one-time or recurring)
+  - [x] Recurring schedules: weekly or twice weekly sessions
+  - [x] Duration per session (hours)
+  - [x] Schedule can be edited to update future sessions
 
 **UI Expectations:**
-- [ ] Class sessions calendar/list view (`/organizations/[id]/sessions`) with:
-  - [ ] Calendar view (month/week/day) or list view
-  - [ ] Filter by group, teacher, venue, date range, status
-  - [ ] Color coding by status (scheduled/held/cancelled)
-- [ ] Create session form:
-  - [ ] Date picker
-  - [ ] Time selection (start/end)
-  - [ ] Group selection (optional, for group classes)
-  - [ ] Teacher selection (required)
-  - [ ] Venue selection (optional)
-  - [ ] Status selection (default: scheduled)
-- [ ] Session detail page:
-  - [ ] Session info (date, time, group, teacher, venue, status)
-  - [ ] Status change interface (mark as held, cancel)
-  - [ ] Linked attendance records (if any)
-  - [ ] Immutable history indicator
-- [ ] Session list/table view:
+- [x] Class sessions calendar/list view (`/organizations/[id]/sessions`) with:
+  - [x] Calendar view (month/week/day) or list view — list/table view implemented
+  - [x] Filter by group, teacher, venue, date range, status
+  - [x] Color coding by status (scheduled/held/cancelled)
+- [x] Create session form:
+  - [x] Date picker
+  - [x] Time selection (start/end)
+  - [x] Group selection (optional, for group classes)
+  - [x] Teacher selection (required)
+  - [x] Venue selection (optional)
+  - [x] Status selection (default: scheduled)
+- [x] Session detail page:
+  - [x] Session info (date, time, group, teacher, venue, status)
+  - [x] Status change interface (mark as held, cancel)
+  - [x] Linked attendance records (if any) — placeholder for Phase 5
+  - [x] Immutable history indicator
+- [x] Session list/table view:
   - [ ] Sortable columns (date, group, teacher, status)
   - [ ] Bulk status updates
-  - [ ] Quick status change actions
-- [ ] Group detail page integration:
-  - [ ] Sessions list for the group
-  - [ ] Quick session creation from group page
-- [ ] Group schedule management:
-  - [ ] Time schedule configuration (one-time or recurring)
-  - [ ] Recurring schedule options:
-    - [ ] Weekly sessions (same day/time each week)
-    - [ ] Twice weekly sessions (two days/times per week)
-  - [ ] Duration per session (hours)
-  - [ ] Schedule can be edited to update future sessions only
-  - [ ] Historical sessions remain unchanged
+  - [x] Quick status change actions
+- [x] Group detail page integration:
+  - [x] Sessions list for the group
+  - [x] Quick session creation from group page
+- [x] Group schedule management:
+  - [x] Time schedule configuration (one-time or recurring)
+  - [x] Recurring schedule options:
+    - [x] Weekly sessions (same day/time each week)
+    - [x] Twice weekly sessions (two days/times per week)
+  - [x] Duration per session (hours)
+  - [x] Schedule can be edited to update future sessions only
+  - [x] Historical sessions remain unchanged
 
 Deliverable:
-- [ ] Everything important happens in time
-- [ ] Groups have flexible scheduling (one-time or recurring patterns)
+- [x] Everything important happens in time
+- [x] Groups have flexible scheduling (one-time or recurring patterns)
 
 **Phase 5 — Attendance**
 

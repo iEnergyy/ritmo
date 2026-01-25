@@ -12,7 +12,8 @@
 		"signUp": "Registrarse",
 		"dashboard": "Panel de control",
 		"createAccount": "Crear cuenta",
-		"backToDashboard": "Volver al panel"
+		"backToDashboard": "Volver al panel",
+		"sessions": "Sesiones"
 	},
 	"SignIn": {
 		"title": "Inicia sesión en tu cuenta",
@@ -309,6 +310,7 @@
 		"deleteTitle": "Eliminar Sesión",
 		"deleteDescription": "¿Estás seguro de que deseas eliminar esta sesión? Las sesiones son inmutables y esta acción no se puede deshacer.",
 		"date": "Fecha",
+		"pickDate": "Elegir fecha",
 		"time": "Hora",
 		"startTime": "Hora de Inicio",
 		"endTime": "Hora de Fin",
@@ -379,5 +381,40 @@
 		"backToSessions": "Volver a Sesiones",
 		"immutableHistory": "Historial Inmutable",
 		"immutableHistoryDescription": "Las sesiones son inmutables para preservar el historial. Los cambios de estado se registran pero no se pueden eliminar."
+	},
+	"GroupSchedule": {
+		"title": "Horario del Grupo",
+		"description": "Configura cuándo se reúne este grupo. Los cambios pueden aplicarse solo a sesiones futuras.",
+		"oneTime": "Puntual",
+		"recurring": "Recurrente",
+		"weekly": "Semanal",
+		"twiceWeekly": "Dos veces por semana",
+		"durationHours": "Duración por sesión (horas)",
+		"durationHoursPlaceholder": "ej. 1,5",
+		"applyToFutureOnly": "Actualizar solo sesiones futuras",
+		"applyToFutureOnlyDescription": "Al editar, solo cambiarán las sesiones desde la fecha indicada. Las sesiones pasadas no se modifican.",
+		"effectiveFrom": "Vigente desde",
+		"pickDate": "Elegir fecha",
+		"effectiveTo": "Vigente hasta",
+		"dayOfWeek": "Día de la semana",
+		"startTime": "Hora de inicio",
+		"days": {
+			"1": "Lunes",
+			"2": "Martes",
+			"3": "Miércoles",
+			"4": "Jueves",
+			"5": "Viernes",
+			"6": "Sábado",
+			"7": "Domingo"
+		},
+		"noSchedule": "Sin horario. Añade un horario para generar sesiones.",
+		"addSchedule": "Añadir horario",
+		"editSchedule": "Editar horario",
+		"save": "Guardar Horario",
+		"generateSessions": "Generar sesiones",
+		"generateSessionsDescription": "Crea sesiones de clase a partir de este horario para el rango de fechas seleccionado.",
+		"generateFrom": "Fecha desde",
+		"generateTo": "Fecha hasta",
+		"generatedCount": "{count} sesiones creadas"
 	}
 }

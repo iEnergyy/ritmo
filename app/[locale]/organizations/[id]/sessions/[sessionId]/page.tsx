@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "@/lib/auth-client";
 import { useParams, useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { AppLayout } from "@/components/app-layout";
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,7 @@ import {
 	Info,
 } from "lucide-react";
 import { format } from "date-fns";
+import { formatTime12h } from "@/lib/format-time";
 
 interface ClassSession {
 	id: string;
@@ -65,6 +66,7 @@ export default function SessionDetailPage() {
 	const { data: session, isPending: sessionLoading } = useSession();
 	const params = useParams();
 	const router = useRouter();
+	const locale = useLocale();
 	const t = useTranslations("SessionDetail");
 	const tSessions = useTranslations("Sessions");
 	const organizationId = params.id as string;
@@ -192,10 +194,8 @@ export default function SessionDetailPage() {
 		}
 	};
 
-	const formatTime = (time: string | null) => {
-		if (!time) return tSessions("noTime");
-		return time;
-	};
+	const formatTime = (time: string | null) =>
+		formatTime12h(time, locale) || tSessions("noTime");
 
 	const formatDate = (dateStr: string) => {
 		try {
@@ -266,9 +266,7 @@ export default function SessionDetailPage() {
 						{t("backToSessions")}
 					</Button>
 					<div>
-						<h1 className="text-3xl font-bold text-gray-900">
-							{t("title")}
-						</h1>
+						<h1 className="text-3xl font-bold text-gray-900">{t("title")}</h1>
 						<p className="mt-2 text-sm text-gray-600">
 							Session details and management
 						</p>
@@ -423,9 +421,7 @@ export default function SessionDetailPage() {
 				<Card>
 					<CardHeader>
 						<CardTitle>{t("attendanceRecords")}</CardTitle>
-						<CardDescription>
-							{t("attendancePlaceholder")}
-						</CardDescription>
+						<CardDescription>{t("attendancePlaceholder")}</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<p className="text-sm text-gray-500">{t("noAttendanceRecords")}</p>
@@ -461,9 +457,7 @@ export default function SessionDetailPage() {
 				>
 					<AlertDialogContent>
 						<AlertDialogHeader>
-							<AlertDialogTitle>
-								{tSessions("deleteTitle")}
-							</AlertDialogTitle>
+							<AlertDialogTitle>{tSessions("deleteTitle")}</AlertDialogTitle>
 							<AlertDialogDescription>
 								{tSessions("deleteDescription")}
 							</AlertDialogDescription>

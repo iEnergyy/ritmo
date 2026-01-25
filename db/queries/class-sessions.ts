@@ -45,18 +45,21 @@ export async function getSessionsByOrganization(
 	}
 
 	if (filters?.dateFrom) {
-		conditions.push(gte(classSessions.date, filters.dateFrom));
+		const fromStr = new Date(filters.dateFrom).toISOString().slice(0, 10);
+		conditions.push(gte(classSessions.date, fromStr));
 	}
 
 	if (filters?.dateTo) {
-		conditions.push(lte(classSessions.date, filters.dateTo));
+		const toStr = new Date(filters.dateTo).toISOString().slice(0, 10);
+		conditions.push(lte(classSessions.date, toStr));
 	}
 
 	if (filters?.status) {
 		conditions.push(eq(classSessions.status, filters.status));
 	}
 
-	const whereClause = conditions.length > 1 ? and(...conditions) : conditions[0];
+	const whereClause =
+		conditions.length > 1 ? and(...conditions) : conditions[0];
 
 	const results = await db
 		.select({
@@ -182,6 +185,12 @@ export async function getSessionsByTeacher(
 	});
 }
 
+/** Normalize to YYYY-MM-DD for Postgres date column */
+function toDateString(d: Date | string): string {
+	if (typeof d === "string") return d;
+	return d.toISOString().slice(0, 10);
+}
+
 /**
  * Create a new session
  */
@@ -190,7 +199,7 @@ export async function createSession(data: {
 	groupId?: string | null;
 	venueId?: string | null;
 	teacherId: string;
-	date: Date;
+	date: Date | string;
 	startTime?: string | null;
 	endTime?: string | null;
 	status: "scheduled" | "held" | "cancelled";
@@ -202,7 +211,7 @@ export async function createSession(data: {
 			groupId: data.groupId || null,
 			venueId: data.venueId || null,
 			teacherId: data.teacherId,
-			date: data.date,
+			date: toDateString(data.date),
 			startTime: data.startTime || null,
 			endTime: data.endTime || null,
 			status: data.status,
@@ -222,7 +231,7 @@ export async function updateSession(
 		groupId?: string | null;
 		venueId?: string | null;
 		teacherId?: string;
-		date?: Date;
+		date?: Date | string;
 		startTime?: string | null;
 		endTime?: string | null;
 	},
@@ -239,7 +248,10 @@ export async function updateSession(
 					? existingSession.venueId
 					: data.venueId || null,
 			teacherId: data.teacherId ?? existingSession.teacherId,
-			date: data.date ?? existingSession.date,
+			date:
+				data.date === undefined
+					? existingSession.date
+					: toDateString(data.date),
 			startTime:
 				data.startTime === undefined
 					? existingSession.startTime

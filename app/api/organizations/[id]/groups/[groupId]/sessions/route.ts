@@ -3,10 +3,7 @@ import {
 	getAuthenticatedSession,
 	enforceTenantIsolation,
 } from "@/lib/api-helpers";
-import {
-	getSessionsByGroup,
-	createSession,
-} from "@/db/queries/class-sessions";
+import { getSessionsByGroup, createSession } from "@/db/queries/class-sessions";
 import { getGroupById } from "@/db/queries/groups";
 import { getTeacherByIdSimple } from "@/db/queries/teachers";
 import { getVenueById } from "@/db/queries/venues";

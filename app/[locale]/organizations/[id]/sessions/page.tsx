@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "@/lib/auth-client";
 import { useParams, useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { AppLayout } from "@/components/app-layout";
 import { Button } from "@/components/ui/button";
@@ -74,6 +74,7 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 import { format } from "date-fns";
+import { formatTime12h } from "@/lib/format-time";
 import { cn } from "@/lib/utils";
 
 interface ClassSession {
@@ -131,6 +132,7 @@ export default function SessionsPage() {
 	const { data: session, isPending: sessionLoading } = useSession();
 	const params = useParams();
 	const router = useRouter();
+	const locale = useLocale();
 	const t = useTranslations("Sessions");
 	const organizationId = params.id as string;
 
@@ -476,11 +478,8 @@ export default function SessionsPage() {
 		}
 	};
 
-	const formatTime = (time: string | null) => {
-		if (!time) return t("noTime");
-		// Time is in HH:mm format, just return it
-		return time;
-	};
+	const formatTime = (time: string | null) =>
+		formatTime12h(time, locale) || t("noTime");
 
 	const formatDate = (dateStr: string) => {
 		try {
@@ -522,9 +521,7 @@ export default function SessionsPage() {
 			<div className="space-y-6">
 				<div className="flex justify-between items-center">
 					<div>
-						<h1 className="text-3xl font-bold text-gray-900">
-							{t("title")}
-						</h1>
+						<h1 className="text-3xl font-bold text-gray-900">{t("title")}</h1>
 						<p className="mt-2 text-sm text-gray-600">
 							Manage class sessions in your organization
 						</p>
@@ -562,7 +559,41 @@ export default function SessionsPage() {
 											render={({ field, fieldState }) => (
 												<Field data-invalid={fieldState.invalid}>
 													<FieldLabel>{t("date")}</FieldLabel>
-													<Input type="date" {...field} />
+													<Popover>
+														<PopoverTrigger asChild>
+															<Button
+																variant="outline"
+																className={cn(
+																	"w-full justify-start text-left font-normal",
+																	!field.value && "text-muted-foreground",
+																)}
+															>
+																<CalendarIcon className="mr-2 h-4 w-4" />
+																{field.value
+																	? format(
+																			new Date(field.value + "T12:00:00"),
+																			"PPP",
+																		)
+																	: t("pickDate")}
+															</Button>
+														</PopoverTrigger>
+														<PopoverContent className="w-auto p-0">
+															<Calendar
+																mode="single"
+																selected={
+																	field.value
+																		? new Date(field.value + "T12:00:00")
+																		: undefined
+																}
+																onSelect={(d) =>
+																	field.onChange(
+																		d ? format(d, "yyyy-MM-dd") : "",
+																	)
+																}
+																initialFocus
+															/>
+														</PopoverContent>
+													</Popover>
 													{fieldState.invalid && (
 														<FieldError errors={[fieldState.error]} />
 													)}
@@ -576,7 +607,15 @@ export default function SessionsPage() {
 												render={({ field }) => (
 													<Field>
 														<FieldLabel>{t("startTime")}</FieldLabel>
-														<Input type="time" {...field} value={field.value || ""} />
+														<div className="relative">
+															<Clock className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+															<Input
+																type="time"
+																{...field}
+																value={field.value || ""}
+																className="pl-8 appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+															/>
+														</div>
 													</Field>
 												)}
 											/>
@@ -586,7 +625,15 @@ export default function SessionsPage() {
 												render={({ field }) => (
 													<Field>
 														<FieldLabel>{t("endTime")}</FieldLabel>
-														<Input type="time" {...field} value={field.value || ""} />
+														<div className="relative">
+															<Clock className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+															<Input
+																type="time"
+																{...field}
+																value={field.value || ""}
+																className="pl-8 appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+															/>
+														</div>
 													</Field>
 												)}
 											/>
@@ -627,7 +674,9 @@ export default function SessionsPage() {
 													<Select
 														value={field.value || "__none__"}
 														onValueChange={(value) =>
-															field.onChange(value === "__none__" ? null : value)
+															field.onChange(
+																value === "__none__" ? null : value,
+															)
 														}
 													>
 														<SelectTrigger>
@@ -656,7 +705,9 @@ export default function SessionsPage() {
 													<Select
 														value={field.value || "__none__"}
 														onValueChange={(value) =>
-															field.onChange(value === "__none__" ? null : value)
+															field.onChange(
+																value === "__none__" ? null : value,
+															)
 														}
 													>
 														<SelectTrigger>
@@ -1005,7 +1056,39 @@ export default function SessionsPage() {
 									render={({ field, fieldState }) => (
 										<Field data-invalid={fieldState.invalid}>
 											<FieldLabel>{t("date")}</FieldLabel>
-											<Input type="date" {...field} />
+											<Popover>
+												<PopoverTrigger asChild>
+													<Button
+														variant="outline"
+														className={cn(
+															"w-full justify-start text-left font-normal",
+															!field.value && "text-muted-foreground",
+														)}
+													>
+														<CalendarIcon className="mr-2 h-4 w-4" />
+														{field.value
+															? format(
+																	new Date(field.value + "T12:00:00"),
+																	"PPP",
+																)
+															: t("pickDate")}
+													</Button>
+												</PopoverTrigger>
+												<PopoverContent className="w-auto p-0">
+													<Calendar
+														mode="single"
+														selected={
+															field.value
+																? new Date(field.value + "T12:00:00")
+																: undefined
+														}
+														onSelect={(d) =>
+															field.onChange(d ? format(d, "yyyy-MM-dd") : "")
+														}
+														initialFocus
+													/>
+												</PopoverContent>
+											</Popover>
 											{fieldState.invalid && (
 												<FieldError errors={[fieldState.error]} />
 											)}
@@ -1019,7 +1102,15 @@ export default function SessionsPage() {
 										render={({ field }) => (
 											<Field>
 												<FieldLabel>{t("startTime")}</FieldLabel>
-												<Input type="time" {...field} value={field.value || ""} />
+												<div className="relative">
+													<Clock className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+													<Input
+														type="time"
+														{...field}
+														value={field.value || ""}
+														className="pl-8 appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+													/>
+												</div>
 											</Field>
 										)}
 									/>
@@ -1029,7 +1120,15 @@ export default function SessionsPage() {
 										render={({ field }) => (
 											<Field>
 												<FieldLabel>{t("endTime")}</FieldLabel>
-												<Input type="time" {...field} value={field.value || ""} />
+												<div className="relative">
+													<Clock className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+													<Input
+														type="time"
+														{...field}
+														value={field.value || ""}
+														className="pl-8 appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+													/>
+												</div>
 											</Field>
 										)}
 									/>
@@ -1165,9 +1264,7 @@ export default function SessionsPage() {
 							<AlertDialogTitle>{t("statusChangeTitle")}</AlertDialogTitle>
 							<AlertDialogDescription>
 								{t("statusChangeDescription", {
-									status: newStatus
-										? t(`statusOptions.${newStatus}`)
-										: "",
+									status: newStatus ? t(`statusOptions.${newStatus}`) : "",
 								})}
 							</AlertDialogDescription>
 						</AlertDialogHeader>

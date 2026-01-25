@@ -92,7 +92,12 @@ export async function PATCH(
 			teacherId,
 			venueId,
 			status,
-			startedAt: startedAt !== undefined ? (startedAt ? new Date(startedAt) : null) : undefined,
+			startedAt:
+				startedAt !== undefined
+					? startedAt
+						? new Date(startedAt)
+						: null
+					: undefined,
 		});
 
 		return NextResponse.json({ group: updatedGroup });
