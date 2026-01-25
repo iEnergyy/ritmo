@@ -45,11 +45,13 @@ export async function getSessionsByOrganization(
 	}
 
 	if (filters?.dateFrom) {
-		conditions.push(gte(classSessions.date, filters.dateFrom));
+		const fromStr = new Date(filters.dateFrom).toISOString().slice(0, 10);
+		conditions.push(gte(classSessions.date, fromStr));
 	}
 
 	if (filters?.dateTo) {
-		conditions.push(lte(classSessions.date, filters.dateTo));
+		const toStr = new Date(filters.dateTo).toISOString().slice(0, 10);
+		conditions.push(lte(classSessions.date, toStr));
 	}
 
 	if (filters?.status) {
