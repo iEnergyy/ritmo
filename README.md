@@ -221,11 +221,11 @@ Dropout detection
 
 🧑‍🏫 Private Classes
 
-Private sessions are modeled separately:
+Private sessions are modeled separately from group classes. They support both 1:1 (one teacher, one student) and 1-to-many (one teacher, multiple students):
 
 One teacher
 
-One student
+One or more students (1:1 or small private group)
 
 One date
 
@@ -857,11 +857,12 @@ Deliverable:
 
 **Phase 6 — Private Classes**
 
-Goal: support 1-on-1 teaching
+Goal: support private teaching in both 1:1 (one teacher, one student) and 1-to-many (one teacher, multiple students) formats.
 
-- [ ] Private session creation
+- [ ] Private session creation (1:1 or 1-to-many)
 - [ ] Duration-based sessions
 - [ ] Teacher assignment
+- [ ] Student(s) assignment (one or more per session)
 - [ ] Attendance implicit handling
 
 **UI Expectations:**
@@ -870,15 +871,15 @@ Goal: support 1-on-1 teaching
   - [ ] Filter by teacher, student, date range, status
   - [ ] Create private session form:
     - [ ] Date picker
-    - [ ] Student selection (required)
+    - [ ] Student(s) selection (required; one or more students for 1:1 or small private group)
     - [ ] Teacher selection (required)
     - [ ] Venue selection (optional)
     - [ ] Duration input (minutes)
     - [ ] Status selection (scheduled/held/cancelled)
 - [ ] Private session detail page:
-  - [ ] Session info (date, student, teacher, venue, duration, status)
+  - [ ] Session info (date, student(s), teacher, venue, duration, status)
   - [ ] Status change (mark as held/cancelled)
-  - [ ] Implicit attendance indicator (if held = present)
+  - [ ] Implicit attendance indicator (if held = present for all students)
 - [ ] Teacher view:
   - [ ] My private sessions list
   - [ ] Quick session creation
@@ -891,7 +892,7 @@ Goal: support 1-on-1 teaching
   - [ ] Different visual styling for private vs group sessions
 
 Deliverable:
-- [ ] Solo teachers fully supported
+- [ ] Solo teachers and school teachers can run 1:1 or 1-to-many private sessions
 
 **Phase 7 — Student Payments**
 
