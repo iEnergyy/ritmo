@@ -38,6 +38,16 @@ import {
 import { format } from "date-fns";
 import { formatTime12h } from "@/lib/format-time";
 
+type AttendanceStatus = "present" | "absent" | "excused" | "late";
+
+interface AttendanceRow {
+	studentId: string;
+	student: { id: string; fullName: string };
+	status: AttendanceStatus | null;
+	recordId: string | null;
+	markedAt: string | null;
+}
+
 interface ClassSession {
 	id: string;
 	date: string;
@@ -74,6 +84,9 @@ export default function SessionDetailPage() {
 
 	const [classSession, setClassSession] = useState<ClassSession | null>(null);
 	const [loading, setLoading] = useState(true);
+	const [attendanceRows, setAttendanceRows] = useState<AttendanceRow[]>([]);
+	const [attendanceLoading, setAttendanceLoading] = useState(false);
+	const [savingAttendance, setSavingAttendance] = useState(false);
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 	const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
 	const [newStatus, setNewStatus] = useState<
@@ -85,6 +98,76 @@ export default function SessionDetailPage() {
 			loadSession();
 		}
 	}, [session, sessionLoading, organizationId, sessionId]);
+
+	useEffect(() => {
+		if (classSession && organizationId && sessionId) {
+			loadAttendance();
+		}
+	}, [classSession?.id, organizationId, sessionId]);
+
+	async function loadAttendance() {
+		if (!organizationId || !sessionId) return;
+		try {
+			setAttendanceLoading(true);
+			const res = await fetch(
+				`/api/organizations/${organizationId}/sessions/${sessionId}/attendance`,
+			);
+			if (res.ok) {
+				const data = await res.json();
+				setAttendanceRows(data.rows ?? []);
+			}
+		} catch (e) {
+			console.error("Failed to load attendance:", e);
+			toast.error("Failed to load attendance");
+		} finally {
+			setAttendanceLoading(false);
+		}
+	}
+
+	function setAttendanceStatus(studentId: string, status: AttendanceStatus) {
+		setAttendanceRows((prev) =>
+			prev.map((r) => (r.studentId === studentId ? { ...r, status } : r)),
+		);
+	}
+
+	function markAllStatus(status: AttendanceStatus) {
+		setAttendanceRows((prev) => prev.map((r) => ({ ...r, status })));
+	}
+
+	async function saveAttendance() {
+		if (!organizationId || !sessionId) return;
+		try {
+			setSavingAttendance(true);
+			const entries = attendanceRows.map((r) => ({
+				studentId: r.studentId,
+				status: r.status ?? "absent",
+			}));
+			const res = await fetch(
+				`/api/organizations/${organizationId}/sessions/${sessionId}/attendance`,
+				{
+					method: "PATCH",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ entries }),
+				},
+			);
+			if (res.ok) {
+				toast.success(t("attendanceSaved"));
+				await loadAttendance();
+			} else {
+				const data = await res.json().catch(() => ({}));
+				toast.error(data.error ?? "Failed to save attendance");
+			}
+		} catch (e) {
+			console.error("Failed to save attendance:", e);
+			toast.error("Failed to save attendance");
+		} finally {
+			setSavingAttendance(false);
+		}
+	}
+
+	const hasMissingAttendance = attendanceRows.some((r) => r.status === null);
+	const canEditAttendance =
+		classSession?.status !== "cancelled" && classSession?.groupId;
 
 	const loadSession = async () => {
 		try {
@@ -417,14 +500,97 @@ export default function SessionDetailPage() {
 					</Card>
 				</div>
 
-				{/* Attendance Records Placeholder */}
+				{/* Attendance Records */}
 				<Card>
 					<CardHeader>
 						<CardTitle>{t("attendanceRecords")}</CardTitle>
 						<CardDescription>{t("attendancePlaceholder")}</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<p className="text-sm text-gray-500">{t("noAttendanceRecords")}</p>
+						{attendanceLoading ? (
+							<p className="text-sm text-gray-500">Loading attendance...</p>
+						) : attendanceRows.length === 0 ? (
+							<p className="text-sm text-gray-500">{t("noExpectedStudents")}</p>
+						) : (
+							<>
+								{hasMissingAttendance && (
+									<p className="mb-4 text-sm font-medium text-amber-600">
+										{t("missingAttendance")}
+									</p>
+								)}
+								{canEditAttendance && (
+									<div className="mb-4 flex flex-wrap gap-2">
+										<Button
+											variant="outline"
+											size="sm"
+											onClick={() => markAllStatus("present")}
+										>
+											{t("markAllPresent")}
+										</Button>
+										<Button
+											variant="outline"
+											size="sm"
+											onClick={() => markAllStatus("absent")}
+										>
+											{t("markAllAbsent")}
+										</Button>
+										<Button
+											size="sm"
+											onClick={saveAttendance}
+											disabled={savingAttendance}
+										>
+											{savingAttendance ? "Saving..." : t("saveAttendance")}
+										</Button>
+									</div>
+								)}
+								<div className="space-y-2">
+									{attendanceRows.map((row) => (
+										<div
+											key={row.studentId}
+											className="flex flex-wrap items-center justify-between gap-2 rounded-md border p-3"
+										>
+											<div>
+												<Link
+													href={`/organizations/${organizationId}/students/${row.studentId}`}
+													className="font-medium text-blue-600 hover:text-blue-500"
+												>
+													{row.student.fullName}
+												</Link>
+												<span className="ml-2 text-sm text-gray-500">
+													{row.status
+														? t(
+																`status${row.status.charAt(0).toUpperCase()}${row.status.slice(1)}`,
+															)
+														: t("notMarked")}
+												</span>
+											</div>
+											{canEditAttendance && (
+												<div className="flex gap-1">
+													{(
+														["present", "absent", "excused", "late"] as const
+													).map((status) => (
+														<Button
+															key={status}
+															variant={
+																row.status === status ? "default" : "outline"
+															}
+															size="sm"
+															onClick={() =>
+																setAttendanceStatus(row.studentId, status)
+															}
+														>
+															{t(
+																`status${status.charAt(0).toUpperCase()}${status.slice(1)}`,
+															)}
+														</Button>
+													))}
+												</div>
+											)}
+										</div>
+									))}
+								</div>
+							</>
+						)}
 					</CardContent>
 				</Card>
 

@@ -139,6 +139,55 @@ export async function getActiveEnrollmentsByGroup(
 }
 
 /**
+ * Get enrollments for a group that were active on a specific date.
+ * Returns enrollments where startDate <= date and (endDate is null or endDate >= date).
+ * Use this to derive "expected students" for a class session.
+ */
+export async function getEnrollmentsByGroupOnDate(
+	groupId: string,
+	organizationId: string,
+	date: Date,
+): Promise<EnrollmentWithStudent[]> {
+	const dateString = date.toISOString().split("T")[0];
+
+	const results = await db
+		.select({
+			id: studentGroups.id,
+			studentId: studentGroups.studentId,
+			groupId: studentGroups.groupId,
+			startDate: studentGroups.startDate,
+			endDate: studentGroups.endDate,
+			createdAt: studentGroups.createdAt,
+			student: students,
+		})
+		.from(studentGroups)
+		.innerJoin(students, eq(studentGroups.studentId, students.id))
+		.innerJoin(groups, eq(studentGroups.groupId, groups.id))
+		.where(
+			and(
+				eq(studentGroups.groupId, groupId),
+				eq(groups.organizationId, organizationId),
+				eq(students.organizationId, organizationId),
+				lte(studentGroups.startDate, dateString),
+				or(
+					isNull(studentGroups.endDate),
+					gte(studentGroups.endDate, dateString),
+				) as any,
+			),
+		);
+
+	return results.map((r) => ({
+		id: r.id,
+		studentId: r.studentId,
+		groupId: r.groupId,
+		startDate: r.startDate,
+		endDate: r.endDate,
+		createdAt: r.createdAt,
+		student: r.student,
+	}));
+}
+
+/**
  * Create a student-group enrollment
  */
 export async function createEnrollment(data: {

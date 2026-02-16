@@ -45,6 +45,7 @@ import {
 	CheckIcon,
 	UsersRound,
 	CalendarDays,
+	ClipboardCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -160,6 +161,11 @@ export function AppLayout({ children, organizationId }: AppLayoutProps) {
 					name: "Sessions",
 					href: `/organizations/${organizationId}/sessions`,
 					icon: CalendarDays,
+				},
+				{
+					name: "Attendance",
+					href: `/organizations/${organizationId}/attendance`,
+					icon: ClipboardCheck,
 				},
 				{
 					name: "Teachers",

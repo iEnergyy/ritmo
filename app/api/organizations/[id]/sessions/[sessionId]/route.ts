@@ -8,6 +8,7 @@ import {
 	updateSession,
 	deleteSession,
 } from "@/db/queries/class-sessions";
+import { hasAttendanceRecords } from "@/db/queries/attendance";
 import { getTeacherByIdSimple } from "@/db/queries/teachers";
 import { getGroupById } from "@/db/queries/groups";
 import { getVenueById } from "@/db/queries/venues";
@@ -162,8 +163,17 @@ export async function DELETE(
 			return NextResponse.json({ error: "Session not found" }, { status: 404 });
 		}
 
-		// TODO: Check for linked attendance records (Phase 5)
-		// For now, allow deletion but warn in UI
+		// Block delete when session has attendance records
+		const hasAttendance = await hasAttendanceRecords(sessionId);
+		if (hasAttendance) {
+			return NextResponse.json(
+				{
+					error:
+						"Session has attendance records; remove or migrate them before deleting the session",
+				},
+				{ status: 409 },
+			);
+		}
 
 		// Delete session
 		await deleteSession(sessionId);
