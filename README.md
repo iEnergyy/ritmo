@@ -629,7 +629,7 @@ export const teacherPayouts = pgTable("teacher_payouts", {
 
 Each phase is independently shippable and reduces real-world pain.
 
-**Current Status:** Phase 0 is complete. Phase 1 is complete. Phase 2 (Unit & Integration Testing) is complete. Phase 3 (Groups & Membership) is complete. Core infrastructure (auth, database, organization management, internationalization, tenant isolation) is fully implemented. Schema definitions for all domain entities are complete. Organization member management, students, teachers, venues, groups, enrollments, and public student registration have full UI/API implementations with shadcn/ui components. Comprehensive test suite with unit and integration tests covering database queries, API routes, authentication, authorization, and tenant isolation.
+**Current Status:** Phase 0 is complete. Phase 1 is complete. Phase 2 (Unit & Integration Testing) is complete. Phase 3 (Groups & Membership) is complete. Phase 4 (Class Sessions) is complete. Phase 5 (Attendance) is complete. Core infrastructure (auth, database, organization management, internationalization, tenant isolation) is fully implemented. Schema definitions for all domain entities are complete. Organization member management, students, teachers, venues, groups, enrollments, class sessions, group time schedules, and attendance have full UI/API implementations with shadcn/ui components. Session delete is blocked when attendance records exist. Comprehensive test suite with unit and integration tests covering database queries, API routes, authentication, authorization, and tenant isolation.
 
 **Phase 0 — Groundwork**
 
@@ -801,7 +801,7 @@ Goal: introduce time as a first-class concept
 - [x] Session detail page:
   - [x] Session info (date, time, group, teacher, venue, status)
   - [x] Status change interface (mark as held, cancel)
-  - [x] Linked attendance records (if any) — placeholder for Phase 5
+  - [x] Linked attendance records (Phase 5 — full attendance marking)
   - [x] Immutable history indicator
 - [x] Session list/table view:
   - [ ] Sortable columns (date, group, teacher, status)
@@ -827,40 +827,33 @@ Deliverable:
 
 Goal: capture what actually happened
 
-- [ ] Attendance per student per session
-- [ ] Attendance states (present / absent / excused / late)
-- [ ] Teacher attendance marking UI
-- [ ] Admin override & audit
-- [ ] Missing-attendance detection
+- [x] Attendance per student per session — Implemented: `attendance_records` table, `db/queries/attendance.ts` with get/upsert/bulk and tenant isolation via session
+- [x] Attendance states (present / absent / excused / late) — Schema enum and UI status buttons
+- [x] Teacher attendance marking UI — Session detail page: expected students from enrollments on session date, quick-mark (present/absent/excused/late), mark all present/absent, save
+- [x] Missing-attendance detection — `getSessionsWithMissingAttendance` and UI block on attendance page
 
 **UI Expectations:**
-- [ ] Attendance marking interface (for teachers):
-  - [ ] Session-focused view: Select session → see enrolled students → mark attendance
-  - [ ] Quick-mark interface with status buttons (present/absent/excused/late)
-  - [ ] Bulk mark all present/absent
-  - [ ] Save confirmation
-- [ ] Attendance list/view page (`/organizations/[id]/attendance`) with:
-  - [ ] Filter by session, student, date range, status
-  - [ ] Attendance records table
-  - [ ] Visual indicators for each status
-- [ ] Session detail page integration:
-  - [ ] Attendance section showing all students and their status
-  - [ ] Quick edit attendance for individual students
-  - [ ] Missing attendance indicators (students not yet marked)
-- [ ] Student profile integration:
-  - [ ] Attendance history for the student
-  - [ ] Attendance statistics (attendance rate, trends)
-- [ ] Admin override interface:
-  - [ ] Edit attendance records with audit trail
-  - [ ] Reason/note field for overrides
-  - [ ] Override history visible
-- [ ] Missing attendance alerts/dashboard:
-  - [ ] List of sessions with missing attendance
-  - [ ] Reminders for teachers
-  - [ ] Admin oversight view
+- [x] Attendance marking interface (for teachers):
+  - [x] Session-focused view: Session detail → expected students (from group enrollments on session date) → mark attendance
+  - [x] Quick-mark interface with status buttons (present/absent/excused/late)
+  - [x] Bulk mark all present/absent
+  - [x] Save confirmation (PATCH bulk, toast)
+- [x] Attendance list/view page (`/organizations/[id]/attendance`) with:
+  - [x] Filter by date range, status (session/student filters available via API)
+  - [x] Attendance records table (date, session/group, student, status, marked at)
+  - [x] Visual indicators for each status (badges)
+- [x] Session detail page integration:
+  - [x] Attendance section showing all expected students and their status
+  - [x] Quick edit attendance for individual students (per-row status buttons)
+  - [x] Missing attendance indicators (students not yet marked)
+- [x] Student profile integration:
+  - [x] Attendance history for the student (table: date, session/group, status)
+- [x] Missing attendance alerts/dashboard:
+  - [x] List of sessions with missing attendance (on `/organizations/[id]/attendance`, links to session detail)
+  - [x] Admin oversight view (missing-attendance block on attendance page)
 
 Deliverable:
-- [ ] Reliable operational truth
+- [x] Reliable operational truth (attendance recorded per student per session; session delete blocked when attendance exists; APIs and UI for marking, list, student history, and missing-attendance view)
 
 **Phase 6 — Private Classes**
 
@@ -1324,6 +1317,25 @@ Goal: long-term sustainability
 
 Deliverable:
 - [ ] Cadence as infrastructure
+
+**Tech Debt — Deferred from Prior Phases**
+
+Goal: complete features deferred during earlier phases (to be built in a dedicated tech-debt phase).
+
+- [ ] **Attendance — Admin override & audit**
+  - [ ] Optional `note` and `marked_by_user_id` on `attendance_records` (migration + API + UI)
+  - [ ] Full change-history audit log for attendance (append-only table or equivalent)
+- [ ] **Attendance — Admin override interface**
+  - [ ] Edit attendance records with audit trail (who changed what, when)
+  - [ ] Reason/note field for overrides on edit
+  - [ ] Override history visible in session attendance view and/or attendance list
+- [ ] **Attendance — Student statistics**
+  - [ ] Attendance statistics on student profile (attendance rate, trends over period)
+- [ ] **Attendance — Missing-attendance reminders**
+  - [ ] Reminders for teachers (sessions with missing attendance); may align with Phase 10 (Notifications)
+
+Deliverable:
+- [ ] All deferred attendance enhancements shipped
 
 📁 Project Structure
 

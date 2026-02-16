@@ -88,6 +88,20 @@ interface Group {
 	status: "active" | "paused" | "closed";
 }
 
+interface AttendanceRecord {
+	id: string;
+	classSessionId: string;
+	studentId: string;
+	status: "present" | "absent" | "excused" | "late";
+	markedAt: string;
+	session: {
+		id: string;
+		date: string;
+		group: { id: string; name: string } | null;
+	};
+	student: { id: string; fullName: string };
+}
+
 const enrollmentSchema = z.object({
 	groupId: z.string().min(1, "Group is required"),
 	startDate: z.string().min(1, "Start date is required"),
@@ -103,11 +117,16 @@ export default function StudentDetailPage() {
 	const t = useTranslations("StudentDetail");
 	const tEnrollments = useTranslations("Enrollments");
 	const tGroups = useTranslations("Groups");
+	const tAttendance = useTranslations("Attendance");
 	const organizationId = params.id as string;
 	const studentId = params.studentId as string;
 
 	const [student, setStudent] = useState<Student | null>(null);
 	const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+	const [attendanceRecords, setAttendanceRecords] = useState<
+		AttendanceRecord[]
+	>([]);
+	const [attendanceLoading, setAttendanceLoading] = useState(false);
 	const [groups, setGroups] = useState<Group[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -126,6 +145,7 @@ export default function StudentDetailPage() {
 			loadStudent();
 			loadEnrollments();
 			loadGroups();
+			loadAttendance();
 		}
 	}, [session, sessionLoading, organizationId, studentId]);
 
@@ -175,6 +195,23 @@ export default function StudentDetailPage() {
 			}
 		} catch (error) {
 			console.error("Failed to load groups:", error);
+		}
+	};
+
+	const loadAttendance = async () => {
+		try {
+			setAttendanceLoading(true);
+			const response = await fetch(
+				`/api/organizations/${organizationId}/students/${studentId}/attendance`,
+			);
+			if (response.ok) {
+				const data = await response.json();
+				setAttendanceRecords(data.records || []);
+			}
+		} catch (error) {
+			console.error("Failed to load attendance:", error);
+		} finally {
+			setAttendanceLoading(false);
 		}
 	};
 
@@ -615,6 +652,53 @@ export default function StudentDetailPage() {
 						</CardContent>
 					</Card>
 				)}
+
+				{/* Attendance history */}
+				<Card>
+					<CardHeader>
+						<CardTitle>{tAttendance("attendanceHistory")}</CardTitle>
+						<CardDescription>
+							{tAttendance("attendanceHistoryDescription")}
+						</CardDescription>
+					</CardHeader>
+					<CardContent>
+						{attendanceLoading ? (
+							<p className="text-sm text-muted-foreground">Loading...</p>
+						) : attendanceRecords.length === 0 ? (
+							<p className="text-sm text-muted-foreground">
+								{tAttendance("noAttendanceHistory")}
+							</p>
+						) : (
+							<Table>
+								<TableHeader>
+									<TableRow>
+										<TableHead>{tAttendance("date")}</TableHead>
+										<TableHead>{tAttendance("session")}</TableHead>
+										<TableHead>{tAttendance("status")}</TableHead>
+									</TableRow>
+								</TableHeader>
+								<TableBody>
+									{attendanceRecords.map((r) => (
+										<TableRow key={r.id}>
+											<TableCell>
+												{format(new Date(r.session.date), "PPP")}
+											</TableCell>
+											<TableCell>
+												<Link
+													href={`/organizations/${organizationId}/sessions/${r.classSessionId}`}
+													className="text-blue-600 hover:text-blue-500"
+												>
+													{r.session.group?.name ?? "—"}
+												</Link>
+											</TableCell>
+											<TableCell>{r.status}</TableCell>
+										</TableRow>
+									))}
+								</TableBody>
+							</Table>
+						)}
+					</CardContent>
+				</Card>
 			</div>
 		</AppLayout>
 	);

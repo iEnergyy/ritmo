@@ -45,6 +45,9 @@ vi.mock("@/db/queries/groups", () => ({
 vi.mock("@/db/queries/venues", () => ({
 	getVenueById: vi.fn(),
 }));
+vi.mock("@/db/queries/attendance", () => ({
+	hasAttendanceRecords: vi.fn(),
+}));
 
 describe("API /organizations/[id]/sessions", () => {
 	const orgId = "org-123";
@@ -430,19 +433,21 @@ describe("API /organizations/[id]/sessions", () => {
 	});
 
 	describe("DELETE /organizations/[id]/sessions/[sessionId]", () => {
-		it("should delete session", async () => {
+		it("should delete session when no attendance records", async () => {
 			const { getAuthenticatedSession, enforceTenantIsolation } = await import(
 				"@/lib/api-helpers"
 			);
 			const { getSessionById, deleteSession } = await import(
 				"@/db/queries/class-sessions"
 			);
+			const { hasAttendanceRecords } = await import("@/db/queries/attendance");
 
 			const classSession = createClassSessions(1, orgId)[0];
 
 			vi.mocked(getAuthenticatedSession).mockResolvedValue(session);
 			vi.mocked(enforceTenantIsolation).mockResolvedValue(undefined);
 			vi.mocked(getSessionById).mockResolvedValue(classSession);
+			vi.mocked(hasAttendanceRecords).mockResolvedValue(false);
 			vi.mocked(deleteSession).mockResolvedValue(undefined);
 
 			const request = createMockRequest(
@@ -457,6 +462,34 @@ describe("API /organizations/[id]/sessions", () => {
 
 			expect(response.status).toBe(200);
 			expect(data.message).toBe("Session deleted successfully");
+		});
+
+		it("should return 409 when session has attendance records", async () => {
+			const { getAuthenticatedSession, enforceTenantIsolation } = await import(
+				"@/lib/api-helpers"
+			);
+			const { getSessionById } = await import("@/db/queries/class-sessions");
+			const { hasAttendanceRecords } = await import("@/db/queries/attendance");
+
+			const classSession = createClassSessions(1, orgId)[0];
+
+			vi.mocked(getAuthenticatedSession).mockResolvedValue(session);
+			vi.mocked(enforceTenantIsolation).mockResolvedValue(undefined);
+			vi.mocked(getSessionById).mockResolvedValue(classSession);
+			vi.mocked(hasAttendanceRecords).mockResolvedValue(true);
+
+			const request = createMockRequest(
+				`http://localhost:3000/api/organizations/${orgId}/sessions/${classSession.id}`,
+				{ method: "DELETE" },
+			);
+
+			const response = await DELETE(request, {
+				params: Promise.resolve({ id: orgId, sessionId: classSession.id }),
+			});
+			const data = await getResponseJson(response);
+
+			expect(response.status).toBe(409);
+			expect(data.error).toContain("attendance");
 		});
 
 		it("should return 404 when session not found", async () => {
