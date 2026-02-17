@@ -27,7 +27,6 @@ vi.mock("@/db/schema", () => ({
 	groups: { id: {}, organizationId: {} },
 	classSessions: { id: {}, organizationId: {} },
 	attendanceRecords: { classSessionId: {} },
-	privateSessions: { id: {}, organizationId: {} },
 	studentPayments: { id: {}, organizationId: {} },
 	teacherPayouts: { id: {}, organizationId: {} },
 	studentGroups: { studentId: {} },

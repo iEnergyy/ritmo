@@ -6,7 +6,6 @@ import {
 	groups,
 	classSessions,
 	attendanceRecords,
-	privateSessions,
 	studentPayments,
 	teacherPayouts,
 	studentGroups,
@@ -204,15 +203,6 @@ export async function getAttendanceRecordsByOrganization(
 			eq(attendanceRecords.classSessionId, classSessions.id),
 		)
 		.where(eq(classSessions.organizationId, organizationId));
-}
-
-/**
- * Get all private sessions for a specific organization
- * @param organizationId - The organization ID
- * @returns Array of private sessions
- */
-export async function getPrivateSessionsByOrganization(organizationId: string) {
-	return scopedQuery(privateSessions, organizationId);
 }
 
 /**

@@ -118,6 +118,7 @@ export default function StudentDetailPage() {
 	const tEnrollments = useTranslations("Enrollments");
 	const tGroups = useTranslations("Groups");
 	const tAttendance = useTranslations("Attendance");
+	const tPrivateSessions = useTranslations("PrivateSessions");
 	const organizationId = params.id as string;
 	const studentId = params.studentId as string;
 
@@ -127,6 +128,16 @@ export default function StudentDetailPage() {
 		AttendanceRecord[]
 	>([]);
 	const [attendanceLoading, setAttendanceLoading] = useState(false);
+	const [privateSessions, setPrivateSessions] = useState<
+		{
+			id: string;
+			date: string;
+			durationMinutes: number;
+			status: string;
+			teacher: { fullName: string };
+		}[]
+	>([]);
+	const [privateSessionsLoading, setPrivateSessionsLoading] = useState(false);
 	const [groups, setGroups] = useState<Group[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -146,6 +157,7 @@ export default function StudentDetailPage() {
 			loadEnrollments();
 			loadGroups();
 			loadAttendance();
+			loadPrivateSessions();
 		}
 	}, [session, sessionLoading, organizationId, studentId]);
 
@@ -212,6 +224,23 @@ export default function StudentDetailPage() {
 			console.error("Failed to load attendance:", error);
 		} finally {
 			setAttendanceLoading(false);
+		}
+	};
+
+	const loadPrivateSessions = async () => {
+		try {
+			setPrivateSessionsLoading(true);
+			const response = await fetch(
+				`/api/organizations/${organizationId}/private-sessions?studentId=${studentId}`,
+			);
+			if (response.ok) {
+				const data = await response.json();
+				setPrivateSessions(data.sessions || []);
+			}
+		} catch (error) {
+			console.error("Failed to load private sessions:", error);
+		} finally {
+			setPrivateSessionsLoading(false);
 		}
 	};
 
@@ -692,6 +721,58 @@ export default function StudentDetailPage() {
 												</Link>
 											</TableCell>
 											<TableCell>{r.status}</TableCell>
+										</TableRow>
+									))}
+								</TableBody>
+							</Table>
+						)}
+					</CardContent>
+				</Card>
+
+				{/* Private sessions */}
+				<Card>
+					<CardHeader>
+						<CardTitle>{tPrivateSessions("title")}</CardTitle>
+						<CardDescription>
+							{tPrivateSessions("forStudentDescription")}
+						</CardDescription>
+					</CardHeader>
+					<CardContent>
+						{privateSessionsLoading ? (
+							<p className="text-sm text-muted-foreground">Loading...</p>
+						) : privateSessions.length === 0 ? (
+							<p className="text-sm text-muted-foreground">
+								{tPrivateSessions("noSessions")}
+							</p>
+						) : (
+							<Table>
+								<TableHeader>
+									<TableRow>
+										<TableHead>{tPrivateSessions("date")}</TableHead>
+										<TableHead>{tPrivateSessions("teacher")}</TableHead>
+										<TableHead>{tPrivateSessions("durationMinutes")}</TableHead>
+										<TableHead>{tPrivateSessions("status")}</TableHead>
+										<TableHead></TableHead>
+									</TableRow>
+								</TableHeader>
+								<TableBody>
+									{privateSessions.map((ps) => (
+										<TableRow key={ps.id}>
+											<TableCell>
+												{format(new Date(ps.date + "T12:00:00"), "PPP")}
+											</TableCell>
+											<TableCell>{ps.teacher.fullName}</TableCell>
+											<TableCell>{ps.durationMinutes} min</TableCell>
+											<TableCell>{tPrivateSessions(ps.status)}</TableCell>
+											<TableCell>
+												<Button variant="ghost" size="sm" asChild>
+													<Link
+														href={`/organizations/${organizationId}/private-sessions/${ps.id}`}
+													>
+														{tPrivateSessions("view")}
+													</Link>
+												</Button>
+											</TableCell>
 										</TableRow>
 									))}
 								</TableBody>

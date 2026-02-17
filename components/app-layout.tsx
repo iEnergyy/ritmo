@@ -46,6 +46,7 @@ import {
 	UsersRound,
 	CalendarDays,
 	ClipboardCheck,
+	UserCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -161,6 +162,11 @@ export function AppLayout({ children, organizationId }: AppLayoutProps) {
 					name: "Sessions",
 					href: `/organizations/${organizationId}/sessions`,
 					icon: CalendarDays,
+				},
+				{
+					name: "Private sessions",
+					href: `/organizations/${organizationId}/private-sessions`,
+					icon: UserCircle2,
 				},
 				{
 					name: "Attendance",

@@ -859,40 +859,37 @@ Deliverable:
 
 Goal: support private teaching in both 1:1 (one teacher, one student) and 1-to-many (one teacher, multiple students) formats.
 
-- [ ] Private session creation (1:1 or 1-to-many)
-- [ ] Duration-based sessions
-- [ ] Teacher assignment
-- [ ] Student(s) assignment (one or more per session)
-- [ ] Attendance implicit handling
+- [x] Private session creation (1:1 or 1-to-many) — Implemented: `private_sessions` + `private_session_students` junction, `db/queries/private-sessions.ts` (create/update/delete), POST/PATCH APIs, create form with student(s) selection
+- [x] Duration-based sessions — Schema `duration_minutes`; create/edit form duration input (minutes)
+- [x] Teacher assignment — Required teacher per session; teacher filter and "My private sessions" when user has linked teacher
+- [x] Student(s) assignment (one or more per session) — Junction table; multi-select students in create/edit form
+- [x] Attendance implicit handling — Detail page shows "all students present" when status = held; no separate attendance records for private sessions
 
 **UI Expectations:**
-- [ ] Private sessions management page (`/organizations/[id]/private-sessions`) with:
-  - [ ] Private sessions list/calendar view
-  - [ ] Filter by teacher, student, date range, status
-  - [ ] Create private session form:
-    - [ ] Date picker
-    - [ ] Student(s) selection (required; one or more students for 1:1 or small private group)
-    - [ ] Teacher selection (required)
-    - [ ] Venue selection (optional)
-    - [ ] Duration input (minutes)
-    - [ ] Status selection (scheduled/held/cancelled)
-- [ ] Private session detail page:
-  - [ ] Session info (date, student(s), teacher, venue, duration, status)
-  - [ ] Status change (mark as held/cancelled)
-  - [ ] Implicit attendance indicator (if held = present for all students)
-- [ ] Teacher view:
-  - [ ] My private sessions list
-  - [ ] Quick session creation
-  - [ ] Mark session as held
-- [ ] Student profile integration:
-  - [ ] Private sessions history
-  - [ ] Upcoming private sessions
-- [ ] Calendar integration:
-  - [ ] Private sessions visible alongside group sessions
-  - [ ] Different visual styling for private vs group sessions
+- [x] Private sessions management page (`/organizations/[id]/private-sessions`) with:
+  - [x] Private sessions list (table view; calendar view not implemented)
+  - [x] Filter by teacher, student, date range, status
+  - [x] Create private session form:
+    - [x] Date picker
+    - [x] Student(s) selection (required; one or more students for 1:1 or small private group)
+    - [x] Teacher selection (required)
+    - [x] Venue selection (optional)
+    - [x] Duration input (minutes)
+    - [x] Status selection (scheduled/held/cancelled)
+- [x] Private session detail page:
+  - [x] Session info (date, student(s), teacher, venue, duration, status)
+  - [x] Status change (mark as held/cancelled)
+  - [x] Implicit attendance indicator (if held = present for all students)
+- [x] Teacher view:
+  - [x] My private sessions list (filter by linked teacher)
+  - [x] Quick session creation (Create button on list page)
+  - [x] Mark session as held (detail page)
+- [x] Student profile integration:
+  - [x] Private sessions history (table on student profile)
+  - [x] Upcoming private sessions (same list; no separate "upcoming" filter)
 
 Deliverable:
-- [ ] Solo teachers and school teachers can run 1:1 or 1-to-many private sessions
+- [x] Solo teachers and school teachers can run 1:1 or 1-to-many private sessions
 
 **Phase 7 — Student Payments**
 
@@ -1323,6 +1320,9 @@ Deliverable:
 
 Goal: complete features deferred during earlier phases (to be built in a dedicated tech-debt phase).
 
+- [ ] **Phase 6 — Private Classes: Calendar integration**
+  - [ ] Private sessions visible alongside group sessions (group sessions page does not yet include private sessions)
+  - [ ] Different visual styling for private vs group sessions
 - [ ] **Attendance — Admin override & audit**
   - [ ] Optional `note` and `marked_by_user_id` on `attendance_records` (migration + API + UI)
   - [ ] Full change-history audit log for attendance (append-only table or equivalent)
