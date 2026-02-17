@@ -893,48 +893,73 @@ Deliverable:
 
 **Phase 7 — Student Payments**
 
-Goal: replace manual tracking
+Goal: replace manual tracking of student fees (e.g. monthly tuition) paid by bank transfer. No payment processing (no gateways, no cards); visibility and reconciliation only.
 
-- [ ] Monthly payment records
-- [ ] Bank transfer receipt upload
-- [ ] Payment status tracking
-- [ ] Overdue detection
-- [ ] Manual reconciliation flow
+**Scope (in):** Monthly payment records per student, status (pending/paid/overdue), receipt upload/storage for bank transfer proof, overdue detection, list/detail/create/edit UI, student profile payment history and summary.  
+**Out of scope:** Payment gateways, automatic charging, invoicing engine, or parent-facing payment portal (Phase 10 may add read-only parent view).
+
+**Current state (pre-Phase 7):**
+- Schema: `student_payments` table exists with `student_id`, `organization_id`, `month` (date), `amount`, `receipt_url`, `status` (enum: pending/paid/overdue). Migrations applied.
+- Helper: `getStudentPaymentsByOrganization(organizationId)` in `lib/db-helpers.ts` (simple scoped select; no filters, no create/update). Not used by any UI or API.
+- No dedicated query module (`db/queries/student-payments.ts`), no API routes, no payments page, no nav link, no student profile payment section, no receipt storage or upload flow.
+
+**Features:**
+- [ ] Monthly payment records — One record per student per month (or per billing period); create/edit/delete with tenant isolation. Schema supports it; need query layer + API + UI.
+- [ ] Bank transfer receipt upload — Store receipt files (e.g. Supabase Storage or S3); save URL in `student_payments.receipt_url`. Support upload on create/edit, replace, view, download.
+- [ ] Payment status tracking — Status field (pending/paid/overdue) with indicators in list and detail; allow status changes on edit and (optional) bulk update.
+- [ ] Overdue detection — Define rule (e.g. status = pending and `month` < current month start ⇒ overdue). Expose in queries (e.g. filter overdue, or computed flag); highlight in UI.
+- [ ] Manual reconciliation flow — Staff can create payment records, attach receipt, and mark as paid when transfer is confirmed; no automation.
+
+**Data & API expectations:**
+- [ ] Query module `db/queries/student-payments.ts`:
+  - [ ] List with filters: organizationId (required), optional studentId, monthFrom/monthTo (date range), status (pending/paid/overdue).
+  - [ ] Get by id (with organizationId) for detail; create/update/delete with tenant validation.
+  - [ ] Helpers for student profile: e.g. getPaymentsByStudent(organizationId, studentId), optional summary (total paid, pending count, overdue count).
+  - [ ] Overdue: either computed in query (pending + month < current) or small helper; used by list and overdue dashboard.
+- [ ] API routes (all behind auth + tenant check):
+  - [ ] `GET/POST /api/organizations/[id]/payments` — List (query params: studentId, monthFrom, monthTo, status), Create (body: studentId, month, amount, status, receiptUrl optional).
+  - [ ] `GET/PATCH/DELETE /api/organizations/[id]/payments/[paymentId]` — Detail, update (amount, month, status, receiptUrl), delete.
+  - [ ] Receipt upload: either inline in POST/PATCH (e.g. base64 or multipart) or separate `POST /api/.../payments/[id]/receipt` that returns URL to set on payment; document chosen approach.
+- [ ] Receipt storage: bucket/path per tenant or global with tenant prefix; RLS or server-side checks so only that org’s receipts are accessible. Support common image/PDF types; optional max size.
 
 **UI Expectations:**
 - [ ] Payments management page (`/organizations/[id]/payments`) with:
   - [ ] Payments list/table with filters (student, month, status, date range)
-  - [ ] Status indicators (pending/paid/overdue)
-  - [ ] Overdue payments highlighted
+  - [ ] Status indicators (pending/paid/overdue) — e.g. badges or column
+  - [ ] Overdue payments highlighted (row or badge)
   - [ ] Create payment record form:
-    - [ ] Student selection
-    - [ ] Month selection (date picker)
-    - [ ] Amount input
-    - [ ] Status selection
-    - [ ] Receipt upload (file upload)
+    - [ ] Student selection (dropdown/combobox; org students only)
+    - [ ] Month selection (date picker or month picker; store as first-of-month or single date per convention)
+    - [ ] Amount input (numeric, required)
+    - [ ] Status selection (pending/paid/overdue)
+    - [ ] Receipt upload (file upload — drag & drop or file picker; optional on create)
   - [ ] Edit payment record:
     - [ ] Update amount, status, month
     - [ ] Upload/replace receipt
-    - [ ] View receipt
-- [ ] Student profile integration:
-  - [ ] Payment history table
-  - [ ] Payment status summary
-  - [ ] Outstanding balance indicator
+    - [ ] View receipt (preview or open in new tab)
+- [ ] Student profile integration (`/organizations/[id]/students/[studentId]`):
+  - [ ] Payment history table (student’s payments: month, amount, status, receipt link; sort by month desc)
+  - [ ] Payment status summary (e.g. paid this month, pending, overdue count)
+  - [ ] Outstanding balance indicator (optional: e.g. “X overdue” or “Y pending”; clarify if “balance” is derived from unpaid months only)
 - [ ] Receipt management:
-  - [ ] Receipt upload interface (drag & drop or file picker)
-  - [ ] Receipt preview/view
-  - [ ] Receipt download
-- [ ] Overdue payments dashboard:
-  - [ ] List of overdue payments
-  - [ ] Overdue indicators on student cards
-  - [ ] Payment reminder actions
-- [ ] Monthly payment overview:
-  - [ ] Calendar/month view showing payment status
-  - [ ] Quick payment entry
-  - [ ] Bulk payment status updates
+  - [ ] Receipt upload interface (drag & drop or file picker) on create/edit payment
+  - [ ] Receipt preview/view (inline or new tab)
+  - [ ] Receipt download (link or button)
+- [ ] Overdue payments dashboard (can be a block on the payments page or separate section):
+  - [ ] List of overdue payments (student, month, amount; link to edit payment or student)
+  - [ ] Overdue indicators on student cards/list (e.g. on students page or in payments table)
+  - [ ] Payment reminder actions (optional: e.g. “Send reminder” button that triggers Phase 10 notification later; or placeholder for now)
+- [ ] Monthly payment overview (optional enhancement):
+  - [ ] Calendar/month view showing payment status (e.g. which months have pending/overdue per student)
+  - [ ] Quick payment entry (e.g. from month view: add payment for student+month)
+  - [ ] Bulk payment status updates (e.g. select multiple records, set status to paid)
+
+**Navigation & i18n:**
+- [ ] Add “Payments” (or equivalent) to organization sidebar in `components/app-layout.tsx` linking to `/organizations/[id]/payments`.
+- [ ] Add all Phase 7 copy to `messages/en.json` and `messages/es.json` (payments page title, filters, form labels, status labels, student profile payment section, errors, empty states).
 
 Deliverable:
-- [ ] Clear payment visibility without payment processing
+- [ ] Clear payment visibility without payment processing: staff can record monthly payments, attach bank transfer receipts, track status and overdue, and see payment history per student.
 
 **Phase 8 — Teacher Payouts**
 
