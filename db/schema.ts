@@ -442,10 +442,6 @@ export const privateSessions = pgTable("private_sessions", {
 		.notNull()
 		.references(() => teachers.id),
 
-	studentId: uuid("student_id")
-		.notNull()
-		.references(() => students.id),
-
 	venueId: uuid("venue_id").references(() => venues.id),
 
 	date: date("date").notNull(),
@@ -455,6 +451,29 @@ export const privateSessions = pgTable("private_sessions", {
 
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const privateSessionStudents = pgTable(
+	"private_session_students",
+	{
+		id: uuid("id").primaryKey().defaultRandom(),
+		privateSessionId: uuid("private_session_id")
+			.notNull()
+			.references(() => privateSessions.id, { onDelete: "cascade" }),
+		studentId: uuid("student_id")
+			.notNull()
+			.references(() => students.id, { onDelete: "cascade" }),
+	},
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	(table: any) =>
+		[
+			uniqueIndex("private_session_students_session_student_uidx").on(
+				table.privateSessionId,
+				table.studentId,
+			),
+			index("private_session_students_session_idx").on(table.privateSessionId),
+			index("private_session_students_student_idx").on(table.studentId),
+		] as const,
+);
 
 /* ----------------------------------
  STUDENT PAYMENTS (BANK TRANSFER)
@@ -556,3 +575,40 @@ export const invitationRelations = relations(invitation, ({ one }) => ({
 		references: [user.id],
 	}),
 }));
+
+/* ----------------------------------
+ PRIVATE SESSIONS RELATIONS
+---------------------------------- */
+
+export const privateSessionsRelations = relations(
+	privateSessions,
+	({ one, many }) => ({
+		organization: one(organization, {
+			fields: [privateSessions.organizationId],
+			references: [organization.id],
+		}),
+		teacher: one(teachers, {
+			fields: [privateSessions.teacherId],
+			references: [teachers.id],
+		}),
+		venue: one(venues, {
+			fields: [privateSessions.venueId],
+			references: [venues.id],
+		}),
+		privateSessionStudents: many(privateSessionStudents),
+	}),
+);
+
+export const privateSessionStudentsRelations = relations(
+	privateSessionStudents,
+	({ one }) => ({
+		privateSession: one(privateSessions, {
+			fields: [privateSessionStudents.privateSessionId],
+			references: [privateSessions.id],
+		}),
+		student: one(students, {
+			fields: [privateSessionStudents.studentId],
+			references: [students.id],
+		}),
+	}),
+);
