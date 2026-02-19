@@ -272,7 +272,9 @@ export default function AttendancePage() {
 										<TableHead>{t("session")}</TableHead>
 										<TableHead>{t("student")}</TableHead>
 										<TableHead>{t("status")}</TableHead>
-										<TableHead>{t("markedAt")}</TableHead>
+										<TableHead className="hidden sm:table-cell">
+											{t("markedAt")}
+										</TableHead>
 									</TableRow>
 								</TableHeader>
 								<TableBody>
@@ -302,7 +304,7 @@ export default function AttendancePage() {
 													{r.status}
 												</Badge>
 											</TableCell>
-											<TableCell className="text-muted-foreground text-sm">
+											<TableCell className="hidden text-muted-foreground text-sm sm:table-cell">
 												{format(new Date(r.markedAt), "PPp")}
 											</TableCell>
 										</TableRow>

@@ -330,8 +330,12 @@ export default function VenuesPage() {
 							<TableHeader>
 								<TableRow>
 									<TableHead>{t("name")}</TableHead>
-									<TableHead>{t("address")}</TableHead>
-									<TableHead>{t("createdAt")}</TableHead>
+									<TableHead className="hidden sm:table-cell">
+										{t("address")}
+									</TableHead>
+									<TableHead className="hidden sm:table-cell">
+										{t("createdAt")}
+									</TableHead>
 									<TableHead className="text-right">{t("actions")}</TableHead>
 								</TableRow>
 							</TableHeader>
@@ -339,8 +343,10 @@ export default function VenuesPage() {
 								{venues.map((venue) => (
 									<TableRow key={venue.id}>
 										<TableCell className="font-medium">{venue.name}</TableCell>
-										<TableCell>{venue.address || "-"}</TableCell>
-										<TableCell>
+										<TableCell className="hidden sm:table-cell">
+											{venue.address || "-"}
+										</TableCell>
+										<TableCell className="hidden sm:table-cell">
 											{new Date(venue.createdAt).toLocaleDateString()}
 										</TableCell>
 										<TableCell className="text-right">

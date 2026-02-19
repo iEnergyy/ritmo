@@ -544,7 +544,7 @@ export default function SessionsPage() {
 									{t("createButton")}
 								</Button>
 							</DialogTrigger>
-							<DialogContent className="max-w-2xl">
+							<DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-2xl">
 								<DialogHeader>
 									<DialogTitle>{t("createTitle")}</DialogTitle>
 									<DialogDescription>
@@ -922,11 +922,19 @@ export default function SessionsPage() {
 							<TableHeader>
 								<TableRow>
 									<TableHead>{t("date")}</TableHead>
-									<TableHead>{t("time")}</TableHead>
+									<TableHead className="hidden sm:table-cell">
+										{t("time")}
+									</TableHead>
 									<TableHead>{t("group")}</TableHead>
-									<TableHead>{t("teacher")}</TableHead>
-									<TableHead>{t("venue")}</TableHead>
-									<TableHead>{t("status")}</TableHead>
+									<TableHead className="hidden sm:table-cell">
+										{t("teacher")}
+									</TableHead>
+									<TableHead className="hidden sm:table-cell">
+										{t("venue")}
+									</TableHead>
+									<TableHead className="hidden sm:table-cell">
+										{t("status")}
+									</TableHead>
 									<TableHead>{t("actions")}</TableHead>
 								</TableRow>
 							</TableHeader>
@@ -934,7 +942,7 @@ export default function SessionsPage() {
 								{sessions.map((session) => (
 									<TableRow key={session.id}>
 										<TableCell>{formatDate(session.date)}</TableCell>
-										<TableCell>
+										<TableCell className="hidden sm:table-cell">
 											{session.startTime && session.endTime
 												? `${formatTime(session.startTime)} - ${formatTime(session.endTime)}`
 												: session.startTime
@@ -953,7 +961,7 @@ export default function SessionsPage() {
 												t("noGroup")
 											)}
 										</TableCell>
-										<TableCell>
+										<TableCell className="hidden sm:table-cell">
 											<Link
 												href={`/organizations/${organizationId}/teachers`}
 												className="text-blue-600 hover:text-blue-500"
@@ -961,7 +969,7 @@ export default function SessionsPage() {
 												{session.teacher.fullName}
 											</Link>
 										</TableCell>
-										<TableCell>
+										<TableCell className="hidden sm:table-cell">
 											{session.venue ? (
 												<Link
 													href={`/organizations/${organizationId}/venues`}
@@ -973,7 +981,7 @@ export default function SessionsPage() {
 												t("noVenue")
 											)}
 										</TableCell>
-										<TableCell>
+										<TableCell className="hidden sm:table-cell">
 											<Badge variant={getStatusBadgeVariant(session.status)}>
 												{getStatusIcon(session.status)}
 												<span className="ml-1">
@@ -1043,7 +1051,7 @@ export default function SessionsPage() {
 
 				{/* Edit Dialog */}
 				<Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-					<DialogContent className="max-w-2xl">
+					<DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-2xl">
 						<DialogHeader>
 							<DialogTitle>{t("editTitle")}</DialogTitle>
 							<DialogDescription>{t("editDescription")}</DialogDescription>

@@ -697,10 +697,18 @@ export default function GroupsPage() {
 							<TableHeader>
 								<TableRow>
 									<TableHead>{t("name")}</TableHead>
-									<TableHead>Teacher</TableHead>
-									<TableHead>{t("venue")}</TableHead>
-									<TableHead>{t("status")}</TableHead>
-									<TableHead>{t("createdAt")}</TableHead>
+									<TableHead className="hidden sm:table-cell">
+										Teacher
+									</TableHead>
+									<TableHead className="hidden sm:table-cell">
+										{t("venue")}
+									</TableHead>
+									<TableHead className="hidden sm:table-cell">
+										{t("status")}
+									</TableHead>
+									<TableHead className="hidden sm:table-cell">
+										{t("createdAt")}
+									</TableHead>
 									<TableHead className="text-right">{t("actions")}</TableHead>
 								</TableRow>
 							</TableHeader>
@@ -715,15 +723,19 @@ export default function GroupsPage() {
 												{group.name}
 											</Link>
 										</TableCell>
-										<TableCell>{group.teacher?.fullName || "-"}</TableCell>
-										<TableCell>{group.venue?.name || t("noVenue")}</TableCell>
-										<TableCell>
+										<TableCell className="hidden sm:table-cell">
+											{group.teacher?.fullName || "-"}
+										</TableCell>
+										<TableCell className="hidden sm:table-cell">
+											{group.venue?.name || t("noVenue")}
+										</TableCell>
+										<TableCell className="hidden sm:table-cell">
 											<Badge variant={getStatusBadgeVariant(group.status)}>
 												{getStatusIcon(group.status)}
 												{t(`statusOptions.${group.status}`)}
 											</Badge>
 										</TableCell>
-										<TableCell>
+										<TableCell className="hidden sm:table-cell">
 											{group.startedAt
 												? new Date(group.startedAt).toLocaleDateString()
 												: "-"}

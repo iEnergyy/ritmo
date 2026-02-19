@@ -54,6 +54,15 @@ describe("SignInPage - Subdomain Handling", () => {
 		mockLocation.origin = "http://localhost:3000";
 	});
 
+	it("uses responsive padding on the form container for mobile-first layout", () => {
+		render(<SignInPage />);
+		const formContainer = document.querySelector(".max-w-md.bg-white");
+		expect(formContainer).toBeInTheDocument();
+		expect(formContainer?.className).toMatch(/\bp-4\b/);
+		expect(formContainer?.className).toMatch(/\bsm:p-6\b/);
+		expect(formContainer?.className).toMatch(/\blg:p-8\b/);
+	});
+
 	it("should set active organization based on subdomain after login", async () => {
 		const user = userEvent.setup();
 		const { authClient } = await import("@/lib/auth-client");

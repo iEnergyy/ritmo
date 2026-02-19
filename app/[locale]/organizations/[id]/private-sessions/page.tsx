@@ -486,7 +486,7 @@ export default function PrivateSessionsPage() {
 									{t("createButton")}
 								</Button>
 							</DialogTrigger>
-							<DialogContent className="max-w-2xl">
+							<DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-2xl">
 								<DialogHeader>
 									<DialogTitle>{t("createTitle")}</DialogTitle>
 									<DialogDescription>
@@ -847,8 +847,12 @@ export default function PrivateSessionsPage() {
 										<TableHead>{t("date")}</TableHead>
 										<TableHead>{t("teacher")}</TableHead>
 										<TableHead>{t("students")}</TableHead>
-										<TableHead>{t("venue")}</TableHead>
-										<TableHead>{t("durationMinutes")}</TableHead>
+										<TableHead className="hidden sm:table-cell">
+											{t("venue")}
+										</TableHead>
+										<TableHead className="hidden sm:table-cell">
+											{t("durationMinutes")}
+										</TableHead>
 										<TableHead>{t("status")}</TableHead>
 										<TableHead className="w-[120px]">{t("actions")}</TableHead>
 									</TableRow>
@@ -866,8 +870,12 @@ export default function PrivateSessionsPage() {
 															.join(", ")} +${s.students.length - 2}`
 													: s.students.map((st) => st.fullName).join(", ")}
 											</TableCell>
-											<TableCell>{s.venue?.name ?? "—"}</TableCell>
-											<TableCell>{s.durationMinutes} min</TableCell>
+											<TableCell className="hidden sm:table-cell">
+												{s.venue?.name ?? "—"}
+											</TableCell>
+											<TableCell className="hidden sm:table-cell">
+												{s.durationMinutes} min
+											</TableCell>
 											<TableCell>
 												<Badge variant={getStatusBadgeVariant(s.status)}>
 													{getStatusIcon(s.status)}
@@ -910,7 +918,7 @@ export default function PrivateSessionsPage() {
 
 			{/* Edit dialog - same form as create */}
 			<Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-				<DialogContent className="max-w-2xl">
+				<DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-2xl">
 					<DialogHeader>
 						<DialogTitle>{t("editTitle")}</DialogTitle>
 						<DialogDescription>{t("editDescription")}</DialogDescription>

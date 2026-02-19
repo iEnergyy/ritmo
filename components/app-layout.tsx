@@ -317,11 +317,11 @@ export function AppLayout({ children, organizationId }: AppLayoutProps) {
 			</Sidebar>
 
 			<SidebarInset>
-				<header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-2 border-b px-4">
+				<header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-2 border-b px-4 min-w-0">
 					<SidebarTrigger />
-					<div className="flex items-center gap-2 ml-auto">
+					<div className="flex items-center gap-2 ml-auto min-w-0">
 						<Select value={locale} onValueChange={switchLocale}>
-							<SelectTrigger className="w-[160px]">
+							<SelectTrigger className="w-full min-w-0 max-w-[160px] sm:max-w-none sm:w-[160px]">
 								<Globe className="h-4 w-4 mr-2" />
 								<SelectValue>
 									{locale.toUpperCase()} -{" "}
@@ -339,7 +339,7 @@ export function AppLayout({ children, organizationId }: AppLayoutProps) {
 						</Select>
 					</div>
 				</header>
-				<main className="flex flex-1 flex-col gap-4 p-4 sm:p-6 lg:p-8">
+				<main className="flex min-w-0 flex-1 flex-col gap-4 p-4 sm:p-6 lg:p-8">
 					{children}
 				</main>
 			</SidebarInset>

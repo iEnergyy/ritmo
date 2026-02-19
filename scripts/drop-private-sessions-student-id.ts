@@ -17,16 +17,22 @@ async function dropPrivateSessionsStudentId() {
 	`);
 	const rows = Array.isArray(hasColumn)
 		? hasColumn
-		: (hasColumn as { rows?: unknown[] })?.rows ?? [];
+		: ((hasColumn as { rows?: unknown[] })?.rows ?? []);
 	if (rows.length === 0) {
 		console.log("✅ Column student_id does not exist. No changes needed.");
 		return;
 	}
 
-	await db.execute(sql.raw(`ALTER TABLE private_sessions DROP CONSTRAINT IF EXISTS private_sessions_student_id_students_id_fk;`));
+	await db.execute(
+		sql.raw(
+			`ALTER TABLE private_sessions DROP CONSTRAINT IF EXISTS private_sessions_student_id_students_id_fk;`,
+		),
+	);
 	console.log("✅ Dropped FK (if existed)");
 
-	await db.execute(sql.raw(`ALTER TABLE private_sessions DROP COLUMN IF EXISTS student_id;`));
+	await db.execute(
+		sql.raw(`ALTER TABLE private_sessions DROP COLUMN IF EXISTS student_id;`),
+	);
 	console.log("✅ Dropped column student_id");
 
 	console.log("\n✅ Done. You can create private sessions again.");

@@ -608,8 +608,12 @@ export default function StudentDetailPage() {
 								<TableHeader>
 									<TableRow>
 										<TableHead>Group</TableHead>
-										<TableHead>{tEnrollments("dateRange")}</TableHead>
-										<TableHead>Status</TableHead>
+										<TableHead className="hidden sm:table-cell">
+											{tEnrollments("dateRange")}
+										</TableHead>
+										<TableHead className="hidden sm:table-cell">
+											Status
+										</TableHead>
 									</TableRow>
 								</TableHeader>
 								<TableBody>
@@ -623,13 +627,13 @@ export default function StudentDetailPage() {
 													{enrollment.group.name}
 												</Link>
 											</TableCell>
-											<TableCell>
+											<TableCell className="hidden sm:table-cell">
 												{formatDateRange(
 													enrollment.startDate,
 													enrollment.endDate,
 												)}
 											</TableCell>
-											<TableCell>
+											<TableCell className="hidden sm:table-cell">
 												{tGroups(`statusOptions.${enrollment.group.status}`)}
 											</TableCell>
 										</TableRow>
@@ -654,7 +658,9 @@ export default function StudentDetailPage() {
 								<TableHeader>
 									<TableRow>
 										<TableHead>Group</TableHead>
-										<TableHead>{tEnrollments("dateRange")}</TableHead>
+										<TableHead className="hidden sm:table-cell">
+											{tEnrollments("dateRange")}
+										</TableHead>
 									</TableRow>
 								</TableHeader>
 								<TableBody>
@@ -668,7 +674,7 @@ export default function StudentDetailPage() {
 													{enrollment.group.name}
 												</Link>
 											</TableCell>
-											<TableCell>
+											<TableCell className="hidden sm:table-cell">
 												{formatDateRange(
 													enrollment.startDate,
 													enrollment.endDate,
@@ -702,7 +708,9 @@ export default function StudentDetailPage() {
 								<TableHeader>
 									<TableRow>
 										<TableHead>{tAttendance("date")}</TableHead>
-										<TableHead>{tAttendance("session")}</TableHead>
+										<TableHead className="hidden sm:table-cell">
+											{tAttendance("session")}
+										</TableHead>
 										<TableHead>{tAttendance("status")}</TableHead>
 									</TableRow>
 								</TableHeader>
@@ -712,7 +720,7 @@ export default function StudentDetailPage() {
 											<TableCell>
 												{format(new Date(r.session.date), "PPP")}
 											</TableCell>
-											<TableCell>
+											<TableCell className="hidden sm:table-cell">
 												<Link
 													href={`/organizations/${organizationId}/sessions/${r.classSessionId}`}
 													className="text-blue-600 hover:text-blue-500"
@@ -750,8 +758,12 @@ export default function StudentDetailPage() {
 									<TableRow>
 										<TableHead>{tPrivateSessions("date")}</TableHead>
 										<TableHead>{tPrivateSessions("teacher")}</TableHead>
-										<TableHead>{tPrivateSessions("durationMinutes")}</TableHead>
-										<TableHead>{tPrivateSessions("status")}</TableHead>
+										<TableHead className="hidden sm:table-cell">
+											{tPrivateSessions("durationMinutes")}
+										</TableHead>
+										<TableHead className="hidden sm:table-cell">
+											{tPrivateSessions("status")}
+										</TableHead>
 										<TableHead></TableHead>
 									</TableRow>
 								</TableHeader>
@@ -762,8 +774,12 @@ export default function StudentDetailPage() {
 												{format(new Date(ps.date + "T12:00:00"), "PPP")}
 											</TableCell>
 											<TableCell>{ps.teacher.fullName}</TableCell>
-											<TableCell>{ps.durationMinutes} min</TableCell>
-											<TableCell>{tPrivateSessions(ps.status)}</TableCell>
+											<TableCell className="hidden sm:table-cell">
+												{ps.durationMinutes} min
+											</TableCell>
+											<TableCell className="hidden sm:table-cell">
+												{tPrivateSessions(ps.status)}
+											</TableCell>
 											<TableCell>
 												<Button variant="ghost" size="sm" asChild>
 													<Link

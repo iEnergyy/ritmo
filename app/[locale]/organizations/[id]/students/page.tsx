@@ -475,9 +475,15 @@ export default function StudentsPage() {
 							<TableHeader>
 								<TableRow>
 									<TableHead>{t("fullName")}</TableHead>
-									<TableHead>{t("email")}</TableHead>
-									<TableHead>{t("phone")}</TableHead>
-									<TableHead>{t("createdAt")}</TableHead>
+									<TableHead className="hidden sm:table-cell">
+										{t("email")}
+									</TableHead>
+									<TableHead className="hidden sm:table-cell">
+										{t("phone")}
+									</TableHead>
+									<TableHead className="hidden sm:table-cell">
+										{t("createdAt")}
+									</TableHead>
 									<TableHead className="text-right">{t("actions")}</TableHead>
 								</TableRow>
 							</TableHeader>
@@ -487,9 +493,13 @@ export default function StudentsPage() {
 										<TableCell className="font-medium">
 											{student.fullName}
 										</TableCell>
-										<TableCell>{student.email || "-"}</TableCell>
-										<TableCell>{student.phone || "-"}</TableCell>
-										<TableCell>
+										<TableCell className="hidden sm:table-cell">
+											{student.email || "-"}
+										</TableCell>
+										<TableCell className="hidden sm:table-cell">
+											{student.phone || "-"}
+										</TableCell>
+										<TableCell className="hidden sm:table-cell">
 											{new Date(student.createdAt).toLocaleDateString()}
 										</TableCell>
 										<TableCell className="text-right">

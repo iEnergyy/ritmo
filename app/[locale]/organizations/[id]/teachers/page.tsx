@@ -428,7 +428,7 @@ export default function TeachersPage() {
 								{t("createButton")}
 							</Button>
 						</DialogTrigger>
-						<DialogContent className="max-w-2xl">
+						<DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-2xl">
 							<DialogHeader>
 								<DialogTitle>{t("createTitle")}</DialogTitle>
 								<DialogDescription>{t("createDescription")}</DialogDescription>
@@ -584,9 +584,15 @@ export default function TeachersPage() {
 								<TableRow>
 									<TableHead>{t("fullName")}</TableHead>
 									<TableHead>{t("paymentType")}</TableHead>
-									<TableHead>{t("rate")}</TableHead>
-									<TableHead>{t("userAccount")}</TableHead>
-									<TableHead>{t("createdAt")}</TableHead>
+									<TableHead className="hidden sm:table-cell">
+										{t("rate")}
+									</TableHead>
+									<TableHead className="hidden sm:table-cell">
+										{t("userAccount")}
+									</TableHead>
+									<TableHead className="hidden sm:table-cell">
+										{t("createdAt")}
+									</TableHead>
 									<TableHead className="text-right">{t("actions")}</TableHead>
 								</TableRow>
 							</TableHeader>
@@ -601,8 +607,10 @@ export default function TeachersPage() {
 												{getPaymentTypeLabel(teacher.paymentType)}
 											</Badge>
 										</TableCell>
-										<TableCell>{getRateDisplay(teacher)}</TableCell>
-										<TableCell>
+										<TableCell className="hidden sm:table-cell">
+											{getRateDisplay(teacher)}
+										</TableCell>
+										<TableCell className="hidden sm:table-cell">
 											{teacher.userEmail ? (
 												<span className="text-sm">
 													{teacher.userName || teacher.userEmail}
@@ -613,7 +621,7 @@ export default function TeachersPage() {
 												</span>
 											)}
 										</TableCell>
-										<TableCell>
+										<TableCell className="hidden sm:table-cell">
 											{new Date(teacher.createdAt).toLocaleDateString()}
 										</TableCell>
 										<TableCell className="text-right">
@@ -654,7 +662,7 @@ export default function TeachersPage() {
 
 				{/* Edit Dialog */}
 				<Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-					<DialogContent className="max-w-2xl">
+					<DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-2xl">
 						<DialogHeader>
 							<DialogTitle>{t("editTitle")}</DialogTitle>
 							<DialogDescription>{t("editDescription")}</DialogDescription>
