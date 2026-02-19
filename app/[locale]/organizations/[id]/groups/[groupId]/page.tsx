@@ -977,7 +977,7 @@ export default function GroupDetailPage() {
 											Create Session
 										</Button>
 									</DialogTrigger>
-									<DialogContent className="max-w-2xl">
+									<DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-2xl">
 										<DialogHeader>
 											<DialogTitle>{tSessions("createTitle")}</DialogTitle>
 											<DialogDescription>
@@ -1540,7 +1540,9 @@ export default function GroupDetailPage() {
 								<TableHeader>
 									<TableRow>
 										<TableHead>Student</TableHead>
-										<TableHead>{tEnrollments("dateRange")}</TableHead>
+										<TableHead className="hidden sm:table-cell">
+											{tEnrollments("dateRange")}
+										</TableHead>
 										<TableHead className="text-right">Actions</TableHead>
 									</TableRow>
 								</TableHeader>
@@ -1555,7 +1557,7 @@ export default function GroupDetailPage() {
 													{enrollment.student.fullName}
 												</Link>
 											</TableCell>
-											<TableCell>
+											<TableCell className="hidden sm:table-cell">
 												{formatDateRange(
 													enrollment.startDate,
 													enrollment.endDate,
@@ -1802,7 +1804,7 @@ export default function GroupDetailPage() {
 					open={isScheduleDialogOpen}
 					onOpenChange={setIsScheduleDialogOpen}
 				>
-					<DialogContent className="max-w-md">
+					<DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-md">
 						<DialogHeader>
 							<DialogTitle>{tGroupSchedule("title")}</DialogTitle>
 							<DialogDescription>

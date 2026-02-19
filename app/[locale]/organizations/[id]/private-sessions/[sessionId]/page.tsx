@@ -532,7 +532,7 @@ export default function PrivateSessionDetailPage() {
 
 			{/* Edit dialog */}
 			<Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-				<DialogContent className="max-w-2xl">
+				<DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-2xl">
 					<DialogHeader>
 						<DialogTitle>{tList("editTitle")}</DialogTitle>
 						<DialogDescription>{tList("editDescription")}</DialogDescription>
