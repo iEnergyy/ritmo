@@ -892,6 +892,7 @@ Deliverable:
 - [x] Solo teachers and school teachers can run 1:1 or 1-to-many private sessions
 
 **Phase 7 — Student Payments**
+<!-- TODO: validate file storage and scope -->
 
 Goal: replace manual tracking of student fees (e.g. monthly tuition) paid by bank transfer. No payment processing (no gateways, no cards); visibility and reconciliation only.
 
